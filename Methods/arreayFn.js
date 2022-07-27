@@ -1,4 +1,4 @@
-import lodash, { isArray, sum } from "lodash";
+import lodash, { isArray, sum, sortBy } from "lodash";
 
 const getColumnByQuery = (pquery) => {
   if (pquery === "VENDOR") {
@@ -132,8 +132,6 @@ export const returnObjectSumm = (ob, query) => {
 
 function groupBy(xs, f, s) {
   return xs.reduce(
-    //(r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push((v[s])), r),
-    //(r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v[lodash.sum(s)]), r),
     (r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v[s]), r),
 
     {}

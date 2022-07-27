@@ -3,17 +3,13 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export const DounatChart = (props) => {
+const pieRose = (props) => {
   let vdata = props.data;
+  let vTitle = props.titile;
   let vSeries = [];
-  let vType = props.type || "pie";
-  let vSize = props.size || "70%";
-  let vTitle = props.title;
-  let vWidth = props.width || 500;
 
+  console.log(`from Pie data`);
   console.log(vdata);
-
-  let vHeight = props.height || 350;
 
   let obKeys = [];
   Object.keys(vdata[0]).forEach((e) => {
@@ -31,47 +27,64 @@ export const DounatChart = (props) => {
     });
   });
 
-  console.log(`print kkk ${key} on Dounat`);
+  console.log(`print kkk ${key}`);
 
   vdata.forEach((e) => {
     vSeries.push(e[key]);
   });
-  console.log(vSeries);
-  console.log(vLabel);
 
-  const state = {
-    series: vSeries,
-
+  let state = {
+    series: vSeries || [42, 47, 52, 58, 65],
     options: {
       chart: {
-        width: 500,
-        //height: 500,
-        type: vType,
+        width: 250,
+        //hight: 600,
+        type: "polarArea",
       },
-      plotOptions: {
-        pie: {
-          startAngle: -90,
-          endAngle: 270,
-        },
-      },
-      labels: vLabel,
-      dataLabels: {
-        enabled: true,
-      },
+      labels: vLabel || ["Rose A", "Rose B", "Rose C", "Rose D", "Rose E"],
       fill: {
-        type: "gradient",
+        opacity: 1,
       },
-      legend: {
-        itemMargin: {
-          horizontal: 5,
-          vertical: 0,
+      stroke: {
+        width: 1,
+        colors: undefined,
+      },
+      yaxis: {
+        show: false,
+      },
+
+      plotOptions: {
+        polarArea: {
+          rings: {
+            strokeWidth: 0,
+          },
+          spokes: {
+            strokeWidth: 0,
+          },
         },
-        formatter: function (val, opts) {
-          return val + " - " + opts.w.globals.series[opts.seriesIndex];
-        },
+      },
+      theme: {
+        /* monochrome: {
+          enabled: true,
+          color: "#255aee",
+          shadeTo: "light",
+          shadeIntensity: 0.6,
+        },*/
+        colors: ["#F44336", "#E91E63", "#9C27B0"],
       },
       title: {
-        text: vTitle || "Most Customer Sales",
+        text: vTitle,
+        align: "left",
+        margin: 10,
+        offsetX: 0,
+        offsetY: 0,
+        floating: false,
+        style: {
+          fontSize: "14px",
+          fontWeight: "bold",
+          fontFamily: undefined,
+          color: "#263238",
+        },
       },
       responsive: [
         {
@@ -79,7 +92,6 @@ export const DounatChart = (props) => {
           options: {
             chart: {
               width: 200,
-              height: 400,
             },
             legend: {
               position: "left",
@@ -98,9 +110,11 @@ export const DounatChart = (props) => {
       <ReactApexChart
         options={state.options}
         series={state.series}
-        type={vType}
-        width={vWidth}
+        type="polarArea"
+        width={500}
       />
     </div>
   );
 };
+
+export default pieRose;

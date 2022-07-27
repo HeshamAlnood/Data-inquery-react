@@ -1,54 +1,56 @@
+import { CodeSandboxCircleFilled } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
-import {
-  returnObjectSumm,
-  groupObject,
-  returnObjectProperty,
-  groupBySum,
-  sumArray,
-} from "../../Methods/arreayFn";
 
 export const BarChart = (props) => {
-  let vSeries = props.series || [
-    400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380,
-  ];
+  let vdata = props.data;
+  console.log("data of class item");
+  console.log(vdata);
+
+  let vSeries = [];
   let vType = props.type || "bar";
   let vSize = props.size || "70%";
   let vTitle = props.title || "70%";
-  let vCatg = props.catg || [
-    "South Korea",
-    "Canada",
-    "United Kingdom",
-    "Netherlands",
-    "Italy",
-    "France",
-    "Japan",
-    "United States",
-    "China",
-    "Germany",
-  ];
+  let vCatg = [];
 
-  console.log(`vSeries
-  .length`);
-  console.log(vSeries.length);
-
-  /*vSeries.forEach((e, i) => {
-    console.log(sumArray(e));
-    e[i] = sumArray(e[i]);
-  });*/
-
-  console.log(vSeries.map((e) => sumArray(e)));
-  //console.log(vSeries);
-  let vLabel = props.label;
   let vHeight = props.height || 1000;
+
+  let obKeys = [];
+  Object.keys(vdata[0]).forEach((e) => {
+    obKeys.push(e);
+  });
+
+  let key;
+  obKeys.forEach((e) => {
+    console.log(`vdata[e]`);
+    console.log(vdata[e]);
+    vdata.forEach((el) => {
+      if (Number.isFinite(el[e])) key = e;
+      if (isNaN(el[e])) vCatg.push(el[e]);
+    });
+  });
+
+  vdata.forEach((e) => {
+    vSeries.push(e[key]);
+  });
+
+  //console.log(vSeries.map((e) => sumArray(e)));
+  console.log(`key In BARCHART`);
+  console.log(key);
+
+  console.log(`vSeries In BARCHART`);
+  console.log(vSeries);
+  console.log(`vCatg In BARCHART`);
+  console.log(vCatg);
 
   const state = {
     series: [
       {
-        data: vSeries.map((e) => sumArray(e)),
-        name: `${vTitle} Amount`,
+        //vSeries.map((e) => sumArray(e)),
+        data: vSeries,
+        name: `${vTitle} : Amount`,
       },
     ],
     options: {
@@ -79,7 +81,6 @@ export const BarChart = (props) => {
         options={state.options}
         series={state.series}
         type={vType}
-        height={vHeight}
       />
     </div>
   );

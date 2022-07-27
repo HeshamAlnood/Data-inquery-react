@@ -71,6 +71,12 @@ export default function DataTablesA(props) {
         "Total Invocies Inovies",
         "Total Uncollect",
       ];
+    } else if (pquery === "INVENTORY") {
+      return [
+        "Total Items Sold Amount",
+        "Total Items Purchaed Amount",
+        "Total On Hand",
+      ];
     }
     //else return pquery;
   };
@@ -175,7 +181,8 @@ export default function DataTablesA(props) {
     var resultProductData = dataOb.filter((a) => {
       let startDate = new Date(vStartDate);
       let endDate = new Date(vEndDate);
-      var date = new Date(a.PIH_INV_DATE);
+      let vObDateCol = query === "PURCHASING" ? "PIH_INV_DATE" : "SIH_INV_DATE";
+      var date = new Date(a[vObDateCol]);
       return (date >= startDate) & (date <= endDate);
     });
 
@@ -299,7 +306,7 @@ export default function DataTablesA(props) {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -513,7 +520,7 @@ export default function DataTablesA(props) {
 
           <Table
             id="dataTable"
-            bordered="true"
+            //bordered="true"
             size="middle"
             editable
             columns={dataCols}
@@ -528,7 +535,7 @@ export default function DataTablesA(props) {
             }}
             //className={"bg-sky-700 text-slate-50	text-base"}
             rowClassName={(record, index) => {
-              let className = index % 2 ? "bg-gray-100" : " ";
+              let className = index % 2 ? "bg-gray-100" : "";
               return className;
             }}
           />
