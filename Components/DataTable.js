@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Container, Grid, Loading, Button } from "@nextui-org/react";
-import { Input, Space, Table, Col, Divider, Row } from "antd";
+import { Input, Space, Table, Col, Divider, Row, DatePicker } from "antd";
+
 import validator from "validator";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "./Stats";
@@ -12,6 +13,8 @@ import moment from "moment";
 import { getSummry, sumArrayByKey, getObSummry } from "../Methods/arreayFn";
 
 import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+const { RangePicker } = DatePicker;
+
 import "react-date-range/dist/styles.css"; // main style file react-date-range
 import "react-date-range/dist/theme/default.css"; // theme css file react-date-range
 
@@ -35,9 +38,8 @@ export default function DataTablesA(props) {
   let [state3, setState3] = useState(new statProps("1", "1", "1"));
   let [flagState, setFlagState] = useState(false);
 
-  const showDateRangerFlag = () => {
-    if (showDateRanger === true) setShowDateRanger(false);
-    else setShowDateRanger(true);
+  const showDateRangerFlag = (flag = false) => {
+    setShowDateRanger(flag);
   };
 
   let [vTitles, setVTitles] = useState(["", "", ""]);
@@ -51,6 +53,8 @@ export default function DataTablesA(props) {
       return "PIH_INV_NO";
     } else if (pquery === "INVOICING") {
       return "SIH_INV_NO";
+    } else if (pquery === "INVENTORY") {
+      return "ITEM_PART_NO";
     } else return pquery;
   };
 
@@ -98,9 +102,13 @@ export default function DataTablesA(props) {
 
     let vstate1 = new statProps(vTitles[0], ob.sum, "bg-red-400");
 
-    setState1(new statProps(vTitles[0], ob.sum, "bg-red-400"));
+    /*setState1(new statProps(vTitles[0], ob.sum, "bg-red-400"));
     setState2(new statProps(vTitles[1], ob.count, "bg-teal-400"));
-    setState3(new statProps(vTitles[2], stat3, "bg-blue-400"));
+    setState3(new statProps(vTitles[2], stat3, "bg-blue-400"));*/
+
+    setState1(new statProps(vTitles[0], ob.sum, "rgb(248 113 113)"));
+    setState2(new statProps(vTitles[1], ob.count, "rgb(45 212 191)"));
+    setState3(new statProps(vTitles[2], stat3, "rgb(96 165 250)"));
   };
 
   const [columnKeys, setColumnKeys] = useState(
@@ -188,6 +196,28 @@ export default function DataTablesA(props) {
 
     setDataElm(resultProductData);
     fillStateProps(resultProductData, props.query);
+  };
+
+  const onChangeDateRange = (dates, dateStrings) => {
+    if (dates) {
+      let vStartDate = moment(dates[0]);
+      let vEndDate = moment(dates[1]);
+      let dataOb = dataElm;
+
+      var resultProductData = dataOb.filter((a) => {
+        let startDate = new Date(vStartDate);
+        let endDate = new Date(vEndDate);
+        let vObDateCol =
+          query === "PURCHASING" ? "PIH_INV_DATE" : "SIH_INV_DATE";
+        var date = new Date(a[vObDateCol]);
+        return (date >= startDate) & (date <= endDate);
+      });
+
+      setDataElm(resultProductData);
+      fillStateProps(resultProductData, props.query);
+    } else {
+      resetFilter();
+    }
   };
 
   const resetFilter = () => {
@@ -347,6 +377,7 @@ export default function DataTablesA(props) {
             defaultSortOrder: "descend",
             filterMode: "tree",
             filterSearch: true,
+            responsive: ["lg", "md"],
             ...getColumnSearchProps(e),
 
             //  onFilter: (value, record) => record[e].startsWith(value),
@@ -434,6 +465,11 @@ export default function DataTablesA(props) {
     //setVTitles(getQueryArr(query));
     fillStateProps(dataElm, props.query);
     setFlagState(true);
+    if (query === "PURCHASING" || query === "INVOICING") {
+      showDateRangerFlag(true);
+    } else {
+      showDateRangerFlag(false);
+    }
   }, [flagState]);
 
   if (isLoading === true) {
@@ -476,12 +512,41 @@ export default function DataTablesA(props) {
             </Col>
           </Row>
           <div>
-            <Divider />
-            <a className="text-lg" onClick={showDateRangerFlag}>
-              Search Date From - To :{" "}
-            </a>
-
             {showDateRanger && (
+              <>
+                <Divider orientation="center"></Divider>
+
+                <Row justify="start" className="space-x-4">
+                  <h className="text-lg px-px"> Search Date : </h>
+
+                  <RangePicker
+                    ranges={{
+                      Yesterday: [moment().day(-1), moment().day(-1)],
+
+                      Today: [moment(), moment()],
+                      "This Week": [moment().day(-7), moment().day(0)],
+                      "This Month": [
+                        moment().startOf("month"),
+                        moment().endOf("month"),
+                      ],
+                      "3 Months": [moment().day(-90), moment().day(0)],
+                      "6 Months": [moment().day(-180), moment().day(0)],
+                      Year: [moment().day(-365), moment().day(0)],
+                      "This Year": [
+                        moment().startOf("year"),
+                        moment().endOf("year"),
+                      ],
+                    }}
+                    format="YYYY/MM/DD"
+                    onChange={onChangeDateRange}
+                    size={"large"}
+                  />
+                </Row>
+              </>
+            )}
+            <Divider orientation="center"></Divider>
+
+            {/*showDateRanger && (
               <DateRangePicker
                 //onSelect={setColumnKeys}
                 direction="horizontal"
@@ -495,7 +560,7 @@ export default function DataTablesA(props) {
                 rangeColors={"#10b981"}
                 ranges={[selectionRange]}
               />
-            )}
+            )*/}
           </div>
           <div>
             <Divider dashed />

@@ -1,6 +1,7 @@
 import { get } from "lodash";
 import moment from "moment";
 import dynamic from "next/dynamic";
+import { Skeleton } from "antd";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
@@ -8,6 +9,11 @@ export const ColumnsChart = (props) => {
   let vdata = props.data;
   console.log("data of Columns item");
   console.log(vdata);
+
+  let finish = props.finish;
+  if (finish === false) {
+    return <Skeleton active />;
+  }
 
   let vSeriesRev = [];
   let vSeriesPro = [];
@@ -28,22 +34,9 @@ export const ColumnsChart = (props) => {
     vYear = e.YEAR;
   });
 
-  console.log(`vSeriesRev`);
-  console.log(vSeriesRev);
-
-  console.log(`vSeriesPro`);
-  console.log(vSeriesPro);
-
-  console.log(`vSeriesExp`);
-  console.log(vSeriesExp);
   vMonth = [...new Set(vMonth)];
 
   vMonth.forEach((e) => {
-    console.log(
-      moment()
-        .month(e - 1)
-        .format("MMMM")
-    );
     e = moment()
       .month(e - 1)
       .format("MMMM");

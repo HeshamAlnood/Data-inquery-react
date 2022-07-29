@@ -57,6 +57,13 @@ export default function SideBar(props) {
                 </a>
               </Link>
             </li>
+            <li>
+              <Link href="/data/INVOICING" key={"INVOICING"}>
+                <a className="flex items-center gap-x-3 py-2 px-2.5 text-xl text-orange-50 hover:text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-300">
+                  Invoicing
+                </a>
+              </Link>
+            </li>
           </ul>
         </div>
       );
@@ -94,16 +101,6 @@ export default function SideBar(props) {
       });
       //console.log(e);
     });
-
-    /*labels.forEach((e) => {
-      console.log(e);
-      e.id === labelActiv ? setLabelsActive() : (e.style.display = "none");
-      //e.id === p_elm ? (e.style.opacity = 1) : (e.style.opacity = 0);
-    });*/
-
-    /*let labels = sideBarElm[0]
-      .querySelectorAll("a")
-      .map((e) => console.log(e.innerText));*/
   }, []);
 
   return (

@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
+import { Skeleton } from "antd";
 
 export const DounatChart = (props) => {
   let vdata = props.data;
@@ -10,6 +11,11 @@ export const DounatChart = (props) => {
   let vSize = props.size || "70%";
   let vTitle = props.title;
   let vWidth = props.width || 500;
+
+  let finish = props.finish;
+  if (finish === false) {
+    return <Skeleton active />;
+  }
 
   console.log(vdata);
 

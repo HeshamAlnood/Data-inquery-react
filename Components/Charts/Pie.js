@@ -2,17 +2,23 @@ import dynamic from "next/dynamic";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
+import { Skeleton } from "antd";
 
 const pieRose = (props) => {
   let vdata = props.data;
   let vTitle = props.titile;
+  let finish = props.finish;
   let vSeries = [];
 
   console.log(`from Pie data`);
   console.log(vdata);
 
+  if (finish === false) {
+    return <Skeleton active />;
+  }
+
   let obKeys = [];
-  Object.keys(vdata[0]).forEach((e) => {
+  Object.keys(vdata[0])?.forEach((e) => {
     obKeys.push(e);
   });
 

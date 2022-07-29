@@ -8,23 +8,34 @@ const Stats = (props) => {
   let bgColor = props.color;
 
   return (
-    <Card isPressable isHoverable variant="bordered" css={{ width: "19rem" }}>
-      <Card.Body className={bgColor}>
+    <Card
+      isPressable
+      isHoverable
+      variant="bordered"
+      css={{
+        width: "19rem",
+        borderRadius: "4%",
+        backgroundColor: "transparent",
+      }}
+      className="glassy"
+    >
+      <Card.Body>
         <Statistic
           title={
             <>
-              <h className="text-white font-bold	tracking-wide text-lg">
+              <h className="text-black font-bold	tracking-wide text-lg ">
                 {vTitle}
               </h>
             </>
           }
           value={vValue}
           valueStyle={{
-            color: "#ffffff",
+            color: bgColor,
             textAlign: "right",
             //fontSize: "2rem",
           }}
-          css={{ color: "#ffffff" }}
+          className={bgColor}
+
           //prefix={<StockOutlined size="larg" />}
         />
       </Card.Body>

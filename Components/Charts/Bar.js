@@ -3,12 +3,17 @@ import dynamic from "next/dynamic";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
+import { Skeleton } from "antd";
 
 export const BarChart = (props) => {
   let vdata = props.data;
   console.log("data of class item");
   console.log(vdata);
 
+  let finish = props.finish;
+  if (finish === false) {
+    return <Skeleton active />;
+  }
   let vSeries = [];
   let vType = props.type || "bar";
   let vSize = props.size || "70%";
@@ -75,6 +80,7 @@ export const BarChart = (props) => {
       },
     },
   };
+
   return (
     <div id="chart">
       <ReactApexChart
