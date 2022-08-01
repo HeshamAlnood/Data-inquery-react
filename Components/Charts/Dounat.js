@@ -13,11 +13,11 @@ export const DounatChart = (props) => {
   let vWidth = props.width || 500;
 
   let finish = props.finish;
-  if (finish === false) {
+  if (finish === false || vdata.length === 0) {
     return <Skeleton active />;
   }
 
-  console.log(vdata);
+  //  console.log(vdata);
 
   let vHeight = props.height || 350;
 

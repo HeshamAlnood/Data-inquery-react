@@ -1,13 +1,24 @@
 import { useEffect, useState, useRef } from "react";
 import { Container, Grid, Loading, Button } from "@nextui-org/react";
-import { Input, Space, Table, Col, Divider, Row, DatePicker } from "antd";
-
+import {
+  Input,
+  Space,
+  Table,
+  Col,
+  Divider,
+  Row,
+  DatePicker,
+  Layout,
+} from "antd";
+const { Header, Footer, Sider, Content } = Layout;
 import validator from "validator";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "./Stats";
 import { VerticalAlignBottomOutlined } from "@ant-design/icons";
 import { Calendar, DateRangePicker } from "react-date-range";
 import TagList from "./List";
+import { DropdownL } from "./Dropdown";
+
 //import Select from "../Components/Select";
 import moment from "moment";
 import { getSummry, sumArrayByKey, getObSummry } from "../Methods/arreayFn";
@@ -294,6 +305,7 @@ export default function DataTablesA(props) {
             size="small"
             style={{
               width: 90,
+              height: 30,
             }}
           ></Button>
           <Button
@@ -305,6 +317,7 @@ export default function DataTablesA(props) {
             size="small"
             style={{
               width: 90,
+              height: 30,
             }}
           >
             Reset
@@ -314,6 +327,7 @@ export default function DataTablesA(props) {
             size="small"
             style={{
               width: 90,
+              height: 30,
             }}
             onClick={() => {
               confirm({
@@ -372,7 +386,9 @@ export default function DataTablesA(props) {
             dataIndex: e,
             sorted: true,
             width: 10,
-            responsive: ["lg"],
+            visible: false,
+
+            //responsive: ["lg", "md"],
             //filteredValue: filteredInfo[e] || null,
             defaultSortOrder: "descend",
             filterMode: "tree",
@@ -433,7 +449,7 @@ export default function DataTablesA(props) {
         setColKey(colsArr);
 
         setDataCols(colsArr);
-
+        setColumnKeys(colsArr.map((column) => column.dataIndex));
         setIsLoading(false);
         disableCursor(false);
         setFlagState(true);
@@ -485,68 +501,78 @@ export default function DataTablesA(props) {
     /*  <div /*className="md:container md:mx-auto">
       <div className="article bg-slate-50">*/
     //<div className="md:container md:mx-auto">
-    <Container xl>
+    /*<Container xl>
       <div className="md:container md:mx-auto  bg-slate-50 ">
-        <div className="ease-in duration-300  ">
-          <Row justify="space-around">
-            <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-              <Stats
-                title={state1.title}
-                value={state1.value}
-                color={state1.color}
-              />
-            </Col>
-            <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-              <Stats
-                title={state2.title}
-                value={state2.value}
-                color={state2.color}
-              />
-            </Col>
-            <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-              <Stats
-                title={state3.title}
-                value={state3.value}
-                color={state3.color}
-              />
-            </Col>
-          </Row>
-          <div>
-            {showDateRanger && (
-              <>
-                <Divider orientation="center"></Divider>
+        <div className="ease-in duration-300  ">*/
+    <Layout>
+      <Content
+        style={{
+          padding: "4rem",
+          paddingLeft: "18rem",
+          margin: 0,
+          minHeight: 280,
+          backgroundColor: "transparent",
+        }}
+      >
+        <Row justify="space-around">
+          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
+            <Stats
+              title={state1.title}
+              value={state1.value}
+              color={state1.color}
+            />
+          </Col>
+          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
+            <Stats
+              title={state2.title}
+              value={state2.value}
+              color={state2.color}
+            />
+          </Col>
+          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
+            <Stats
+              title={state3.title}
+              value={state3.value}
+              color={state3.color}
+            />
+          </Col>
+        </Row>
+        <div>
+          {showDateRanger && (
+            <>
+              <Divider orientation="center"></Divider>
 
-                <Row justify="start" className="space-x-4">
-                  <h className="text-lg px-px"> Search Date : </h>
+              <Row justify="start" className="space-x-4">
+                <h className="text-lg px-px"> Search Date : </h>
 
-                  <RangePicker
-                    ranges={{
-                      Yesterday: [moment().day(-1), moment().day(-1)],
+                <RangePicker
+                  ranges={{
+                    Yesterday: [moment().day(-1), moment().day(-1)],
 
-                      Today: [moment(), moment()],
-                      "This Week": [moment().day(-7), moment().day(0)],
-                      "This Month": [
-                        moment().startOf("month"),
-                        moment().endOf("month"),
-                      ],
-                      "3 Months": [moment().day(-90), moment().day(0)],
-                      "6 Months": [moment().day(-180), moment().day(0)],
-                      Year: [moment().day(-365), moment().day(0)],
-                      "This Year": [
-                        moment().startOf("year"),
-                        moment().endOf("year"),
-                      ],
-                    }}
-                    format="YYYY/MM/DD"
-                    onChange={onChangeDateRange}
-                    size={"large"}
-                  />
-                </Row>
-              </>
-            )}
-            <Divider orientation="center"></Divider>
+                    Today: [moment(), moment()],
+                    "This Week": [moment().day(-7), moment().day(0)],
+                    "This Month": [
+                      moment().startOf("month"),
+                      moment().endOf("month"),
+                    ],
+                    "3 Months": [moment().day(-90), moment().day(0)],
+                    "6 Months": [moment().day(-180), moment().day(0)],
+                    Year: [moment().day(-365), moment().day(0)],
+                    "This Year": [
+                      moment().startOf("year"),
+                      moment().endOf("year"),
+                    ],
+                  }}
+                  format="YYYY/MM/DD"
+                  onChange={onChangeDateRange}
+                  size={"large"}
+                />
+              </Row>
+            </>
+          )}
+          <Divider orientation="center"></Divider>
 
-            {/*showDateRanger && (
+          {/*showDateRanger && (
               <DateRangePicker
                 //onSelect={setColumnKeys}
                 direction="horizontal"
@@ -561,52 +587,67 @@ export default function DataTablesA(props) {
                 ranges={[selectionRange]}
               />
             )*/}
-          </div>
-          <div>
-            <Divider dashed />
-            <Grid xs={12} md={3}>
-              <Button.Group size="lg" color="primary" className="bg-blue-500">
-                <Button color="gradient" onClick={performFilter}>
-                  Search
-                </Button>
-                <Button color="gradient" onClick={resetFilter}>
-                  Reset
-                </Button>
-                <Button color="gradient" onClick={HtmlTOExcel}>
-                  Download Excel
-                  <VerticalAlignBottomOutlined
-                    style={{ paddingLeft: "0.5rem" }}
-                  />
-                </Button>
-              </Button.Group>
-            </Grid>
-          </div>
-          <TagList cols={vendorList} filterd={setFilterd} qName={query} />
-
-          <Table
-            id="dataTable"
-            //bordered="true"
-            size="middle"
-            editable
-            columns={dataCols}
-            rowKey={(record) => record[getTableKey(props.query)]}
-            dataSource={dataElm}
-            pagination={{ defaultPageSize: 20 }}
-            loading={setIsLoading}
-            onChange={handleChange}
-            scroll={{
-              //y: 240,
-              x: "100vw",
-            }}
-            //className={"bg-sky-700 text-slate-50	text-base"}
-            rowClassName={(record, index) => {
-              let className = index % 2 ? "bg-gray-100" : "";
-              return className;
-            }}
-          />
         </div>
+        <div>
+          <Divider dashed />
+          <Grid xs={12} md={3}>
+            <Button.Group size="lg" color="primary" className="bg-blue-500">
+              <Button color="gradient" onClick={performFilter}>
+                Search
+              </Button>
+              <Button color="gradient" onClick={resetFilter}>
+                Reset
+              </Button>
+              <Button color="gradient" onClick={HtmlTOExcel}>
+                Download Excel
+                <VerticalAlignBottomOutlined
+                  style={{ paddingLeft: "0.5rem" }}
+                />
+              </Button>
+            </Button.Group>
+          </Grid>
+        </div>
+
+        <DropdownL menu={columnKeys} chng={setDataCols} />
+        <TagList cols={vendorList} filterd={setFilterd} qName={query} />
+        <Table
+          id="dataTable"
+          //bordered="true"
+          size="middle"
+          editable
+          columns={dataCols}
+          rowKey={(record) => record[getTableKey(props.query)]}
+          dataSource={dataElm}
+          pagination={{ defaultPageSize: 20 }}
+          loading={setIsLoading}
+          onChange={handleChange}
+          scroll={{
+            //y: 240,
+            x: "100vw",
+          }}
+          //className={"bg-sky-700 text-slate-50	text-base"}
+          rowClassName={(record, index) => {
+            let className = index % 2 ? "bg-gray-100" : "";
+            return className;
+          }}
+        />
+      </Content>
+    </Layout>
+
+    /*</Content></div>
       </div>
-    </Container>
+    </Container>*/
     //</div>
   );
 }
+
+/*
+         
+          <TagList
+            cols={columnKeys}
+            filterd={setColumnKeys}
+            qName={`Columns to Display`}
+            type={`Cols`}
+          />
+        
+        */

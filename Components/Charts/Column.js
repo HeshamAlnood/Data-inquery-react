@@ -7,11 +7,11 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 export const ColumnsChart = (props) => {
   let vdata = props.data;
-  console.log("data of Columns item");
-  console.log(vdata);
+  /*console.log("data of Columns item");
+  console.log(vdata);*/
 
   let finish = props.finish;
-  if (finish === false) {
+  if (finish === false || vdata.length === 0) {
     return <Skeleton active />;
   }
 

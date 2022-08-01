@@ -13,7 +13,7 @@ const pieRose = (props) => {
   console.log(`from Pie data`);
   console.log(vdata);
 
-  if (finish === false) {
+  if (finish === false || vdata.length === 0) {
     return <Skeleton active />;
   }
 

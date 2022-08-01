@@ -63,7 +63,8 @@ const TagList = (props) => {
         allowClear
         showArrow
         placeholder={`please Select ${props.qName ?? "Vendors"}`}
-        tagRender={tagRender}
+        //defaultValue={props.type === "Cols" ? props.cols : ""}
+        tagRender={props.type === "Cols" ? "" : tagRender}
         //bordered={false}
         //status={"warning"}
 

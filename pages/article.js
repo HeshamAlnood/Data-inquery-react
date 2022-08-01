@@ -10,6 +10,7 @@ import {} from "../Components/Charts/Line";
 import { SparkLine } from "../Components/Charts/SparkLines";
 import { useEffect, useState } from "react";
 import PieRose from "../Components/Charts/Pie";
+
 import {
   Col,
   Row,
@@ -45,9 +46,9 @@ export default function DashBoard(props) {
   let [expensesTotal, setExpensesTotal] = useState([{}]);
   let [revExpSummary, setRevExpSummary] = useState([{}]);
 
-  let [invoicing, setInvoicing] = useState({});
-  let [customerSummOb, setCustomerSummOb] = useState({});
-  let [vendorSummOb, setVendorSummOb] = useState({});
+  let [invoicing, setInvoicing] = useState([{}]);
+  let [customerSummOb, setCustomerSummOb] = useState([{}]);
+  let [vendorSummOb, setVendorSummOb] = useState([{}]);
   let vDateFrom = "20160101";
   let vDateTo = "20500101";
   let [dateFrom, setDateFrom] = useState(vDateFrom);
@@ -96,6 +97,9 @@ export default function DashBoard(props) {
   };
 
   const runQuerys = () => {
+    console.log(`dateFrom, dateTo`);
+    console.log(dateFrom, dateTo);
+
     setIsDone(false);
     Promise.all([
       /*requestData("VENDOR"),
@@ -114,23 +118,6 @@ export default function DashBoard(props) {
       .catch((err) => console.log(`Eroor Promise  `));
   };
 
-  useEffect(() => {
-    console.log("Start Promise");
-    /* Promise.all([
-   
-      requestData("VENDORBYPURCHASE"),
-      requestData("CUSTOMERBYINVOICE"),
-      requestData("CLASSSALE"),
-      requestData("EXPENSETOTAL"),
-      requestData("REVEXPSUMMARY"),
- 
-    ])
-      .then((e) => setIsDone(true))
-      .catch((err) => console.log(`Eroor Promise  `));*/
-    runQuerys();
-    console.log("End Promise");
-  }, []);
-
   const onChangeDateRange = (dates, dateStrings) => {
     if (dates) {
       console.log("From: ", dates[0], ", to: ", dates[1]);
@@ -148,6 +135,13 @@ export default function DashBoard(props) {
       console.log("Clear");
     }
   };
+
+  useEffect(() => {
+    console.log("Start Promise");
+
+    runQuerys();
+    console.log("End Promise");
+  }, [dateFrom]);
 
   return (
     <Layout>
@@ -268,7 +262,7 @@ export default function DashBoard(props) {
               hoverable="true"
             >
               <PieRose
-                data={purchasingByVendor}
+                data={purchasingByVendor || [{}]}
                 titile="Most Purchased Vendors"
                 finish={isDone}
               />
