@@ -2,8 +2,9 @@ import { Button, Modal } from "antd";
 import React, { useRef, useState } from "react";
 import Draggable from "react-draggable";
 
-export const ModalScreen = (props) => {
+const ModalScreen = (props) => {
   console.log(props.showFlag + " 1");
+  alert("HEello MOdel");
   const [visible, setVisible] = useState(true);
   const [disabled, setDisabled] = useState(false);
 
@@ -13,9 +14,9 @@ export const ModalScreen = (props) => {
     bottom: 0,
     right: 0,
   });
-  console.log(props.showFlag + " 1");
+  console.log(`Inside Modal Function Component`, props.showFlag + " 1");
 
-  setVisible(props.showFlag);
+  //setVisible(props.showFlag);
   const draggleRef = useRef(null);
   console.log(props.showFlag + " 2");
 
@@ -98,3 +99,5 @@ export const ModalScreen = (props) => {
     </Modal>
   );
 };
+
+export default ModalScreen;

@@ -62,7 +62,7 @@ const TagList = (props) => {
         mode="multiple"
         allowClear
         showArrow
-        placeholder={`please Select ${props.qName ?? "Vendors"}`}
+        placeholder={`Please Select ${props.qName ?? "Vendors"}`}
         //defaultValue={props.type === "Cols" ? props.cols : ""}
         tagRender={props.type === "Cols" ? "" : tagRender}
         //bordered={false}
