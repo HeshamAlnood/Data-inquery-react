@@ -129,10 +129,11 @@ export default function Customer() {
       let prsnt = (vSumBal / vSumNet) * 100;
       prsnt = toFixedTrunc(100 - prsnt, 2);
 
-      console.log(`prsnt`, toFixedTrunc(prsnt, 2));
+      //console.log(`prsnt`, toFixedTrunc(prsnt, 2));
 
       return (
         <>
+          {isDone ?? <Skeleton />}
           <Card
             title={vTitle}
             hoverable
@@ -250,7 +251,7 @@ export default function Customer() {
       <Content
         style={{
           padding: "4rem",
-          paddingLeft: "18rem",
+          paddingLeft: "29rem",
           margin: 0,
           minHeight: 280,
           backgroundColor: "transparent",
@@ -258,20 +259,24 @@ export default function Customer() {
       >
         {isDone ?? <Skeleton active />}
 
-        <TagList cols={custList} filterd={setFilterd} qName={`CUSTOMER`} />
+        <TagList
+          cols={custList}
+          filterd={setFilterd}
+          qName={`CUSTOMER`}
+          width={"100.5rem"}
+        />
 
         <Row justify="center">
           <Col>{Getdata(customerData)}</Col>
         </Row>
         <Modal
-          title="Modal 1000px width"
+          title="Uploading Files"
           centered
           visible={visible}
           onOk={() => setVisible(false)}
           onCancel={() => setVisible(false)}
           width={1000}
         >
-          <p>some contents...</p>
           <Uploader />
         </Modal>
       </Content>

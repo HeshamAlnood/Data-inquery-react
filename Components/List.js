@@ -10,6 +10,8 @@ const TagList = (props) => {
     <Option key={e} className="rounded-full"></Option>
   ));
 
+  let vWidth = props.width || "100%";
+
   const handleChange = (value) => {
     console.log(`selected ${value}`);
 
@@ -42,7 +44,7 @@ const TagList = (props) => {
         onClose={onClose}
         style={{
           borderRadius: "1.5625rem",
-          height: "2.1rem",
+          height: "1.8rem",
           paddingTop: "0.2rem",
           marginTop: "0.2rem",
           marginBottom: "0.2rem",
@@ -60,6 +62,7 @@ const TagList = (props) => {
     <div>
       <Select
         mode="multiple"
+        size="large"
         allowClear
         showArrow
         placeholder={`Please Select ${props.qName ?? "Vendors"}`}
@@ -69,8 +72,8 @@ const TagList = (props) => {
         //status={"warning"}
 
         style={{
-          width: "100%",
-
+          width: vWidth,
+          height: "2.5rem",
           borderRadius: "20%",
         }}
         //defaultValue={[]}
