@@ -5,9 +5,11 @@ const { Dragger } = Upload;
 
 import React from "react";
 
-const Uploader = () => {
+const Uploader = (prop) => {
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
+  console.log(`props.type, props.key`);
+  console.log(prop.type, prop.keyVal);
 
   const handleUpload = () => {
     const formData = new FormData();
@@ -17,11 +19,14 @@ const Uploader = () => {
     console.log(`start upload 1 `);
     setUploading(true); // You can use any AJAX library you like
     console.log(`start upload 2`);
-    fetch("http://localhost:3001/upload", {
-      method: "POST",
-      body: formData,
-      redirect: "follow",
-    })
+    fetch(
+      `http://localhost:3001/upload?type=${prop.type}&keyVal=${prop.keyVal}`,
+      {
+        method: "POST",
+        body: formData,
+        redirect: "follow",
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setFileList([]);

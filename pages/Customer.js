@@ -32,6 +32,7 @@ export default function Customer() {
   let [isDone, setIsDone] = useState(false);
   let [custList, setCustList] = useState([]);
   let [filterd, setFilterd] = useState([]);
+  let [currCust, setCurrCust] = useState("");
 
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
@@ -95,10 +96,11 @@ export default function Customer() {
     setVisible(false);
   };
 
-  const showModal = () => {
-    console.log(`Go Go Modal Modal`);
+  const showModal = (cust) => {
+    console.log(`Go Go Modal Modal`, cust);
 
     setVisible(true);
+    setCurrCust(cust);
 
     const onStart = (_event, uiData) => {
       const { clientWidth, clientHeight } = window.document.documentElement;
@@ -144,9 +146,18 @@ export default function Customer() {
               width: "80%",
             }}
             actions={[
-              <SettingOutlined key="setting" onClick={showModal} />,
-              <EditOutlined key="edit" onClick={showModal} />,
-              <EllipsisOutlined key="ellipsis" onClick={showModal} />,
+              <SettingOutlined
+                key="setting"
+                onClick={() => showModal(e.CUST_CUSTOMER)}
+              />,
+              <EditOutlined
+                key="edit"
+                onClick={() => showModal(e.CUST_CUSTOMER)}
+              />,
+              <EllipsisOutlined
+                key="ellipsis"
+                onClick={() => showModal(e.CUST_CUSTOMER)}
+              />,
             ]}
           >
             <Descriptions labelStyle={{ fontWeight: "bold" }}>
@@ -277,7 +288,7 @@ export default function Customer() {
           onCancel={() => setVisible(false)}
           width={1000}
         >
-          <Uploader />
+          <Uploader keyVal={currCust} type="Customer" />
         </Modal>
       </Content>
     </Layout>
