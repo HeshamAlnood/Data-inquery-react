@@ -21,6 +21,11 @@ import {
   EllipsisOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+
+import ViewerPdf from "../Components/ViewerPdf";
+import ViewArchive from "../Components/ViewArchive";
+//import PdfViewer from "../Components/PdfViewer";
+
 import TagList from "../Components/List";
 import ModalScreen from "../Components/Modal";
 import Uploader from "../Components/Uploader";
@@ -33,7 +38,7 @@ export default function Customer() {
   let [custList, setCustList] = useState([]);
   let [filterd, setFilterd] = useState([]);
   let [currCust, setCurrCust] = useState("");
-
+  let [drawerFlag, setDrawerFlag] = useState(true);
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
   let [bounds, setBounds] = useState({
@@ -53,6 +58,11 @@ export default function Customer() {
     while (f.length < n) f += "0";
     return `${v[0]}.${f}`;
   }
+
+  const controlDrawer = (cust) => {
+    drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
+    setCurrCust(cust);
+  };
 
   const fetchData = async () => {
     await fetch(`http://192.168.0.159:3001/dbData?inquery=CUSTOMERINV`)
@@ -152,11 +162,11 @@ export default function Customer() {
               />,
               <EditOutlined
                 key="edit"
-                onClick={() => showModal(e.CUST_CUSTOMER)}
+                onClick={() => controlDrawer(e.CUST_CUSTOMER)}
               />,
               <EllipsisOutlined
                 key="ellipsis"
-                onClick={() => showModal(e.CUST_CUSTOMER)}
+                onClick={() => controlDrawer(e.CUST_CUSTOMER)}
               />,
             ]}
           >
@@ -257,6 +267,22 @@ export default function Customer() {
     queryFilterd();
   }, [filterd]);
 
+  /*return (
+    <Layout>
+      <Content
+        style={{
+          padding: "4rem",
+          paddingLeft: "29rem",
+          margin: 0,
+          minHeight: 280,
+          backgroundColor: "transparent",
+        }}
+      >
+        <ViewerPdf />
+      </Content>
+    </Layout>
+  );*/
+
   return (
     <Layout>
       <Content
@@ -291,6 +317,12 @@ export default function Customer() {
           <Uploader keyVal={currCust} type="Customer" />
         </Modal>
       </Content>
+      <ViewArchive
+        showFlag={drawerFlag}
+        setShowFlag={controlDrawer}
+        keyVal={currCust}
+        type="Customer"
+      />
     </Layout>
   );
 }

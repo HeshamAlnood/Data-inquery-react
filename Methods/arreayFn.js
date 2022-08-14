@@ -145,3 +145,18 @@ export const groupBySum = (ob, col, sumCol) => {
 
   return result;
 };
+
+export const formatDate = (pdate, pformat) => {
+  //console.log(`pdate`, new Date(pdate));
+  let vdd = String(pdate.getDate());
+  let vmm = String(pdate.getMonth());
+  let vyyyy = pdate.getFullYear();
+  let vformat = pformat;
+  vdd = vdd.padStart(2, "0");
+  vmm = vmm.padStart(2, "0");
+  vformat = vformat
+    .replace("dd", vdd)
+    .replace("mm", vmm)
+    .replace("yyyy", vyyyy);
+  return vformat;
+};
