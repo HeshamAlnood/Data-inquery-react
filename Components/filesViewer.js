@@ -1,5 +1,6 @@
 import {
   Container,
+  Card,
   Loading,
   Button,
   Grid,
@@ -8,7 +9,8 @@ import {
   useCollator,
 } from "@nextui-org/react";
 
-import { Image, Col, Row } from "antd";
+import { EyeOutlined, DownloadOutlined } from "@ant-design/icons";
+import { Image, Divider, Col, Row } from "antd";
 import { useEffect, useState } from "react";
 
 import { formatDate } from "../Methods/arreayFn";
@@ -23,6 +25,8 @@ const FileViewer = (props) => {
   let [isLoading, setIsLoading] = useState(true);
   let [currSrc, setCurrSrc] = useState("");
   let [currSrcExt, setCurrSrcExt] = useState("");
+  let [currFileName, setCurrFileName] = useState("");
+
   let [previewFlag, setPreviewFlag] = useState(false);
   const [columnKeys, setColumnKeys] = useState(
     colKey.map((column) => column.key)
@@ -61,11 +65,11 @@ const FileViewer = (props) => {
     } else return pExt;
   };
 
-  const getPreview = (pcurrSrc, pcurrSrcExt) => {
+  const getPreview = (pcurrSrc, pcurrSrcExt, fileName = "") => {
     console.log(`from show Preview `, pcurrSrc, pcurrSrcExt);
     //setPreviewFlag(true);
     if (pcurrSrcExt.toLocaleUpperCase() === ".PDF") {
-      return <ViewerPdf src={pcurrSrc} />;
+      return <ViewerPdf src={pcurrSrc} fileName={fileName} />;
     }
 
     if (pcurrSrcExt.toLocaleUpperCase() === ".JPG" || ".JPEG") {
@@ -75,11 +79,12 @@ const FileViewer = (props) => {
     }
   };
 
-  const showPreview = (pcurrSrc, pcurrSrcExt) => {
+  const showPreview = (pcurrSrc, pcurrSrcExt, fileName) => {
     console.log(`show PReview `, pcurrSrc, pcurrSrcExt);
     setCurrSrc(pcurrSrc);
     setCurrSrcExt(pcurrSrcExt);
     setPreviewFlag(true);
+    setCurrFileName(fileName);
   };
 
   const closePreview = () => {
@@ -215,17 +220,16 @@ const FileViewer = (props) => {
                       if (columnKey === "src") {
                         return (
                           <Table.Cell>
-                            {
-                              <Image
-                                src={item[columnKey]}
-                                width={50}
-                                fallback="/icons/file.png"
-                                preview={false}
-                                onClick={() =>
-                                  showPreview(item.src, item.fileExt)
-                                }
-                              />
-                            }
+                            <Image
+                              src={item[columnKey]}
+                              width={50}
+                              fallback="/icons/file.png"
+                              preview={false}
+                              onClick={() =>
+                                showPreview(item.src, item.fileExt)
+                              }
+                              className={"hover:scale-125   "}
+                            />
                           </Table.Cell>
                         );
                       } else if (columnKey === "fileCreateDate") {
@@ -265,10 +269,28 @@ const FileViewer = (props) => {
           </Table>
         </div>
       </Col>
+      <Divider type="vertical" />
+
       <Col>
-        <div style={{ width: "31.2rem" }}>
-          {previewFlag && getPreview(currSrc, currSrcExt)}
-        </div>
+        <Card
+          isHoverable
+          variant="bordered"
+          css={{
+            mw: "100rem",
+            width: "40rem",
+            backgroundColor: "rgb(203 213 225)",
+          }}
+        >
+          <Card.Body
+            css={{
+              mw: "100rem",
+              width: "40rem",
+              backgroundColor: "rgb(203 213 225)",
+            }}
+          >
+            {previewFlag && getPreview(currSrc, currSrcExt, currFileName)}
+          </Card.Body>
+        </Card>
       </Col>
     </Row>
   );
