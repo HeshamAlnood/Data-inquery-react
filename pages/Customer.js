@@ -13,6 +13,7 @@ import {
   Button,
   Tag,
   Modal,
+  BackTop,
 } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import {
@@ -20,6 +21,8 @@ import {
   EditOutlined,
   EllipsisOutlined,
   SettingOutlined,
+  FileSearchOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 
 import ViewerPdf from "../Components/ViewerPdf";
@@ -149,18 +152,25 @@ export default function Customer() {
           <Card
             title={vTitle}
             hoverable
+            //loading={true}
             type="inner"
             //bordered={false}
-            headStyle={{ backgroundColor: "#1e81b0  ", color: "white" }}
+            headStyle={{
+              backgroundColor: "#1e81b0  ",
+              color: "white",
+
+              fontStyle: "normal",
+              fontWeight: "bolder",
+            }}
             style={{
               width: "80%",
             }}
             actions={[
-              <SettingOutlined
+              <UploadOutlined
                 key="setting"
                 onClick={() => showModal(e.CUST_CUSTOMER)}
               />,
-              <EditOutlined
+              <FileSearchOutlined
                 key="edit"
                 onClick={() => controlDrawer(e.CUST_CUSTOMER)}
               />,
@@ -285,6 +295,8 @@ export default function Customer() {
 
   return (
     <Layout>
+      <BackTop />
+
       <Content
         style={{
           padding: "4rem",

@@ -129,6 +129,77 @@ export default function DataTablesA(props) {
     dataCols.some((key) => key === column.key)
   );
 
+  const generateCols = (ob = []) => {
+    //let cols = Object.keys(ob[1]);
+    let cols = [];
+    cols = ob;
+    let colsArr = [];
+
+    cols.forEach((e, i) => {
+      let ob = {
+        title: e.replaceAll("_", " "),
+        dataIndex: e,
+        sorted: true,
+        width: 10,
+        visible: false,
+        fixed: getTableKey(props.query) === e ? "left" : "",
+
+        //responsive: ["lg", "md"],
+        //filteredValue: filteredInfo[e] || null,
+        defaultSortOrder: "descend",
+        filterMode: "tree",
+        filterSearch: true,
+        responsive: ["lg", "md"],
+        ...getColumnSearchProps(e),
+
+        //  onFilter: (value, record) => record[e].startsWith(value),
+
+        sorter: (a, b) => {
+          //  console.log("check validator");
+          let sa = a[e] || "";
+          let sb = b[e] || "";
+          validator.isFloat(sa.toString()) + " " + sa;
+
+          if (validator.isFloat(sa.toString()) === true) {
+            //  console.log("sort Numbers");
+            return (Number.parseFloat(sa) || 1) - (Number.parseFloat(sb) || -1);
+          } else if (validator.isAlpha(sa.toString()) === true) {
+            //console.log("sort Strings");
+            return (sa || "a")
+              .toString()
+              .toLowerCase()
+              .localeCompare((sb || "b").toString().toLowerCase());
+          } else {
+            if (sa < sb) {
+              return -1;
+            }
+            if (sa > sb) {
+              return 1;
+            }
+            return 0;
+          }
+        },
+
+        render: (text, record) => (
+          <div style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
+            {text}
+          </div>
+        ),
+        //ellipsis: true,
+        sortDirections: ["descend", "ascend"],
+      };
+
+      colsArr.push(ob);
+    });
+    return colsArr;
+  };
+
+  const chngCols = (pcolsArr) => {
+    console.log("chngCols", pcolsArr);
+    let cols = generateCols(pcolsArr);
+    setDataCols(cols);
+  };
+
   const [vendorList, setVendorList] = useState(["A-0001"]);
 
   let [filterd, setFilterd] = useState([]);
@@ -378,65 +449,8 @@ export default function DataTablesA(props) {
       .then((res) => res.json())
       .then((data) => {
         let cols = Object.keys(data[1]);
-        let colsArr = [];
+        let colsArr = generateCols(cols);
 
-        cols.forEach((e, i) => {
-          let ob = {
-            title: e.replaceAll("_", " "),
-            dataIndex: e,
-            sorted: true,
-            width: 10,
-            visible: false,
-
-            //responsive: ["lg", "md"],
-            //filteredValue: filteredInfo[e] || null,
-            defaultSortOrder: "descend",
-            filterMode: "tree",
-            filterSearch: true,
-            responsive: ["lg", "md"],
-            ...getColumnSearchProps(e),
-
-            //  onFilter: (value, record) => record[e].startsWith(value),
-
-            sorter: (a, b) => {
-              //  console.log("check validator");
-              let sa = a[e] || "";
-              let sb = b[e] || "";
-              validator.isFloat(sa.toString()) + " " + sa;
-
-              if (validator.isFloat(sa.toString()) === true) {
-                //  console.log("sort Numbers");
-                return (
-                  (Number.parseFloat(sa) || 1) - (Number.parseFloat(sb) || -1)
-                );
-              } else if (validator.isAlpha(sa.toString()) === true) {
-                //console.log("sort Strings");
-                return (sa || "a")
-                  .toString()
-                  .toLowerCase()
-                  .localeCompare((sb || "b").toString().toLowerCase());
-              } else {
-                if (sa < sb) {
-                  return -1;
-                }
-                if (sa > sb) {
-                  return 1;
-                }
-                return 0;
-              }
-            },
-
-            render: (text, record) => (
-              <div style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
-                {text}
-              </div>
-            ),
-            //ellipsis: true,
-            sortDirections: ["descend", "ascend"],
-          };
-
-          colsArr.push(ob);
-        });
         /*        console.log(`getTableKey`);
         console.log(getTableKey());*/
 
@@ -608,7 +622,7 @@ export default function DataTablesA(props) {
           </Grid>
         </div>
 
-        <DropdownL menu={columnKeys} chng={setDataCols} />
+        <DropdownL menu={columnKeys} chng={chngCols} />
         <TagList cols={vendorList} filterd={setFilterd} qName={query} />
         <Table
           id="dataTable"

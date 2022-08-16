@@ -11,6 +11,9 @@ export const DropdownL = (props) => {
 
   const onChange = (checkedValues) => {
     console.log("checked = ", checkedValues);
+    console.log(`props`, props);
+    props.chng(checkedValues);
+
     //props.chng(checkedValues);
   };
 

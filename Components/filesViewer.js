@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 
 import { EyeOutlined, DownloadOutlined } from "@ant-design/icons";
-import { Image, Divider, Col, Row } from "antd";
+import { Image, Divider, Col, Row, Empty } from "antd";
 import { useEffect, useState } from "react";
 
 import { formatDate } from "../Methods/arreayFn";
@@ -23,6 +23,7 @@ const FileViewer = (props) => {
   let [vPage, setPage] = useState(15);
   let [colKey, setColKey] = useState(["2"]);
   let [isLoading, setIsLoading] = useState(true);
+  let [noData, setNoDate] = useState(false);
   let [currSrc, setCurrSrc] = useState("");
   let [currSrcExt, setCurrSrcExt] = useState("");
   let [currFileName, setCurrFileName] = useState("");
@@ -69,7 +70,13 @@ const FileViewer = (props) => {
     console.log(`from show Preview `, pcurrSrc, pcurrSrcExt);
     //setPreviewFlag(true);
     if (pcurrSrcExt.toLocaleUpperCase() === ".PDF") {
-      return <ViewerPdf src={pcurrSrc} fileName={fileName} />;
+      return (
+        <ViewerPdf
+          src={pcurrSrc}
+          fileName={fileName}
+          previewFlag={props.previewFlag}
+        />
+      );
     }
 
     if (pcurrSrcExt.toLocaleUpperCase() === ".JPG" || ".JPEG") {
@@ -103,16 +110,14 @@ const FileViewer = (props) => {
     /*get data*/
 
     setIsLoading(true);
-    console.log(
-      `url `,
-      `http://192.168.0.159:3001/getFiles?type=${vType}&keyVal=${vKeyVal}`
-    );
+
     fetch(`http://192.168.0.159:3001/getFiles?type=${vType}&keyVal=${vKeyVal}`)
       .then((res) => res.json())
       .then((data) => {
         let cols = data && Object.keys(data[0]);
         let colsArr = [];
         console.log(`file Info`, data);
+        console.log(`data length`, data.length);
 
         cols.forEach((e, i) => {
           let ob = { key: e, label: e };
@@ -128,6 +133,7 @@ const FileViewer = (props) => {
 
         setDataCols(colsArr);
         setIsLoading(false);
+        setNoDate(false);
 
         setPage(Math.trunc(data.length / 20));
 
@@ -142,8 +148,16 @@ const FileViewer = (props) => {
         let contr = 0;
       })
 
-      .catch((e) => console.log(`Error in fetch ${e}`));
+      .catch((e) => {
+        console.log(`Error in fetch ${e}`);
+        setIsLoading(false);
+        setNoDate(true);
+      });
   }, [props.type, props.keyVal]);
+
+  useEffect(() => {
+    props.showFlag === false ? setCurrSrc("") : "";
+  }, [props.showFlag]);
 
   if (isLoading === true) {
     return (
@@ -155,6 +169,9 @@ const FileViewer = (props) => {
     );
   }
 
+  if (noData === true) {
+    return <Empty description={<span>No Files been uploaded ..</span>} />;
+  }
   return (
     /*  <div /*className="md:container md:mx-auto">
       <div className="article bg-slate-50">*/
@@ -278,6 +295,7 @@ const FileViewer = (props) => {
           css={{
             mw: "100rem",
             width: "40rem",
+            height: "65rem",
             backgroundColor: "rgb(203 213 225)",
           }}
         >
@@ -285,7 +303,8 @@ const FileViewer = (props) => {
             css={{
               mw: "100rem",
               width: "40rem",
-              backgroundColor: "rgb(203 213 225)",
+              height: "65rem",
+              backgroundColor: "rgb(248 250 252)",
             }}
           >
             {previewFlag && getPreview(currSrc, currSrcExt, currFileName)}

@@ -7,6 +7,7 @@ const ViewArchive = (props) => {
   console.log(`View Archive Function`, props.showFlag);
   const [visible, setVisible] = useState(false);
   const [size, setSize] = useState();
+
   let vType = props.type;
   let vKeyVal = props.keyVal;
 
@@ -14,18 +15,27 @@ const ViewArchive = (props) => {
 
   const onClose = () => {
     setVisible(false);
-    props.setShowFlag();
+    setShowFLag(false);
+    //vKeyVal = "";
+
+    //    props.setShowFlag();
+
+    //vKeyVal = "";
+  };
+  () => {
+    vshowFlag === false ? setVisible(true) : setVisible(false);
+    vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
   };
 
   useEffect(() => {
     vshowFlag === false ? setVisible(true) : setVisible(false);
     vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
-  }, [props.showFlag]);
+  }, [props.showFlag, props.type, props.keyVal]);
 
-  () => {
+  /*() => {
     vshowFlag === false ? setVisible(true) : setVisible(false);
     vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
-  };
+  };*/
 
   return (
     <>
@@ -45,7 +55,7 @@ const ViewArchive = (props) => {
           </Space>
         }
       >
-        <FileViewer type={vType} keyVal={vKeyVal} />
+        <FileViewer type={vType} keyVal={vKeyVal} showFlag={vshowFlag} />
       </Drawer>
     </>
   );

@@ -27,32 +27,24 @@ function ViewerPdf(props) {
     setPageNumber(pageNumber + 1 >= numPages ? numPages : pageNumber + 1);
   console.log(`Viewer Pdf  3`, props.src);
 
+  const goToFirstPage = () => setPageNumber(1);
+  const goToLastPage = () => setPageNumber(numPages);
+
+  console.log(`Viewer Pdf  3`, props.src);
+
   useEffect(() => {
     setCurrSrc(props.src);
-  }, [props.src]);
+  }, [props.src, props.previewFlag]);
+
+  console.log(`preview Flag `, props.previewFlag);
+  console.log(`CurrSrc `, props.src);
+
+  //if (props.previewFlag === false) setCurrSrc("");
+  //  props.previewFlag === false ? setCurrSrc("") : "";
 
   return (
     <div>
-      <nav className="flex justify-start">
-        <Button
-          type="primary"
-          ghost
-          shape="round"
-          size={"large"}
-          onClick={goToPrevPage}
-        >
-          Prev
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          shape="round"
-          size={"large"}
-          onClick={goToNextPage}
-        >
-          Next
-        </Button>
-
+      <nav className="flex justify-end">
         <Button
           //type="primary"
           shape="round"
@@ -69,10 +61,48 @@ function ViewerPdf(props) {
 
       <Document
         //file="../git-cheat-sheet-education.pdf"
-        file={currSrc}
+        file={/*props.previewFlag &&*/ currSrc}
         onLoadSuccess={onDocumentLoadSuccess}
       >
         <Page pageNumber={pageNumber} />
+        <nav className="flex justify-center">
+          <Button
+            //   type="primary"
+            // ghost
+            shape="round"
+            size={"large"}
+            onClick={goToFirstPage}
+          >
+            First Page
+          </Button>
+          <Button
+            //  type="primary"
+            //ghost
+            shape="round"
+            size={"large"}
+            onClick={goToPrevPage}
+          >
+            Prev
+          </Button>
+          <Button
+            //type="primary"
+            //ghost
+            shape="round"
+            size={"large"}
+            onClick={goToNextPage}
+          >
+            Next
+          </Button>
+          <Button
+            // type="primary"
+            //ghost
+            shape="round"
+            size={"large"}
+            onClick={goToLastPage}
+          >
+            Last Page
+          </Button>
+        </nav>
         <span className="flex justify-center">
           Page {pageNumber} of {numPages}
         </span>
