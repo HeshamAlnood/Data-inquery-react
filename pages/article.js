@@ -119,15 +119,27 @@ export default function DashBoard(props) {
   };
 
   const onChangeDateRange = (dates, dateStrings) => {
+    console.log(`dateStrings length`, dateStrings[1].length);
+    if (dateStrings[1].length === 0) {
+      return;
+    }
     if (dates) {
       console.log("From: ", dates[0], ", to: ", dates[1]);
       console.log("From: ", dateStrings[0], ", to: ", dateStrings[1]);
+      console.log(
+        "From: ",
+        dateStrings[0].replaceAll("/", ""),
+        ", to: ",
+        dateStrings[1].replaceAll("/", "")
+      );
       console.log(dateStrings[0].replaceAll("/", ""));
-      console.log(dateStrings[0].replaceAll("/", ""));
-      setDateFrom(dateStrings[0].replaceAll("/", ""));
+      console.log(dateStrings[1].replaceAll("/", ""));
       setDateTo(dateStrings[1].replaceAll("/", ""));
+      setDateFrom(dateStrings[0].replaceAll("/", ""));
 
-      runQuerys();
+      if (dateStrings[1].length > 0) {
+        runQuerys();
+      }
     } else {
       setDateFrom(vDateFrom);
       setDateTo(vDateTo);
@@ -141,7 +153,7 @@ export default function DashBoard(props) {
 
     runQuerys();
     console.log("End Promise");
-  }, [dateFrom]);
+  }, []);
 
   return (
     <Layout>
@@ -172,6 +184,7 @@ export default function DashBoard(props) {
             }}
             format="YYYY/MM/DD"
             onChange={onChangeDateRange}
+            onCalendarChange={onChangeDateRange}
             size={"large"}
           />
         </Row>
@@ -194,7 +207,7 @@ export default function DashBoard(props) {
               <SparkLine
                 data={revExpSummary}
                 dataType="REVENUE"
-                title="Revenue"
+                title="Yearly Revenue"
                 color="#81b878"
                 finish={isDone}
               />
@@ -216,7 +229,7 @@ export default function DashBoard(props) {
               <SparkLine
                 data={revExpSummary}
                 dataType="EXPENSES"
-                title="Expenses"
+                title="Yearly Expenses"
                 color="#FFCF36"
                 finish={isDone}
               />
@@ -238,7 +251,7 @@ export default function DashBoard(props) {
               <SparkLine
                 data={revExpSummary}
                 dataType="PROFIT"
-                title="Profit"
+                title="Yearly Profit"
                 color="#119CF9"
                 finish={isDone}
               />

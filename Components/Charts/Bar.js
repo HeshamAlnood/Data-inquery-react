@@ -29,8 +29,6 @@ export const BarChart = (props) => {
 
   let key;
   obKeys.forEach((e) => {
-    console.log(`vdata[e]`);
-    console.log(vdata[e]);
     vdata.forEach((el) => {
       if (Number.isFinite(el[e])) key = e;
       if (isNaN(el[e])) vCatg.push(el[e]);
@@ -42,13 +40,6 @@ export const BarChart = (props) => {
   });
 
   //console.log(vSeries.map((e) => sumArray(e)));
-  console.log(`key In BARCHART`);
-  console.log(key);
-
-  console.log(`vSeries In BARCHART`);
-  console.log(vSeries);
-  console.log(`vCatg In BARCHART`);
-  console.log(vCatg);
 
   const state = {
     series: [

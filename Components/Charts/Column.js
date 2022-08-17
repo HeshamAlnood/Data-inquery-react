@@ -46,8 +46,6 @@ export const ColumnsChart = (props) => {
       .month(e - 1)
       .format("MMMM")
   );
-  console.log(`vMonthN`);
-  console.log(vMonthN);
 
   let vType = props.type || "bar";
   let vSize = props.size || "70%";

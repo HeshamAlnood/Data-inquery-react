@@ -10,9 +10,6 @@ const pieRose = (props) => {
   let finish = props.finish;
   let vSeries = [];
 
-  console.log(`from Pie data`);
-  console.log(vdata);
-
   if (finish === false || vdata.length === 0) {
     return <Skeleton active />;
   }
@@ -25,15 +22,11 @@ const pieRose = (props) => {
   let key;
   let vLabel = [];
   obKeys.forEach((e) => {
-    console.log(`vdata[e]`);
-    console.log(vdata[e]);
     vdata.forEach((el) => {
       if (Number.isFinite(el[e])) key = e;
       if (isNaN(el[e])) vLabel.push(el[e]);
     });
   });
-
-  console.log(`print kkk ${key}`);
 
   vdata.forEach((e) => {
     vSeries.push(e[key]);

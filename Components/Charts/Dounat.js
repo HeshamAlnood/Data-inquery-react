@@ -29,21 +29,15 @@ export const DounatChart = (props) => {
   let key;
   let vLabel = [];
   obKeys.forEach((e) => {
-    console.log(`vdata[e]`);
-    console.log(vdata[e]);
     vdata.forEach((el) => {
       if (Number.isFinite(el[e])) key = e;
       if (isNaN(el[e])) vLabel.push(el[e]);
     });
   });
 
-  console.log(`print kkk ${key} on Dounat`);
-
   vdata.forEach((e) => {
     vSeries.push(e[key]);
   });
-  console.log(vSeries);
-  console.log(vLabel);
 
   const state = {
     series: vSeries,
