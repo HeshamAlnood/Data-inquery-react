@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import FileViewer from "./filesViewer";
 
 const ViewArchive = (props) => {
-  let [vshowFlag, setShowFLag] = useState(props.showFlag);
-  console.log(`View Archive Function`, props.showFlag);
+  const [vshowFlag, setShowFLag] = useState(false);
+  console.log(`View Archive Function`, props.showFlag, vshowFlag);
   const [visible, setVisible] = useState(false);
   const [size, setSize] = useState();
 
@@ -16,27 +16,32 @@ const ViewArchive = (props) => {
   const onClose = () => {
     setVisible(false);
     setShowFLag(false);
+    props.setShowFlag("", false);
     //vKeyVal = "";
 
     //    props.setShowFlag();
 
     //vKeyVal = "";
   };
-  () => {
-    vshowFlag === false ? setVisible(true) : setVisible(false);
-    vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
-  };
+  //setShowFLag(props.showFlag);
+
+  /*  vshowFlag === false ? setVisible(true) : setVisible(false);
+  vshowFlag === false ? setShowFLag(true) : setShowFLag(false);*/
+  //setShowFLag(props.showFlag);
 
   useEffect(() => {
-    vshowFlag === false ? setVisible(true) : setVisible(false);
-    vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
-  }, [props.showFlag, props.type, props.keyVal]);
+    //setShowFLag(props.showFlag);
+    props.showFlag === true ? setVisible(true) : setVisible(false);
+    props.showFlag === true ? setShowFLag(true) : setShowFLag(false);
+  }, [props.showFlag]);
 
+  if (vshowFlag === false) return;
   /*() => {
     vshowFlag === false ? setVisible(true) : setVisible(false);
     vshowFlag === false ? setShowFLag(true) : setShowFLag(false);
   };*/
-
+  console.log(`visible `, visible);
+  console.log(`show Flagg `, vshowFlag);
   return (
     <>
       <Drawer

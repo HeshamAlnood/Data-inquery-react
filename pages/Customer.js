@@ -41,7 +41,7 @@ export default function Customer() {
   let [custList, setCustList] = useState([]);
   let [filterd, setFilterd] = useState([]);
   let [currCust, setCurrCust] = useState("");
-  let [drawerFlag, setDrawerFlag] = useState(true);
+  let [drawerFlag, setDrawerFlag] = useState(false);
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
   let [bounds, setBounds] = useState({
@@ -62,8 +62,12 @@ export default function Customer() {
     return `${v[0]}.${f}`;
   }
 
-  const controlDrawer = (cust) => {
-    drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
+  const controlDrawer = (cust, flag = false) => {
+    console.log(`controlDrawer`, flag);
+
+    //drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
+    setDrawerFlag(flag);
+
     setCurrCust(cust);
   };
 
@@ -172,11 +176,11 @@ export default function Customer() {
               />,
               <FileSearchOutlined
                 key="edit"
-                onClick={() => controlDrawer(e.CUST_CUSTOMER)}
+                onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
               />,
               <EllipsisOutlined
                 key="ellipsis"
-                onClick={() => controlDrawer(e.CUST_CUSTOMER)}
+                onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
               />,
             ]}
           >
@@ -319,7 +323,7 @@ export default function Customer() {
           <Col>{Getdata(customerData)}</Col>
         </Row>
         <Modal
-          title="Uploading Files"
+          title={`Upload files for ${currCust}`}
           centered
           visible={visible}
           onOk={() => setVisible(false)}

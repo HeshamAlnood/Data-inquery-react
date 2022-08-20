@@ -9,8 +9,12 @@ import {
   useCollator,
 } from "@nextui-org/react";
 
-import { EyeOutlined, DownloadOutlined } from "@ant-design/icons";
-import { Image, Divider, Col, Row, Empty } from "antd";
+import {
+  EyeOutlined,
+  DownloadOutlined,
+  ZoomInOutlined,
+} from "@ant-design/icons";
+import { Image, Divider, Col, Row, Empty, Space } from "antd";
 import { useEffect, useState } from "react";
 
 import { formatDate } from "../Methods/arreayFn";
@@ -27,6 +31,7 @@ const FileViewer = (props) => {
   let [currSrc, setCurrSrc] = useState("");
   let [currSrcExt, setCurrSrcExt] = useState("");
   let [currFileName, setCurrFileName] = useState("");
+  const [isPreviewVisible, setPreviewVisible] = useState(false);
 
   let [previewFlag, setPreviewFlag] = useState(false);
   const [columnKeys, setColumnKeys] = useState(
@@ -80,7 +85,22 @@ const FileViewer = (props) => {
     }
 
     if (pcurrSrcExt.toLocaleUpperCase() === ".JPG" || ".JPEG") {
-      return <Image src={pcurrSrc} />;
+      return (
+        <Image
+          src={pcurrSrc}
+          rootClassName="align-top"
+          preview={{
+            getContainer: true,
+            //width: "50",
+
+            visible: isPreviewVisible,
+            maskClassName: "customize-mask",
+
+            onVisibleChange: (visible, prevVisible) =>
+              setPreviewVisible(visible),
+          }}
+        />
+      );
     } else {
       setPreviewFlag(false);
     }
@@ -177,140 +197,176 @@ const FileViewer = (props) => {
       <div className="article bg-slate-50">*/
     //<div className="md:container md:mx-auto">
     <Row>
-      <Col>
-        <div style={{ width: "31.2rem" }}>
-          <Table
-            id="dataTable"
-            striped={true}
-            lined={true}
-            bordered={false}
-            aria-label="Example static striped collection table"
-            hoverable="true"
-            borderWeight="black"
-            lineWeight="light"
-            //selectionMode="single"
-
-            //sortDescriptor={list.sortDescriptor}
-            //        onSortChange={list.sort}
-
+      <Space size={20} align="start">
+        <Col>
+          <Card
+            isHoverable
+            variant="bordered"
             css={{
-              height: "6",
-              width: "100%",
-              //minWidth: "50%",
-            }} /*css={{
+              mw: "100rem",
+              width: "40rem",
+              height: "65rem",
+              backgroundColor: "rgb(203 213 225)",
+            }}
+          >
+            <Card.Body
+              css={{
+                mw: "100rem",
+                width: "40rem",
+                height: "65rem",
+                backgroundColor: "rgb(248 250 252)",
+              }}
+            >
+              {previewFlag && getPreview(currSrc, currSrcExt, currFileName)}
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Divider type="vertical" />
+          <div style={{ width: "32.8rem" }}>
+            <Table
+              id="dataTable"
+              striped
+              lined={true}
+              bordered={false}
+              aria-label="Example static striped collection table"
+              hoverable="true"
+              borderWeight="black"
+              lineWeight="light"
+              fixed={true}
+              onSelectionChange={(keys) => console.log(`keyyys`, keys)}
+              onClick={(e) => {
+                console.log(
+                  `e .src `,
+                  //e.target,
+                  e.target.parentElement
+                );
+                console.log(
+                  e.target.parentElement
+                    .querySelector("img")
+                    .src.substring(0, -3)
+                );
+
+                /*console.log(
+                  document
+                    .getElementById("dataTable")
+                    .getElementsByClassName("hover:scale-125")
+                    .getAttribute("currentSrc")
+                )*/
+              }}
+              //selectionMode="single"
+
+              //sortDescriptor={list.sortDescriptor}
+              //        onSortChange={list.sort}
+
+              css={{
+                height: "6",
+                width: "100%",
+                //minWidth: "50%",
+              }} /*css={{
           height: "auto",
           minWidth: "100%",
           width: "100%",
           zIndex: 1,
         }}*/
-          >
-            <Table.Header columns={dataCols}>
-              {(column) => (
-                <Table.Column
-                  key={column.key}
-                  align="start"
-                  className="bg-sky-700 text-slate-50 text-base"
-                  isRowHeader
-                  //allowsSorting
-                  minWidth="5rem"
-                  maxWidth="7rem"
-                >
-                  {""}
-                  {getColLabel(column.label)}
-                </Table.Column>
-              )}
-            </Table.Header>
-            <Table.Body items={dataElm}>
-              {(item) => (
-                <Table.Row
-                  key={colKey}
-                  css={{
-                    "&:hover": {
-                      background: "$yellow100",
-                      color: "$blue400",
-                    },
-                  }}
-                >
-                  {
-                    /*(columnKey) => <Table.Cell>{item[columnKey]}</Table.Cell>*/
-                    (columnKey) => {
-                      if (columnKey === "src") {
-                        return (
-                          <Table.Cell>
-                            <Image
-                              src={item[columnKey]}
-                              width={50}
-                              fallback="/icons/file.png"
-                              preview={false}
+            >
+              <Table.Header columns={dataCols}>
+                {(column) => (
+                  <Table.Column
+                    key={column.key}
+                    align="start"
+                    className="bg-sky-700 text-slate-50 text-base"
+                    isRowHeader
+                    //allowsSorting
+
+                    css={{
+                      width: "10px",
+                      minWidth: "30px" /* height: "calc($space$14 * 10)" }*/,
+                    }}
+                  >
+                    {""}
+                    {getColLabel(column.label)}
+                  </Table.Column>
+                )}
+              </Table.Header>
+              <Table.Body items={dataElm}>
+                {(item) => (
+                  <Table.Row
+                    key={colKey}
+                    css={{
+                      "&:hover": {
+                        background: "$yellow100",
+                        color: "$blue400",
+                      },
+                    }}
+                  >
+                    {
+                      /*(columnKey) => <Table.Cell>{item[columnKey]}</Table.Cell>*/
+                      (columnKey) => {
+                        if (columnKey === "src") {
+                          return (
+                            <Table.Cell>
+                              <Image
+                                src={item[columnKey]}
+                                width={50}
+                                fallback="/icons/file.png"
+                                //preview={true}
+                                onClick={() =>
+                                  showPreview(item.src, item.fileExt)
+                                }
+                                className={"hover:scale-125"}
+                              />
+                            </Table.Cell>
+                          );
+                        } else if (columnKey === "fileCreateDate") {
+                          return (
+                            <Table.Cell
                               onClick={() =>
                                 showPreview(item.src, item.fileExt)
                               }
-                              className={"hover:scale-125   "}
-                            />
-                          </Table.Cell>
-                        );
-                      } else if (columnKey === "fileCreateDate") {
-                        return (
-                          <Table.Cell
-                            onClick={() => showPreview(item.src, item.fileExt)}
-                          >
-                            {item[columnKey] &&
-                              formatDate(
-                                new Date(item[columnKey]),
-                                "dd/mm/yyyy"
-                              )}
-                          </Table.Cell>
-                        );
-                      } else if (columnKey === "fileExt") {
-                        return (
-                          <Table.Cell
-                            onClick={() => showPreview(item.src, item.fileExt)}
-                          >
-                            {getExtIcon(item[columnKey])}
-                          </Table.Cell>
-                        );
-                      } else {
-                        return (
-                          <Table.Cell
-                            onClick={() => showPreview(item.src, item.fileExt)}
-                          >
-                            {item[columnKey]}
-                          </Table.Cell>
-                        );
+                            >
+                              {item[columnKey] &&
+                                formatDate(
+                                  new Date(item[columnKey]),
+                                  "dd/mm/yyyy"
+                                )}
+                            </Table.Cell>
+                          );
+                        } else if (columnKey === "fileExt") {
+                          return (
+                            <Table.Cell
+                              onClick={() =>
+                                showPreview(item.src, item.fileExt)
+                              }
+                            >
+                              {getExtIcon(item[columnKey])}
+                            </Table.Cell>
+                          );
+                        } else {
+                          return (
+                            <Table.Cell
+                              css={{
+                                width: "10px",
+                                minWidth:
+                                  "2px" /* height: "calc($space$14 * 10)" }*/,
+                              }}
+                              onClick={() =>
+                                showPreview(item.src, item.fileExt)
+                              }
+                            >
+                              {item[columnKey]}
+                            </Table.Cell>
+                          );
+                        }
                       }
                     }
-                  }
-                </Table.Row>
-              )}
-            </Table.Body>
-          </Table>
-        </div>
-      </Col>
-      <Divider type="vertical" />
-
-      <Col>
-        <Card
-          isHoverable
-          variant="bordered"
-          css={{
-            mw: "100rem",
-            width: "40rem",
-            height: "65rem",
-            backgroundColor: "rgb(203 213 225)",
-          }}
-        >
-          <Card.Body
-            css={{
-              mw: "100rem",
-              width: "40rem",
-              height: "65rem",
-              backgroundColor: "rgb(248 250 252)",
-            }}
-          >
-            {previewFlag && getPreview(currSrc, currSrcExt, currFileName)}
-          </Card.Body>
-        </Card>
-      </Col>
+                  </Table.Row>
+                )}
+              </Table.Body>
+            </Table>
+          </div>
+        </Col>
+      </Space>
     </Row>
   );
 };
