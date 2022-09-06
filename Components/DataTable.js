@@ -18,10 +18,18 @@ import { VerticalAlignBottomOutlined } from "@ant-design/icons";
 import { Calendar, DateRangePicker } from "react-date-range";
 import TagList from "./List";
 import { DropdownL } from "./Dropdown";
-
+import { getDataNoti } from "../Methods/Noti";
 //import Select from "../Components/Select";
 import moment from "moment";
 import { getSummry, sumArrayByKey, getObSummry } from "../Methods/arreayFn";
+
+export const tableKey = {
+  VENDOR: "VEND_VENDOR",
+  CUSTOMER: "CUST_CUSTOMER",
+  PURCHASING: "PIH_INV_NO",
+  INVOICING: "SIH_INV_NO",
+  INVENTORY: "ITEM_PART_NO",
+};
 
 import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
 const { RangePicker } = DatePicker;
@@ -56,43 +64,31 @@ export default function DataTablesA(props) {
   let [vTitles, setVTitles] = useState(["", "", ""]);
 
   const getTableKey = (pquery = query) => {
-    if (pquery === "VENDOR") {
-      return "VEND_VENDOR";
-    } else if (pquery === "CUSTOMER") {
-      return "CUST_CUSTOMER";
-    } else if (pquery === "PURCHASING") {
-      return "PIH_INV_NO";
-    } else if (pquery === "INVOICING") {
-      return "SIH_INV_NO";
-    } else if (pquery === "INVENTORY") {
-      return "ITEM_PART_NO";
-    } else return pquery;
+    return tableKey[pquery];
+  };
+
+  let queryArr = {
+    VENDOR: ["Total Balance Amount", "Total Vendors", "Max Balance Amount"],
+    CUSTOMER: ["Total Balance Amount", "Total Customer", "Max Balance Amount"],
+    PURCHASING: [
+      "Total Purchase Amount",
+      "Total Purchase Inovies",
+      "Total Unpaid",
+    ],
+    INVOICING: [
+      "Total Invocies Amount",
+      "Total Invocies Inovies",
+      "Total Uncollect",
+    ],
+    INVENTORY: [
+      "Total Items Sold Amount",
+      "Total Items Purchaed Amount",
+      "Total On Hand",
+    ],
   };
 
   const getQueryArr = (pquery = query) => {
-    if (pquery === "VENDOR") {
-      return ["Total Balance Amount", "Total Vendors", "Max Balance Amount"];
-    } else if (pquery === "CUSTOMER") {
-      return ["Total Balance Amount", "Total Customer", "Max Balance Amount"];
-    } else if (pquery === "PURCHASING") {
-      return [
-        "Total Purchase Amount",
-        "Total Purchase Inovies",
-        "Total Unpaid",
-      ];
-    } else if (pquery === "INVOICING") {
-      return [
-        "Total Invocies Amount",
-        "Total Invocies Inovies",
-        "Total Uncollect",
-      ];
-    } else if (pquery === "INVENTORY") {
-      return [
-        "Total Items Sold Amount",
-        "Total Items Purchaed Amount",
-        "Total On Hand",
-      ];
-    }
+    return queryArr[pquery];
     //else return pquery;
   };
 
@@ -119,7 +115,7 @@ export default function DataTablesA(props) {
 
     setState1(new statProps(vTitles[0], ob.sum, "rgb(248 113 113)"));
     setState2(new statProps(vTitles[1], ob.count, "rgb(45 212 191)"));
-    setState3(new statProps(vTitles[2], stat3, "rgb(96 165 250)"));
+    setState3(new statProps(vTitles[2], ob.sumKey, "rgb(96 165 250)"));
   };
 
   const [columnKeys, setColumnKeys] = useState(
@@ -140,7 +136,7 @@ export default function DataTablesA(props) {
         title: e.replaceAll("_", " "),
         dataIndex: e,
         sorted: true,
-        width: 10,
+        width: "5%",
         visible: false,
         fixed: getTableKey(props.query) === e ? "left" : "",
 
@@ -186,6 +182,7 @@ export default function DataTablesA(props) {
           </div>
         ),
         //ellipsis: true,
+        tableLayout: "auto",
         sortDirections: ["descend", "ascend"],
       };
 
@@ -195,7 +192,7 @@ export default function DataTablesA(props) {
   };
 
   const chngCols = (pcolsArr) => {
-    console.log("chngCols", pcolsArr);
+    //console.log("chngCols", pcolsArr);
     let cols = generateCols(pcolsArr);
     setDataCols(cols);
   };
@@ -462,11 +459,14 @@ export default function DataTablesA(props) {
         setDataRaw(data);
         setColKey(colsArr);
 
+        dataElm = "";
+
         setDataCols(colsArr);
         setColumnKeys(colsArr.map((column) => column.dataIndex));
         setIsLoading(false);
         disableCursor(false);
         setFlagState(true);
+        getDataNoti();
         setPagination({
           ...params.pagination,
           total: 200, // 200 is mock data, you should read it from server
@@ -640,10 +640,11 @@ export default function DataTablesA(props) {
             x: "100vw",
           }}
           //className={"bg-sky-700 text-slate-50	text-base"}
+          /*
           rowClassName={(record, index) => {
             let className = index % 2 ? "bg-gray-100" : "";
             return className;
-          }}
+          }}*/
         />
       </Content>
     </Layout>

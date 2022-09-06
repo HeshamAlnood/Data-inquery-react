@@ -1,6 +1,7 @@
 import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
 import { Button, Upload, message, Popconfirm } from "antd";
 import { useState } from "react";
+
 const { Dragger } = Upload;
 
 import React from "react";
@@ -60,7 +61,8 @@ const Uploader = (prop) => {
 
     //action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
     multiple: true,
-    accept: "image/jpeg,image/gif,image/png,application/pdf,image/x-eps",
+    accept:
+      "image/jpeg,image/gif,image/png,application/pdf,image/x-eps/doc/xlsx/xls",
     headers: {
       authorization: "authorization-text",
     },
@@ -187,14 +189,18 @@ const Uploader = (prop) => {
       <Popconfirm
         title="Are you sure to Upload the files ?"
         okText="Yes"
+        onConfirm={() => {
+          handleUpload();
+          setFileList([]);
+        }}
         cancelText="No"
       >
         <Button
           type="primary"
-          onClick={() => {
+          /*onClick={() => {
             handleUpload();
             setFileList([]);
-          }}
+          }}*/
           disabled={fileList.length === 0}
           loading={uploading}
           style={{

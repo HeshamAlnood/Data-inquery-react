@@ -51,6 +51,9 @@ const ViewArchive = (props) => {
         width={"50%"}
         onClose={onClose}
         visible={visible}
+        contentWrapperStyle={{ transition: "0.6s" }}
+        className="transition ease-in-out delay-150"
+        //drawerStyle={{ transition: "0.6s" }}
         extra={
           <Space>
             <Button onClick={onClose}>Back</Button>

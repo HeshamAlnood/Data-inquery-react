@@ -24,6 +24,7 @@ import {
   FileSearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import useSwr from "swr";
 
 import ViewerPdf from "../Components/ViewerPdf";
 import ViewArchive from "../Components/ViewArchive";
@@ -52,6 +53,7 @@ export default function Customer() {
   });
   const draggleRef = useRef(null);
   let custArr;
+  //const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
   function toFixedTrunc(x, n) {
     const v = (typeof x === "string" ? x : x.toString()).split(".");

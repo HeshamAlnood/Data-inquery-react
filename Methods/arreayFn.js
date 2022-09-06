@@ -1,21 +1,20 @@
 import lodash, { isArray, sum, sortBy } from "lodash";
+//import { tableKey } from "../Components/DataTable";
+const columnByQuery = {
+  VENDOR: "VEND_BALANCE",
+  CUSTOMER: "CUST_BALANCE",
+  PURCHASING: "PIH_INV_BALANCE",
+  INVOICING: "SIH_INV_BALANCE",
+  INVENTORY: "ITEM_ON_HAND_QTY",
+};
 
 const getColumnByQuery = (pquery) => {
-  if (pquery === "VENDOR") {
-    return "VEND_BALANCE";
-  } else if (pquery === "CUSTOMER") {
-    return "CUST_BALANCE";
-  } else if (pquery === "PURCHASING") {
-    return "PIH_NET_INV_AMT";
-  } else if (pquery === "INVOICING") {
-    return "SIH_NET_INV_AMT";
-  } else {
-    return pquery;
-  }
+  return columnByQuery[pquery];
 };
 
 export const sumArrayByKey = (obArry, queryName) => {
-  let col = getColumnByQuery(queryName);
+  let col = getColumnByQuery(queryName) || queryName;
+  console.log(`col `, col);
   return lodash.sumBy(obArry, col);
 };
 
@@ -68,9 +67,9 @@ export const getSummryA = async (arry, pquery) => {
 
 export const getSummry = (arry, pquery) => {
   let vArry = getValueByObKey(arry, pquery);
-  /*console.log("fromarrayFN");
+  console.log("fromarrayFN");
   console.log(arry);
-  console.log(vArry);*/
+  console.log(vArry);
   let summaryOb = sumArray(vArry);
   let sumKey = sumArrayByKey(arry, pquery);
   let max = maxArrayValue(vArry);

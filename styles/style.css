@@ -45,6 +45,14 @@
   //background-color: rgb(125 211 252);
 }
 
+.ant-table-cell-fix-left {
+  //background: #eef8ff !important;
+  background: #eff2f4 !important;
+  font-weight: 500;
+  color: blue;
+}
+
+//ant-table-cell-fix-left-last
 /*.stat_bg {
   //background: radial-gradient(#1fe4f5, #3fbafe);
   background: radial-gradient(#fbc1cc, #fa99b2);
@@ -68,4 +76,74 @@
   -webkit-backdrop-filter: blur(20px);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ant-menu-item:hover {
+  transform: translateY(0.1rem) !important;
+  //background-color: green !important;
+  //border: 2 2 0 0;
+  transition: background-color 0.4s, border 0.4s, color 0.4s ease !important;
+}
+
+.ant-menu-item-selected {
+  /*.ant-menu-item:fouces {*/
+  //background-color: green !important;
+  transition: background-color 0.4s, border 0.4s, color 0.4s ease !important;
+}
+
+.ant-picker-cell-end,
+.ant-picker-cell {
+  background: #fbf6f2 !important;
+  color: #ff5733 !important;
+}
+
+/*.ant-picker-cell-inner,*/
+.ant-picker-cell-in-view
+/*.ant-picker-calendar-date */ {
+  background: #fcfeed !important;
+  color: blue !important;
+}
+
+.ant-picker-calendar-date-value {
+  font-weight: bold;
+}
+
+.ant-picker-cell-today > div > .ant-picker-calendar-date-value {
+  /*  border: 2px solid red;*/
+  //border-radius: 9999px !important;
+  /*border-color: red !important;*/
+  //inline-size: fit-content(20em) !important;
+  //overflow: hidden !important;
+
+  //-webkit-text-stroke: 2px red;
+  //border-radius: 0.25em black !important;
+  /*-moz-border-radius: 100px black !important;*/
+  //font-size: "xll";
+  border: 2px solid red;
+  border-radius: 50%;
+
+  display: inline-block;
+  background: red;
+  color: white !important;
+  font-size: 1rem;
+}
+.events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.events .ant-badge-status {
+  width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.notes-month {
+  font-size: 28px;
+  text-align: center;
+}
+.notes-month section {
+  font-size: 28px;
 }

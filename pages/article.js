@@ -55,9 +55,9 @@ export default function DashBoard(props) {
   let [dateTo, setDateTo] = useState(vDateTo);
   let [isDone, setIsDone] = useState(false);
 
-  const requestData = async (pquery) => {
+  const requestData = async (pquery, pdateFrom, pDateTo) => {
     const rqs = await fetch(
-      `http://192.168.0.159:3001/dbData?inquery=${pquery}&dfrom=${dateFrom}&dto=${dateTo}`
+      `http://192.168.0.159:3001/dbData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
     );
     const data = await rqs.json();
 
@@ -96,20 +96,20 @@ export default function DashBoard(props) {
     setVendorSummOb(returnObjectSumm(data, "VENDORS"));*/
   };
 
-  const runQuerys = () => {
-    console.log(`dateFrom, dateTo`);
-    console.log(dateFrom, dateTo);
-
+  const runQuerys = (pdateFrom = vDateFrom, pDateTo = vDateTo) => {
+    console.log(`runQuerys dateFrom, dateTo`);
+    console.log(pdateFrom, pDateTo);
+    console.log(`End runQuerys dateFrom, dateTo`);
     setIsDone(false);
     Promise.all([
       /*requestData("VENDOR"),
       requestData("CUSTOMER"),
       requestData("PURCHASING"),*/
-      requestData("VENDORBYPURCHASE"),
-      requestData("CUSTOMERBYINVOICE"),
-      requestData("CLASSSALE"),
-      requestData("EXPENSETOTAL"),
-      requestData("REVEXPSUMMARY"),
+      requestData("VENDORBYPURCHASE", pdateFrom, pDateTo),
+      requestData("CUSTOMERBYINVOICE", pdateFrom, pDateTo),
+      requestData("CLASSSALE", pdateFrom, pDateTo),
+      requestData("EXPENSETOTAL", pdateFrom, pDateTo),
+      requestData("REVEXPSUMMARY", pdateFrom, pDateTo),
 
       /*requestData("INVENTORY"),
       requestData("INVOICING"),*/
@@ -120,12 +120,18 @@ export default function DashBoard(props) {
 
   const onChangeDateRange = (dates, dateStrings) => {
     console.log(`dateStrings length`, dateStrings[1].length);
-    if (dateStrings[1].length === 0) {
+    /*if (dateStrings[1].length === 0) {
       return;
-    }
+    }*/
+
     if (dates) {
       console.log("From: ", dates[0], ", to: ", dates[1]);
-      console.log("From: ", dateStrings[0], ", to: ", dateStrings[1]);
+      console.log(
+        "dateStrings From: ",
+        dateStrings[0],
+        ", to: ",
+        dateStrings[1]
+      );
       console.log(
         "From: ",
         dateStrings[0].replaceAll("/", ""),
@@ -134,13 +140,24 @@ export default function DashBoard(props) {
       );
       console.log(dateStrings[0].replaceAll("/", ""));
       console.log(dateStrings[1].replaceAll("/", ""));
-      setDateTo(dateStrings[1].replaceAll("/", ""));
-      setDateFrom(dateStrings[0].replaceAll("/", ""));
 
       if (dateStrings[1].length > 0) {
-        runQuerys();
+        setDateTo(dateStrings[1].replaceAll("/", ""));
+        setDateFrom(dateStrings[0].replaceAll("/", ""));
+
+        console.log("if length > 0");
+        console.log(`dateFrom before run the query : `, dateFrom);
+        console.log(
+          `dateTo before run the query : `,
+          dateTo,
+          dateStrings[1].replaceAll("/", "")
+        );
+        let dataFr = dateStrings[0].replaceAll("/", "");
+        let dataTo = dateStrings[1].replaceAll("/", "");
+        runQuerys(dataFr, dataTo);
       }
     } else {
+      console.log("else ");
       setDateFrom(vDateFrom);
       setDateTo(vDateTo);
       runQuerys();

@@ -16,6 +16,7 @@ const Stats = (props) => {
         width: "19rem",
         borderRadius: "4%",
         backgroundColor: "transparent",
+        //  backgroundColor: "black",
       }}
       className="glassy"
     >

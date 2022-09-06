@@ -9,11 +9,12 @@ import Dashboard from "../Components/Dashboard";
 import Article from "../Components/article";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-export default function Home() {
+export default function Home({ allPokemons }) {
   const props = {
     companyName: "Asassyat",
     label: "DashBoard",
   };
+  console.log(`pokemons`, allPokemons);
   return (
     <div>
       <Head>
@@ -25,6 +26,22 @@ export default function Home() {
       <div>Welocm To First NextJs Porject</div>
     </div>
   );
+}
+export async function getStaticProps() {
+  /*let res = await fetch(`http://192.168.0.159:3001/dbData?inquery=INVOICING`);
+  let dataq = await res.json();
+*/ const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
+
+  // Parse the JSON
+  const data = await response.json();
+
+  // Finally we return the result
+  // inside props as allPokemons
+  return {
+    props: { allPokemons: data.results },
+  };
+  return { props: { data: "dataq" } };
+  //});
 }
 
 /*export default function Home() {

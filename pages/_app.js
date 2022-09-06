@@ -8,14 +8,18 @@ import "/dist/output.css";
 import "react-date-range/dist/theme/default.css"; // theme css file react-date-range*/
 import SideBar from "../Components/SideBar";
 import Menu from "../Components/Menu";
+import { useContext, createContext } from "react";
 
 //import "./node_modules/preline/dist/hs-ui.bundle.js";
 
-function MyApp({ Component, pageProps }) {
-  // return <Component {...pageProps} />;
+//export const companyName = createContext("");
+
+function MyApp({ Component, pageProps, data }) {
+  // return <Component {...pageProps} />; <SideBar companyName={"  Assassyat"} componentName={"hello"} />
+  console.log(`from myApp props data`, data);
   return (
     <NextUIProvider>
-      <SideBar companyName={"  Assassyat"} componentName={"hello"} />
+      <Menu companyName={"Assassyat"} componentName={"hello"} />
 
       <Component {...pageProps} />
     </NextUIProvider>

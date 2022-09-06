@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Dashboard from "../Components/Dashboard";
 import DataTable from "../Components/DataTables";
 import { Divider } from "antd";
+//import { getStaticProps } from "next/types";
 
 export default function SideBar(props) {
   let vCompanyName = props.companyName;
   let vLabel = props.componentName;
   console.log(`label`);
   console.log(vLabel);
+  //let   invcData   = getStaticProps();
 
+  //console.log(`invcData`, data, props.data);
   let vLabelClasses =
     "ease-in-out flex items-center gap-x-3 py-2 px-2.5 text-xl text-orange-50 hover:text-slate-700 rounded-md hover:bg-gray-100 hover:scale-125   dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-300";
 

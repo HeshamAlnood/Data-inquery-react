@@ -75,12 +75,27 @@ const FileViewer = (props) => {
     console.log(`from show Preview `, pcurrSrc, pcurrSrcExt);
     //setPreviewFlag(true);
     if (pcurrSrcExt.toLocaleUpperCase() === ".PDF") {
-      return (
+      /*return (
         <ViewerPdf
           src={pcurrSrc}
           fileName={fileName}
           previewFlag={props.previewFlag}
         />
+      );*/
+      return (
+        /*(
+        <object data={pcurrSrc} type="application/pdf">
+          <iframe
+            src={pcurrSrc}
+            
+            height={1000}
+            frameborder="0"
+            scrolling="no"
+          ></iframe>
+        </object>
+      );*/ <object height={1000} data={pcurrSrc} type="application/pdf">
+          <embed src={pcurrSrc} type="application/pdf" />
+        </object>
       );
     }
 
@@ -102,7 +117,20 @@ const FileViewer = (props) => {
         />
       );
     } else {
-      setPreviewFlag(false);
+      //setPreviewFlag(false);
+      return (
+        /*<iframe src={pcurrSrc} width="100%" height="565px" frameborder="0">
+          {" "}
+        </iframe>*/
+        <iframe
+          src={`https://view.officeapps.live.com/op/embed.aspx?src=${pcurrSrc}`}
+          width="100%"
+          height="565px"
+          frameborder="0"
+        >
+          {" "}
+        </iframe>
+      );
     }
   };
 
@@ -310,7 +338,7 @@ const FileViewer = (props) => {
                                 src={item[columnKey]}
                                 width={50}
                                 fallback="/icons/file.png"
-                                //preview={true}
+                                preview={false}
                                 onClick={() =>
                                   showPreview(item.src, item.fileExt)
                                 }
