@@ -14,9 +14,9 @@ import { useContext, createContext } from "react";
 
 //export const companyName = createContext("");
 
-function MyApp({ Component, pageProps, data }) {
+function MyApp({ Component, pageProps, dataq }) {
   // return <Component {...pageProps} />; <SideBar companyName={"  Assassyat"} componentName={"hello"} />
-  console.log(`from myApp props data`, data);
+  console.log(`from myApp props data`, dataq);
   return (
     <NextUIProvider>
       <Menu companyName={"Assassyat"} componentName={"hello"} />

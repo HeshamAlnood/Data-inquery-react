@@ -34,12 +34,13 @@ import {
 } from "../Methods/arreayFn";
 import Column from "antd/lib/table/Column";
 
-export default function DashBoard(props) {
+export default function DashBoard(props, { dataq }) {
   let [vendors, setVendors] = useState({});
   let [customers, setCustomers] = useState({});
   let [inventory, setInventory] = useState({});
 
   let [purchasing, setPurchasing] = useState({});
+
   let [purchasingByVendor, setPurchasingByVendor] = useState([{}]);
   let [salesByInvoice, setSalesByInvoice] = useState([{}]);
   let [classSale, setClassSale] = useState([{}]);
@@ -55,41 +56,78 @@ export default function DashBoard(props) {
   let [dateTo, setDateTo] = useState(vDateTo);
   let [isDone, setIsDone] = useState(false);
 
+  const storeInStorage = (value, valueName) => {
+    sessionStorage.setItem(
+      valueName,
+      typeof value === "object" ? value.map((e) => JSON.stringify(e)) : value
+    );
+  };
+
+  const assignDataFromStorage = (value = "", valueName = "") => {
+    let expn = sessionStorage.getItem("EXPENSETOTAL-D");
+    console.log(`Parse `, JSON.parse(expn));
+    setExpensesTotal(JSON.parse(expn));
+    setInventory(JSON.parse(sessionStorage.getItem("INVENTORY-D")));
+    setSalesByInvoice(
+      JSON.parse(sessionStorage.getItem("CUSTOMERBYINVOICE-D")) || []
+    );
+
+    setClassSale(JSON.parse(sessionStorage.getItem("CLASSSALE-D")) || []);
+    setRevExpSummary(
+      JSON.parse(sessionStorage.getItem("REVEXPSUMMARY-D")) || []
+    );
+    setPurchasingByVendor(
+      JSON.parse(sessionStorage.getItem("VENDORBYPURCHASE-D")) || []
+    );
+  };
+
+  console.log(`try props home :`, dataq);
   const requestData = async (pquery, pdateFrom, pDateTo) => {
     const rqs = await fetch(
       `http://192.168.0.159:3001/dbData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
     );
     const data = await rqs.json();
 
-    console.log("printing prmoise race");
+    //console.log("printing prmoise race");
     /*console.log(data);*/
 
     if (pquery === "VENDOR") {
       setVendors(data);
-      console.log(`finish vendor`);
+      //  console.log(`finish vendor`);
+      storeInStorage(data, "VENDOR-D");
     } else if (pquery === "CUSTOMER") {
       setCustomers(data);
-      console.log(`finish custoemr`);
+      //console.log(`finish custoemr`);
+      storeInStorage(data, "CUSTOMER-D");
     } else if (pquery === "PURCHASING") {
-      console.log(`finish purchasing`);
+      //console.log(`finish purchasing`);
       setPurchasing(data);
       setVendorSummOb(groupBySum(data, "PIH_VENDOR", "PIH_NET_INV_AMT"));
+      storeInStorage(data, "PURCHASING-D");
     } else if (pquery === "INVOICING") {
       setInvoicing(data);
       setCustomerSummOb(groupBySum(data, "SIH_CUSTOMER", "SIH_NET_INV_AMT"));
+      storeInStorage(data, "INVOICING-D");
     } else if (pquery === "INVENTORY") {
       setInventory(data);
-      console.log(`finish items`);
+      //console.log(`finish items`);
+      storeInStorage(data, "INVENTORY-D");
     } else if (pquery === "VENDORBYPURCHASE") {
       setPurchasingByVendor(data);
+
+      storeInStorage(data, "VENDORBYPURCHASE-D");
     } else if (pquery === "CUSTOMERBYINVOICE") {
       setSalesByInvoice(data);
+      storeInStorage(data, "CUSTOMERBYINVOICE-D");
     } else if (pquery === "CLASSSALE") {
       setClassSale(data);
+      storeInStorage(data, "CLASSSALE-D");
     } else if (pquery === "EXPENSETOTAL") {
       setExpensesTotal(data);
+      storeInStorage(data, "EXPENSETOTAL-D");
     } else if (pquery === "REVEXPSUMMARY") {
       setRevExpSummary(data);
+      storeInStorage(data, "REVEXPSUMMARY-D");
     } else return;
 
     /*setCustomerSummOb(returnObjectSumm(data, "CUSTOMER"));
@@ -97,10 +135,24 @@ export default function DashBoard(props) {
   };
 
   const runQuerys = (pdateFrom = vDateFrom, pDateTo = vDateTo) => {
-    console.log(`runQuerys dateFrom, dateTo`);
+    /* console.log(`runQuerys dateFrom, dateTo`);
     console.log(pdateFrom, pDateTo);
-    console.log(`End runQuerys dateFrom, dateTo`);
-    setIsDone(false);
+    console.log(`End runQuerys dateFrom, dateTo`);*/
+    console.log(
+      `runQuerys `,
+      purchasingByVendor.length,
+      salesByInvoice.length,
+      classSale.length
+    );
+    if (
+      purchasingByVendor.length > 1 ||
+      salesByInvoice.length > 1 ||
+      classSale.length > 1
+    ) {
+      setIsDone(false);
+      return;
+    }
+
     Promise.all([
       /*requestData("VENDOR"),
       requestData("CUSTOMER"),
@@ -165,7 +217,12 @@ export default function DashBoard(props) {
     }
   };
 
+  /*useEffect(() => {
+    assignDataFromStorage();
+    null;
+  }, []);*/
   useEffect(() => {
+    //assignDataFromStorage();
     console.log("Start Promise");
 
     runQuerys();

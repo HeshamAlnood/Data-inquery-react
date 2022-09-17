@@ -639,6 +639,7 @@ export default function DataTablesA(props) {
             //y: 240,
             x: "100vw",
           }}
+
           //className={"bg-sky-700 text-slate-50	text-base"}
           /*
           rowClassName={(record, index) => {

@@ -47,7 +47,7 @@
 
 .ant-table-cell-fix-left {
   //background: #eef8ff !important;
-  background: #eff2f4 !important;
+  background: rgb(248 250 252) !important;
   font-weight: 500;
   color: blue;
 }
@@ -146,4 +146,34 @@
 }
 .notes-month section {
   font-size: 28px;
+}
+
+.counter-number {
+  position: relative;
+
+  transform: translate3d(0, 300%, 0);
+
+  animation: countdown 1s forwards;
+}
+
+/*.ant-statistic-content-value-int {*/
+.line {
+  animation: 2s anim-lineUp ease-out 1 !important;
+}
+@keyframes anim-lineUp {
+  0% {
+    opacity: 0;
+    transform: translateY(80%);
+  }
+  20% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
 }

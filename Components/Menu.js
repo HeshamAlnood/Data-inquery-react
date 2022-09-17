@@ -95,6 +95,14 @@ const items = [
     "12",
     <ContainerOutlined />
   ),
+  getItem(
+    <Link href="/ApproveInvoices" key={"Approve Collection"}>
+      <a className={vLabelClasses}>Approve Collection</a>
+    </Link>,
+    "13",
+    <ContainerOutlined />
+  ),
+  ,
 ];
 
 function menuOb(key, href) {

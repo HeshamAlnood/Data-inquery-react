@@ -9,12 +9,12 @@ import Dashboard from "../Components/Dashboard";
 import Article from "../Components/article";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-export default function Home({ allPokemons }) {
+export default function Home({ dataq }) {
   const props = {
     companyName: "Asassyat",
     label: "DashBoard",
   };
-  console.log(`pokemons`, allPokemons);
+  console.log(`pokemons`, dataq);
   return (
     <div>
       <Head>
@@ -28,17 +28,18 @@ export default function Home({ allPokemons }) {
   );
 }
 export async function getStaticProps() {
-  /*let res = await fetch(`http://192.168.0.159:3001/dbData?inquery=INVOICING`);
+  let res = await fetch(`http://192.168.0.159:3001/dbData?inquery=INVOICING`);
   let dataq = await res.json();
-*/ const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
-
+  console.log(`dataq idex : `, dataq);
+  /*const response = await fetch("https://pokeapi.co/api/v2/pokemon/");
+   */
   // Parse the JSON
-  const data = await response.json();
+  //const data = await response.json();
 
   // Finally we return the result
   // inside props as allPokemons
   return {
-    props: { allPokemons: data.results },
+    props: { dataq: "dataq" },
   };
   return { props: { data: "dataq" } };
   //});

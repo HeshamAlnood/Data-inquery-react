@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 export default function runDataTables({ allPokemons }) {
   const router = useRouter();
 
-  console.log(`allPokemons65gsdhsdfghjm,ertj4frg      `, allPokemons);
+  //console.log(`allPokemons65gsdhsdfghjm,ertj4frg      `, allPokemons);
   const { id } = router.query;
   console.log(`router.query`);
   console.log(id);
