@@ -177,3 +177,40 @@
     transform: translateY(0%);
   }
 }
+
+.InvGrid {
+  display: grid;
+  grid-template-columns: 100px 200px 120px 200px;
+  gap: 50px;
+  justifycontent: "center";
+  //height: "1rem";
+}
+
+.InputText {
+  border: 0.2px solid rgb(203 213 225);
+  border-radius: "100%";
+}
+
+.editable-cell {
+  position: relative;
+}
+
+.editable-cell-value-wrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+  padding: 4px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  height: 2rem;
+}
+
+[data-theme="dark"] .editable-row:hover .editable-cell-value-wrap {
+  border: 1px solid #434343;
+}
+
+input:invalid {
+  border: 2px solid red;
+}

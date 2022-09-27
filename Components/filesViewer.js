@@ -126,7 +126,7 @@ const FileViewer = (props) => {
           src={`https://view.officeapps.live.com/op/embed.aspx?src=${pcurrSrc}`}
           width="100%"
           height="565px"
-          frameborder="0"
+          frameBorder="0"
         >
           {" "}
         </iframe>

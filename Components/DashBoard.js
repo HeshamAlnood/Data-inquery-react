@@ -164,8 +164,8 @@ class ApexChart extends React.Component {
         <div className="article bg-slate-50">
           <div className="row">
             <div className="col-md-4 ">
-              <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
-                <div class="p-4 md:p-10">
+              <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
+                <div className="p-4 md:p-10">
                   <div id="chart-spark1">
                     <ReactApexChart
                       options={this.state.options}
@@ -178,7 +178,7 @@ class ApexChart extends React.Component {
               </div>
             </div>
             <div className="col-md-4 flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
-              <div class="p-4 md:p-10">
+              <div className="p-4 md:p-10">
                 <div id="chart-spark2">
                   <ReactApexChart
                     options={this.state.optionsSpark2}
@@ -191,7 +191,7 @@ class ApexChart extends React.Component {
             </div>
             <div className="col-md-4">
               <div className="col-md-4 flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
-                <div class="p-4 md:p-10">
+                <div className="p-4 md:p-10">
                   <div id="chart-spark3">
                     <ReactApexChart
                       options={this.state.optionsSpark3}
@@ -206,7 +206,7 @@ class ApexChart extends React.Component {
           </div>
 
           <div className="col-md-4 flex flex-col bg-white border shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:shadow-slate-700/[.7]">
-            <div class="p-4 md:p-10">
+            <div className="p-4 md:p-10">
               <div className="area">
                 <ReactApexChart
                   options={this.state.areaoptions}

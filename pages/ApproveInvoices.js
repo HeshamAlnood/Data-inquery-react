@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useReducer } from "react";
+import { useEffect, useState, useRef, useReducer, useContext } from "react";
 import { Container, Grid, Loading, Button } from "@nextui-org/react";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "../Components/Stats";
@@ -13,13 +13,12 @@ import TagList from "../Components/List";
 import { DropdownL } from "../Components/Dropdown";
 import { getDataNoti } from "../Methods/Noti";
 import validator from "validator";
-import useSWR from "swr";
-import { callSwr } from "../Methods/callSWR";
+
 import VirtualTable from "../Components/VirtualTable";
 import { VList } from "virtual-table-ant-design";
 //import CSSTransition from "react-addons-css-transition-group";
-import { CSSTransition, Transition } from "react-transition-group";
-
+//import { CSSTransition, Transition } from "react-transition-group";
+import { CompanyName } from "./_app";
 import {
   Input,
   Space,
@@ -58,6 +57,7 @@ const ApproveCollect = (prop) => {
 
   const [counter, setCounter] = useReducer((n) => n + 1, 1);
   const [stIslodaing, setStIsLoading] = useState(false);
+  const CompName = useContext(CompanyName);
 
   let [filterd, setFilterd] = useState([]);
   const { RangePicker } = DatePicker;
@@ -126,7 +126,7 @@ const ApproveCollect = (prop) => {
   const resetFilter = () => {
     setData(dataRaw);
     //fillStateProps(dataRaw, props.query);
-    console.log(`dataRaw `, dataRaw);
+
     setSearchText("");
   };
 
@@ -219,7 +219,7 @@ const ApproveCollect = (prop) => {
 
       colsArr.push(ob);
     });
-    console.log(`end colsArr generation`);
+
     setDataCols(colsArr);
     return colsArr;
   };
@@ -356,28 +356,17 @@ const ApproveCollect = (prop) => {
           .map((e) => e.SIC_AMOUNT);
 
         let sumNdAprv = ndAprv.reduce((a, e) => a + e, 0);
-        console.log(`nd Aprv`, ndAprv, sumNdAprv);
         setTotalNeedAprv(Math.round(sumNdAprv, 2));
 
         //fillArry(data);
       });
 
-    return () => {
-      console.log("This will be logged on unmount");
-    };
+    return () => {};
   }, [mounted]);
 
   /*begin selection*/
 
   const onSelectChange = (newSelectedRowKeys, selectedRows, info) => {
-    console.log(
-      "selectedRowKeys changed: ",
-      selectedRowKeys,
-      newSelectedRowKeys
-    );
-    console.log(`select Rows :`, selectedRows);
-    console.log(`info :`, info);
-    console.log(`counter :`, counter);
     setStIsLoading(true);
     setCounter();
     setTotalCheckAprv(null);
@@ -391,18 +380,8 @@ const ApproveCollect = (prop) => {
 
     setSelectedRowKeys(newSelectedRowKeys);
 
-    console.log(
-      ` before ant statics : `,
-      document.getElementsByClassName("ant-statistic-content-value-int")[1]
-    );
-
     setTotalCheckAprv(
       selectedRows.map((e) => e.SIC_AMOUNT).reduce((a, b) => a + b, 0)
-    );
-
-    console.log(
-      ` after ant statics : `,
-      document.getElementsByClassName("ant-statistic-content-value-int")[1]
     );
 
     setTimeout(() => setStIsLoading(false), 10);
@@ -486,22 +465,6 @@ const ApproveCollect = (prop) => {
   }, [filterd]);
 
   //  setData(tempData);
-
-  /*useEffect(() => {
-    console.log(`useEffect selectedRowKeys`);
-    let sicAmountArr = [];
-    selectedRowKeys.forEach((e) =>
-      /*console.log(
-        `  Check Amount`,
-        data.filter((ee) => ee.SRL === e).map((e) => e.SIC_AMOUNT)
-      )*/
-  /*sicAmountArr.push(
-        data.filter((ee) => ee.SRL === e).map((e) => e.SIC_AMOUNT)
-      )
-    );
-    setTotalCheckAprv(sicAmountArr.reduce((a, b) => +a + +b, 0));
-    //let totalChek = data.filter(e=> e.SRL.)
-  }, [selectedRowKeys]);*/
 
   /*end selecion */
 
@@ -645,6 +608,9 @@ const ApproveCollect = (prop) => {
           </Space>
         </div>
         <div>
+          <a>{CompName} hh</a>
+        </div>
+        <div>
           <DropdownL menu={columnKeys} chng={chngCols} />
           <TagList
             cols={valueList}
@@ -659,6 +625,7 @@ const ApproveCollect = (prop) => {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
           </span>
         </div>
+
         <Table
           id="dataTable"
           //bordered="true"

@@ -14,6 +14,7 @@ const pieRose = (props) => {
     return <Skeleton active />;
   }
 
+  console.log(`pie ROOOse ,`, vdata);
   let obKeys = [];
   Object.keys(vdata[0])?.forEach((e) => {
     obKeys.push(e);

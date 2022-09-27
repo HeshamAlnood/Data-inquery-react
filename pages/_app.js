@@ -12,7 +12,19 @@ import { useContext, createContext } from "react";
 
 //import "./node_modules/preline/dist/hs-ui.bundle.js";
 
-//export const companyName = createContext("");
+export const CompanyName = createContext("Assassyat1");
+//export const =createContext('');
+//export const invContext = createContext([]);
+
+/*const runRequest = async () => {
+  const rqs = await fetch(
+    `http://192.168.0.159:3001/dbData?inquery=${"INVENTORY"}&dfrom=${20100101}&dto=${20221231}`
+  );
+  const data = await rqs.json();
+  invContext = createContext(data);
+  return data;
+};
+runRequest();*/
 
 function MyApp({ Component, pageProps, dataq }) {
   // return <Component {...pageProps} />; <SideBar companyName={"  Assassyat"} componentName={"hello"} />
@@ -20,7 +32,6 @@ function MyApp({ Component, pageProps, dataq }) {
   return (
     <NextUIProvider>
       <Menu companyName={"Assassyat"} componentName={"hello"} />
-
       <Component {...pageProps} />
     </NextUIProvider>
   );

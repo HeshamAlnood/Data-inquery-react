@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, useContext } from "react";
 import { Container, Grid, Loading, Button } from "@nextui-org/react";
 import {
   Input,
@@ -15,13 +15,15 @@ import validator from "validator";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "./Stats";
 import { VerticalAlignBottomOutlined } from "@ant-design/icons";
-import { Calendar, DateRangePicker } from "react-date-range";
+//import { Calendar, DateRangePicker } from "react-date-range";
 import TagList from "./List";
 import { DropdownL } from "./Dropdown";
 import { getDataNoti } from "../Methods/Noti";
 //import Select from "../Components/Select";
 import moment from "moment";
 import { getSummry, sumArrayByKey, getObSummry } from "../Methods/arreayFn";
+//import { invContext } from "../_app";
+//import { invContext } from "../pages/_app";
 
 export const tableKey = {
   VENDOR: "VEND_VENDOR",
@@ -34,12 +36,14 @@ export const tableKey = {
 import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
 const { RangePicker } = DatePicker;
 
-import "react-date-range/dist/styles.css"; // main style file react-date-range
+/*import "react-date-range/dist/styles.css"; // main style file react-date-range
 import "react-date-range/dist/theme/default.css"; // theme css file react-date-range
-
+*/
 export default function DataTablesA(props) {
-  let [dataElm, setDataElm] = useState([{ key: 1, label: 1 }]);
-  let [dataRaw, setDataRaw] = useState(dataElm);
+  console.log(` context props data `, props.data);
+
+  let [dataElm, setDataElm] = useState(props.data);
+  let [dataRaw, setDataRaw] = useState(props.data);
   let [dataCols, setDataCols] = useState([{ key: 1, label: 1 }]);
   let [vPage, setPage] = useState(15);
   let [colKey, setColKey] = useState(["2"]);
@@ -52,6 +56,7 @@ export default function DataTablesA(props) {
     this.value = value;
     this.color = color;
   };
+  //let invDataL = useContext(invContext);
   let [state1, setState1] = useState(new statProps("1", "1", "1"));
   let [state2, setState2] = useState(new statProps("1", "1", "1"));
   let [state3, setState3] = useState(new statProps("1", "1", "1"));
@@ -281,7 +286,7 @@ export default function DataTablesA(props) {
     if (dates) {
       let vStartDate = moment(dates[0]);
       let vEndDate = moment(dates[1]);
-      let dataOb = dataElm;
+      let dataOb = dataElm || [];
 
       var resultProductData = dataOb.filter((a) => {
         let startDate = new Date(vStartDate);
@@ -418,7 +423,11 @@ export default function DataTablesA(props) {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
+      /*record[dataIndex]
+        ?.toString()
+        .toLowerCase()
+        .startsWith(value.toLowerCase())*/
+      record[dataIndex]?.toString().toLowerCase() === value.toLowerCase(),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -440,8 +449,42 @@ export default function DataTablesA(props) {
       ),*/
   });
 
+  const fetchDataFromProp = (params = {}) => {
+    let data = props.data;
+    let cols = Object.keys(data[1]);
+    let colsArr = generateCols(cols);
+
+    /*        console.log(`getTableKey`);
+        console.log(getTableKey());*/
+
+    let listUnqique = data.map((e) => e[getTableKey()]);
+    //getQueryArr(query);
+    setVendorList([...new Set(listUnqique)]);
+    setDataElm(data);
+
+    setDataRaw(data);
+    setColKey(colsArr);
+
+    dataElm = "";
+
+    setDataCols(colsArr);
+    setColumnKeys(colsArr.map((column) => column.dataIndex));
+    setIsLoading(false);
+    disableCursor(false);
+    setFlagState(true);
+    getDataNoti();
+    setPagination({
+      ...params.pagination,
+      total: 200, // 200 is mock data, you should read it from server
+      // total: data.totalCount,
+    });
+  };
+
   const fetchData = (params = {}) => {
     disableCursor();
+    fetchDataFromProp(params);
+    return;
+
     fetch(`http://192.168.0.159:3001/dbData?inquery=${query}`)
       .then((res) => res.json())
       .then((data) => {
@@ -479,15 +522,20 @@ export default function DataTablesA(props) {
   useEffect(() => {
     /*get data*/
     query = props.query;
-    if (query === "1" || query === undefined) {
+    /*if (query === "1" || query === undefined) {
       return;
-    }
+    }*/
+
     setIsLoading(true);
     setFlagState(false);
     setVTitles(getQueryArr(query));
-    fetchData({
-      pagination,
-    });
+    setTimeout(
+      () =>
+        fetchData({
+          pagination,
+        }),
+      1000
+    );
   }, [query]);
 
   useEffect(() => {
@@ -635,10 +683,11 @@ export default function DataTablesA(props) {
           pagination={{ defaultPageSize: 20 }}
           loading={setIsLoading}
           onChange={handleChange}
-          scroll={{
+          scroll={{ y: "240", x: "80vw" }}
+          /*scroll={{
             //y: 240,
             x: "100vw",
-          }}
+          }}*/
 
           //className={"bg-sky-700 text-slate-50	text-base"}
           /*

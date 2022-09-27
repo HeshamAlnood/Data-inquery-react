@@ -16,6 +16,8 @@ import {
   BackTop,
 } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
+import { /*Container, Grid,*/ Loading /*, Button*/ } from "@nextui-org/react";
+
 import {
   ConsoleSqlOutlined,
   EditOutlined,
@@ -152,9 +154,17 @@ export default function Customer() {
 
       //console.log(`prsnt`, toFixedTrunc(prsnt, 2));
 
+      if (isDone === false)
+        return (
+          <div className="flex justify-center">
+            <div className="article ">
+              <Loading size="xl">Loading ...</Loading>
+            </div>
+          </div>
+        );
+
       return (
         <>
-          {isDone ?? <Skeleton />}
           <Card
             title={vTitle}
             hoverable
@@ -186,7 +196,17 @@ export default function Customer() {
               />,
             ]}
           >
-            <Descriptions labelStyle={{ fontWeight: "bold" }}>
+            <Descriptions
+              labelStyle={{ fontWeight: "bold" }}
+              column={{
+                xxl: 4,
+                xl: 3,
+                lg: 3,
+                md: 3,
+                sm: 2,
+                xs: 1,
+              }}
+            >
               {obEntry.map(([key, val] = entry) => {
                 let bal = key === "CUST_BALANCE" ? val : 0;
                 let vCustomValue;
@@ -216,22 +236,22 @@ export default function Customer() {
                 }
 
                 return (
-                  <Descriptions.Item
-                    label={key.replaceAll(" ").replaceAll("_", " ")}
-                    contentStyle={{
-                      fontWeight: "bold",
-                      //color: "blue",
-                      color: "rgb(163 163 163)" /*"rgb(29 78 216)"*/,
-                    }}
-                  >
-                    {Number.isFinite(val) === true
-                      ? new Intl.NumberFormat("en-us").format(
-                          toFixedTrunc(val, 2)
-                        )
-                      : vCustomValue ?? val}
-                  </Descriptions.Item>
+                  <>
+                    <Descriptions.Item
+                      label={key.replaceAll(" ").replaceAll("_", " ")}
+                      contentStyle={{
+                        fontWeight: "bold",
+                        color: "rgb(163 163 163)",
+                      }}
+                    >
+                      {Number.isFinite(val) === true
+                        ? new Intl.NumberFormat("en-us").format(
+                            toFixedTrunc(val, 2)
+                          )
+                        : vCustomValue ?? val}
+                    </Descriptions.Item>
+                  </>
                 );
-                // }
               })}
 
               <Descriptions.Item

@@ -13,8 +13,9 @@ import {
   CalendarOutlined,
   KeyOutlined,
 } from "@ant-design/icons";
-import { Button, Menu, Divider } from "antd";
+import { Button, Menu, Divider, Layout } from "antd";
 import { indexOf } from "lodash";
+const { Header, Content, Footer, Sider } = Layout;
 
 //import { getThemeName } from "@nextui-org/react/types/theme/utils";
 
@@ -102,6 +103,13 @@ const items = [
     "13",
     <ContainerOutlined />
   ),
+  getItem(
+    <Link href="/Sales_invoice" key={"Sales Invoice"}>
+      <a className={vLabelClasses}>Sales Invoice</a>
+    </Link>,
+    "14",
+    <ContainerOutlined />
+  ),
   ,
 ];
 
@@ -147,61 +155,86 @@ const MenuBar = (props) => {
   };
 
   return (
-    <div
-      style={{
-        overflow: "unset",
-        width: 256,
-        height: "auto",
-        backgroundColor: "#001529",
-      }}
-      id="docs-sidebar"
-      //className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 "
-      className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
-    >
-      <Button
-        type="primary"
-        onClick={toggleCollapsed}
-        style={{
-          marginBottom: 16,
+    // <div
+    //   style={{
+    //     overflow: "unset",
+    //     width: 256,
+    //     height: "auto",
+    //     backgroundColor: "#001529",
+    //   }}
+    //   id="docs-sidebar"
+    //   //className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 "
+    //   className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
+    // >
+    <Layout>
+      <Sider
+        breakpoint="lg"
+        collapsedWidth="0"
+        collapsible
+        onBreakpoint={(broken) => {
+          console.log(broken);
+        }}
+        onCollapse={(collapsed, type) => {
+          console.log(collapsed, type);
         }}
       >
-        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </Button>
-
-      <nav
-        className="  w-full flex flex-col flex-wrap divide-y divide-slate-400"
-        id="sidebar"
-      >
-        <div className="divide-y divide-slate-400">
-          <a
-            className="flex-none text-3xl text-white font-semibold dark:text-white  text-center  "
-            href="#"
-            aria-label="Brand"
-          >
-            {vCompanyName}
-          </a>
-        </div>
-        <Divider orientation="center"></Divider>
-        <Menu
-          defaultSelectedKeys={getDefaultMenu()}
-          defaultOpenKeys={["sub1"]}
-          mode="inline"
-          theme="dark"
-          inlineCollapsed={collapsed}
-          items={items}
-          //className={"bg-slate-300"}
-          triggerSubMenuAction={"hover"}
-          subMenuOpenDelay={1}
-          //  className="items-center gap-x-3 py-2 px-2.5 text-xl text-orange-50 hover:text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-300"
+        <div
           style={{
-            //width: 256,
-            height: "100%",
             overflow: "unset",
-            hover: { transition: " 9.5s", backgroundColor: "green" },
+            width: 256,
+            height: "auto",
+            backgroundColor: "#001529",
           }}
-        />
-      </nav>
-    </div>
+          id="docs-sidebar"
+          //className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 "
+          className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
+        >
+          <Button
+            type="primary"
+            onClick={toggleCollapsed}
+            style={{
+              marginBottom: 16,
+            }}
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </Button>
+
+          <nav
+            className="  w-full flex flex-col flex-wrap divide-y divide-slate-400"
+            id="sidebar"
+          >
+            <div className="divide-y divide-slate-400">
+              <a
+                className="flex-none text-3xl text-white font-semibold dark:text-white  text-center  "
+                href="#"
+                aria-label="Brand"
+              >
+                {vCompanyName}
+              </a>
+            </div>
+            <Divider orientation="center"></Divider>
+            <Menu
+              defaultSelectedKeys={getDefaultMenu()}
+              defaultOpenKeys={["sub1"]}
+              mode="inline"
+              theme="dark"
+              inlineCollapsed={collapsed}
+              items={items}
+              //className={"bg-slate-300"}
+              triggerSubMenuAction={"hover"}
+              subMenuOpenDelay={1}
+              //  className="items-center gap-x-3 py-2 px-2.5 text-xl text-orange-50 hover:text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-300"
+              style={{
+                //width: 256,
+                height: "100%",
+                overflow: "unset",
+                hover: { transition: " 9.5s", backgroundColor: "green" },
+              }}
+            />
+          </nav>
+        </div>
+      </Sider>
+    </Layout>
   );
 };
 

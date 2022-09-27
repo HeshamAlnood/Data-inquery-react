@@ -15,7 +15,7 @@ const getColumnByQuery = (pquery) => {
 export const sumArrayByKey = (obArry, queryName) => {
   let col = getColumnByQuery(queryName) || queryName;
   console.log(`col `, col);
-  return lodash.sumBy(obArry, col);
+  return Math.round(lodash.sumBy(obArry, col), 2);
 };
 
 export const sumArray = (arry) => {
@@ -27,7 +27,7 @@ export const countArray = (arry) => {
 };
 
 export const maxArrayValue = (arry) => {
-  return lodash.max(arry);
+  return Math.trunc(lodash.max(arry), 2);
 };
 
 export const maxArrayValueByKey = (arry, pquery) => {

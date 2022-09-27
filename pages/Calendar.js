@@ -1,29 +1,27 @@
-import { Layout, Badge, Calendar, Input, Alert } from "antd";
+import { Layout, Badge, Calendar, Input, Alert, Loading } from "antd";
 import { padStart } from "lodash";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { sumArrayByKey } from "../Methods/arreayFn";
 
-export default function Customer(props) {
+function CalendarData(props) {
   const [dayTrans, setDayTrans] = useState([]);
   const [dayInfo, setDayInfo] = useState([]);
   const [vday, setDay] = useState("");
-  const [vmonth, setMonth] = useState("");
-  const [vyear, setYear] = useState("2016");
+  const [vmonth, setMonth] = useState(moment().month() + 1);
+  const [vyear, setYear] = useState(moment().subtract(6, "years").year());
   const [date, setDate] = useState("");
   const { Header, Footer, Sider, Content } = Layout;
   const [currDate, setCurrDate] = useState("");
   const [monthInfo, setMonthInfo] = useState([]);
+  const [listData, setListDate] = useState([]);
+  const [dayFlag, setDayFlag] = useState(false);
+
+  console.log(`from server props CalendarData :`, props.data);
 
   const tranDates = async (pDate) => {
     console.log(`Before tranDates , `, pDate.year(), pDate.format("MM"));
     console.log(`Before tranDates variables , `, vyear, vmonth);
-    /*pDate.year() === vyear ? setYear(pDate.year()) : "";
-    pDate.month() === vmonth ? setMonth(pDate.month()) : "";*/
-    /*setMonth(pDate.month());
-    setYear(pDate.year());*/
-
-    //setTimeout(() => console.log(`waitng for update the dates`), 1000);
 
     console.log(`After tranDates , `, pDate.year(), pDate.format("MM"));
     console.log(`After tranDates variables , `, vyear, vmonth);
@@ -32,26 +30,7 @@ export default function Customer(props) {
     await getDayTrans(pDate.year(), pDate.format("MM"));
   };
 
-  const tranMonth = (pYEar, pMonth = -1) => {
-    //await   getDayTrans(pYEar.year());
-
-    let rslt;
-    //let rslt =
-    //getDaysInfo(pYEar).then((d) => setMonthInfo(d));
-
-    /*if (dayInfo === undefined) {
-      let rslt = getDaysInfo(pYEar);
-
-      console.log(`rslt : `, rslt);
-    } else {
-      rslt = dayInfo;
-      console.log(`Else rslt : `, rslt);
-    }*/
-    //setTimeout(() => null, 1000);
-    //let rslt = monthInfo;
-  };
-
-  const getDaysInfo = async (pYear, pMonth) => {
+  const getDaysInfo = async (pYear, pMonth = moment().month()) => {
     //if (pYear.length === 0 || pYear === "") return;
     console.log(`pYEar : `, pYear);
     console.log(`pMonth : `, pMonth);
@@ -60,19 +39,22 @@ export default function Customer(props) {
         pMonth || null
       }`
     );
-    let data = rsp.json();
-
+    let data = await rsp.json();
+    console.log(`data from api `, data);
     return data;
   };
 
-  const getDayTrans = (pYear = vyear, pMonth = vmonth, pDay) => {
-    let data = [];
+  const getDayTrans = (pYear = vyear, pMonth = vmonth, pDay = null) => {
+    let datas = [];
     const dayInfo = [];
+
     getDaysInfo(pYear, pMonth).then((d) => {
       setDayTrans(d);
-      data = d;
-      console.log(`data `, data);
-      data.forEach((e) => {
+
+      //setListDate(dayInfo.filter((e) => e.key === value.format("yyyyMMDD")));
+      datas = d;
+      console.log(`data getDaysInfo & getDayTrans`, datas);
+      datas.forEach((e) => {
         //if (e.Day === pDay) {
 
         let ob = {
@@ -89,31 +71,83 @@ export default function Customer(props) {
         //}
       });
 
-      setTimeout(() => setDayInfo(dayInfo || []), 3000);
-
+      //setTimeout(() => setDayInfo(dayInfo || []), 3000);
+      //setTimeout(() => null, 2000);
       //tranDates(date);
+      setDayInfo(dayInfo || []);
       return dayInfo || [];
     });
 
     //setTimeout(() => console.log("waiting"), 3000);
-
-    console.log(`data after`, data);
+    return dayInfo || [];
+    console.log(`data after`, datas);
   };
 
   useEffect(() => {
+    setDayFlag(false);
+    setDayTrans(props.data);
+    let dayInfo = [];
+
+    let datas = props.data;
+    console.log(`data getDaysInfo & getDayTrans`, datas);
+    datas.forEach((e) => {
+      //if (e.Day === pDay) {
+
+      let ob = {
+        id: e.TYPE + e.YEAR + e.MONTH + e.DAY,
+        key: e.YEAR + e.MONTH + e.DAY,
+        amount: e.AMOUNT,
+        day: e.DAY,
+        month: e.MONTH,
+        year: e.YEAR,
+        type: e.TYPE === "INVOICE" ? "success" : "warning",
+        content: `Total ${e.TYPE} : ${Math.round(e.AMOUNT, 2)}`,
+      };
+      dayInfo.push(ob);
+      //}
+    });
+
+    setDayInfo(dayInfo || []);
+    setMonthInfo(dayInfo || []);
+    //return dayInfo || [];
+    //setDayInfo(props.data);
+
+    setDayFlag(true);
+  }, []);
+
+  useEffect(() => {
     console.log(`useEffect vyear`, vyear);
+    console.log(`useEffect vmonth`, vmonth + 1);
     if (vyear === undefined) return;
     console.log(`start api`);
+    setDayFlag(false);
     getDaysInfo(vyear).then((d) => {
       console.log(`get data api`, d);
       setMonthInfo(d);
+      setDayFlag(true);
+      //setTimeout(() => null, 1000);
     });
-  }, [vyear]);
+  }, [vyear, vmonth]);
 
   const dateCellRender = (value) => {
-    const listData = dayInfo.filter((e) => e.key === value.format("yyyyMMDD"));
+    // console.log(`dayFlag false or true : `, dayFlag);
+    if (dayFlag === false) return;
+    //console.log(`from dateCellRender`, dayInfo);
+    const listData =
+      dayInfo?.filter((e) => e.key === value.format("yyyyMMDD")) || [];
+    //setListDate(dayInfo.filter((e) => e.key === value.format("yyyyMMDD")));
+    //setTimeout(() => null, 1000);
+    //    console.log(`listData : `, value.format("yyyyMMDD"), listData);
+    /*if ((listData.length = 0)) {
+      return (
+        <div className="flex justify-center">
+          <div className="article ">
+            <Loading size="xl">Loading ...</Loading>
+          </div>
+        </div>
+      );
+    }*/
 
-    //console.log(`listData : `, value.format("yyyyMMDD"), listData);
     return (
       <ul className="events">
         {listData.map((item) => (
@@ -127,6 +161,7 @@ export default function Customer(props) {
 
   const monthCellRender = (value) => {
     console.log(`month cell info`, monthInfo);
+    if (dayFlag === false) return;
     let arr = monthInfo.filter((e) => e.MONTH === value.format("MM"));
     let arrInv = arr.filter((e) => e.TYPE === "INVOICE");
     let arrPur = arr.filter((e) => e.TYPE === "PURCHASE");
@@ -171,7 +206,8 @@ export default function Customer(props) {
           </div>
         )}
         <Calendar
-          dateCellRender={dateCellRender}
+          dateCellRender={dayFlag === true ? dateCellRender : ""}
+          defaultValue={moment().subtract(6, "years")}
           onChange={(e) => {
             console.log(` on Change `, e.format("yyyyMM"));
             console.log(` Current `, vyear, vmonth);
@@ -201,3 +237,18 @@ export default function Customer(props) {
     </Layout>
   );
 }
+
+export async function getServerSideProps() {
+  let year = moment().year();
+  let month = moment().month();
+  let rsp = await fetch(`http://192.168.0.159:3001/DailyTrans?year=${2016}`);
+  let data = await rsp.json();
+  //let data = [{ hhh: "hello" }];
+  //return data;
+  //console.log(`getServerSideProps `, data);
+  return {
+    props: { data: data }, // will be passed to the page component as props
+  };
+}
+
+export default CalendarData;
