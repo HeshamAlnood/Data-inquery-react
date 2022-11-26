@@ -54,7 +54,7 @@ export default function DashBoard(props) {
 
   let vDateTo = moment().endOf("year").format("yyyyMMDD");
 
-  console.log(`Date Moment : `, vDateFrom, vDateTo);
+  //  console.log(`Date Moment : `, vDateFrom, vDateTo);
   let [dateFrom, setDateFrom] = useState(vDateFrom);
   let [dateTo, setDateTo] = useState(vDateTo);
   let [isDone, setIsDone] = useState(false);
@@ -66,6 +66,10 @@ export default function DashBoard(props) {
       valueName,
       typeof value === "object" ? value.map((e) => JSON.stringify(e)) : value
     );
+  };
+
+  const getInStorage = (value) => {
+    sessionStorage.getItem(valueName);
   };
 
   const dataHandling = useMemo((data, pquery) => {
@@ -100,14 +104,10 @@ export default function DashBoard(props) {
 
   const requestData = async (pquery, pdateFrom, pDateTo) => {
     const rqs = await fetch(
-      `http://192.168.0.159:3001/dbData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
+      `http://localhost:3000/api/requestData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
     );
+    //`http://192.168.0.159:3000/api/requestData?inquery=CUSTOMERBYINVOICE&dfrom=20160101&dto=20160501`
     const data = await rqs.json();
-
-    //console.log("printing prmoise race");
-    /*console.log(data);*/
-    /*dataHandling(data, pquery);
-    return;*/
 
     if (pquery === "VENDOR") {
       setVendors(data);
@@ -141,78 +141,70 @@ export default function DashBoard(props) {
     setVendorSummOb(returnObjectSumm(data, "VENDORS"));*/
   };
 
-  const runQuerys = (pdateFrom = vDateFrom, pDateTo = vDateTo) => {
+  const runQuerys = async (pdateFrom = vDateFrom, pDateTo = vDateTo) => {
     setIsDone(false);
-    Promise.all([
-      /*requestData("VENDOR"),
-      requestData("CUSTOMER"),
-      requestData("PURCHASING"),*/
+    /*Promise.all([
+    
       requestData("VENDORBYPURCHASE", pdateFrom, pDateTo),
       requestData("CUSTOMERBYINVOICE", pdateFrom, pDateTo),
       requestData("CLASSSALE", pdateFrom, pDateTo),
       requestData("EXPENSETOTAL", pdateFrom, pDateTo),
       requestData("REVEXPSUMMARY", pdateFrom, pDateTo),
-
-      /*requestData("INVENTORY"),
-      requestData("INVOICING"),*/
+   
     ])
       .then((e) => setIsDone(true))
-      .catch((err) => console.log(`Eroor Promise  `, err));
+      .catch((err) => console.log(`Eroor Promise  `, err));*/
+    await requestData("VENDORBYPURCHASE", pdateFrom, pDateTo);
+    await requestData("CUSTOMERBYINVOICE", pdateFrom, pDateTo);
+    await requestData("CLASSSALE", pdateFrom, pDateTo);
+    await requestData("EXPENSETOTAL", pdateFrom, pDateTo);
+    //await requestData("REVEXPSUMMARY", pdateFrom, pDateTo);
+    setIsDone(true);
   };
 
+  /*const exeQuerys = useMemo(
+    () => runQuerys(vDateFrom, vDateTo),
+    [vDateFrom, vDateTo]
+  );*/
+
   const onChangeDateRange = (dates, dateStrings) => {
-    console.log(`dateStrings length`, dateStrings[1].length);
-    /*if (dateStrings[1].length === 0) {
-      return;
-    }*/
+    console.log(`panel change ~  `);
 
     if (dates) {
-      console.log("From: ", dates[0], ", to: ", dates[1]);
-      console.log(
-        "dateStrings From: ",
-        dateStrings[0],
-        ", to: ",
-        dateStrings[1]
-      );
-      console.log(
-        "From: ",
-        dateStrings[0].replaceAll("/", ""),
-        ", to: ",
-        dateStrings[1].replaceAll("/", "")
-      );
-      console.log(dateStrings[0].replaceAll("/", ""));
-      console.log(dateStrings[1].replaceAll("/", ""));
-
       if (dateStrings[1].length > 0) {
         setDateTo(dateStrings[1].replaceAll("/", ""));
         setDateFrom(dateStrings[0].replaceAll("/", ""));
 
-        console.log("if length > 0");
-        console.log(`dateFrom before run the query : `, dateFrom);
-        console.log(
-          `dateTo before run the query : `,
-          dateTo,
-          dateStrings[1].replaceAll("/", "")
-        );
         let dataFr = dateStrings[0].replaceAll("/", "");
         let dataTo = dateStrings[1].replaceAll("/", "");
-
+        console.log(`dataFr ${dataFr} dateTo`, dataTo);
         runQuerys(dataFr, dataTo);
+        //exeQuerys;
       }
     } else {
-      console.log("else ");
-      setDateFrom(vDateFrom);
-      setDateTo(vDateTo);
       runQuerys();
-      console.log("Clear");
+      null;
     }
   };
 
   useEffect(() => {
     //assignDataFromStorage();
     console.log("Start Promise");
+    console.log("props ", props.classSale);
 
-    runQuerys();
+    //runQuerys();
+    //exeQuerys;
+
+    setPurchasingByVendor(props.purchasingByVendor);
+
+    setSalesByInvoice(props.salesByInvoice);
+
+    setClassSale(props.classSale);
+
+    setExpensesTotal(props.expensesTotal);
+
+    setRevExpSummary(props.revExpSummary);
+    setIsDone(true);
     console.log("End Promise");
   }, []);
 
@@ -244,7 +236,7 @@ export default function DashBoard(props) {
               "This Year": [moment().startOf("year"), moment().endOf("year")],
             }}
             format="YYYY/MM/DD"
-            onChange={onChangeDateRange}
+            //onChange={onChangeDateRange}
             onCalendarChange={onChangeDateRange}
             size={"large"}
             defaultValue={[moment().startOf("year"), moment().endOf("year")]}
@@ -322,18 +314,21 @@ export default function DashBoard(props) {
         </Row>
         <Divider orientation="center"></Divider>
 
-        <Row justify="space-around" gutter={[50, 30]}>
-          <Col className="gutter-row" span={6}>
+        <Row justify="center" className="space-x-20">
+          <Col className="gutter-row  " span={6}>
             <Card
               bordered={false}
               size="small"
               style={{
-                width: "41.5rem",
+                //                width: "41.5rem",
                 height: "24rem",
+                minWidth: "21.5rem",
+                //              maxWidth: "59.6rem",
+                maxWidth: "108rem",
                 borderRadius: "4%",
                 backgroundColor: "transparent",
               }}
-              className="glassy"
+              className="glassy "
               hoverable="true"
             >
               <PieRose
@@ -347,8 +342,11 @@ export default function DashBoard(props) {
             <Card
               bordered={false}
               hoverable="true"
+              size="small"
               style={{
-                width: "41.5rem",
+                //width: "41.5rem",
+                minWidth: "21.5rem",
+                maxWidth: "10z8rem",
                 height: "24rem",
                 borderRadius: "4%",
                 backgroundColor: "transparent",
@@ -364,7 +362,9 @@ export default function DashBoard(props) {
               bordered={false}
               hoverable="true"
               style={{
-                width: "41.5rem",
+                //width: "41.5rem",
+                maxWidth: "108rem",
+                minWidth: "21.5rem",
                 height: "24rem",
                 borderRadius: "4%",
                 backgroundColor: "transparent",
@@ -433,4 +433,69 @@ export default function DashBoard(props) {
       </Content>
     </Layout>
   );
+}
+export async function getServerSideProps(context) {
+  let purchasingByVendor,
+    salesByInvoice,
+    classSale,
+    expensesTotal,
+    revExpSummary;
+
+  const requestData = async (pquery, pdateFrom, pDateTo) => {
+    const rqs = await fetch(
+      //`http://192.168.0.159:3001/dbData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
+      `http://localhost:3000/api/requestData?inquery=${pquery}&dfrom=${pdateFrom}&dto=${pDateTo}`
+    );
+    const data = await rqs.json();
+
+    if (pquery === "VENDORBYPURCHASE") {
+      purchasingByVendor = data;
+    } else if (pquery === "CUSTOMERBYINVOICE") {
+      salesByInvoice = data;
+    } else if (pquery === "CLASSSALE") {
+      classSale = data;
+    } else if (pquery === "EXPENSETOTAL") {
+      expensesTotal = data;
+    } else if (pquery === "REVEXPSUMMARY") {
+      revExpSummary = data;
+    } else return;
+  };
+
+  const runQuerys = async (pdateFrom = vDateFrom, pDateTo = vDateTo) => {
+    /*await Promise.all([*/
+    await requestData("VENDORBYPURCHASE", pdateFrom, pDateTo);
+    await requestData("CUSTOMERBYINVOICE", pdateFrom, pDateTo);
+    await requestData("CLASSSALE", pdateFrom, pDateTo);
+    await requestData("EXPENSETOTAL", pdateFrom, pDateTo);
+    await requestData("REVEXPSUMMARY", pdateFrom, pDateTo);
+    /*]
+    )
+      .then((e) => console.log(e))
+      .catch((err) => console.log(`Eroor Promise  `, err));*/
+  };
+  let data = [];
+  let dFrom = moment().year() + "0101";
+  let dTo = moment().year() + "1231";
+
+  await runQuerys(dFrom, dTo).then((e) => {
+    return {
+      props: {
+        purchasingByVendor: `purchasingByVendor` || 0,
+        salesByInvoice: `salesByInvoice`,
+        classSale: `classSale`,
+        expensesTotal: `expensesTotal`,
+        revExpSummary: `revExpSummary`,
+      }, // will be passed to the page component as props
+    };
+  });
+
+  return {
+    props: {
+      purchasingByVendor: purchasingByVendor || 0,
+      salesByInvoice: salesByInvoice,
+      classSale: classSale,
+      expensesTotal: expensesTotal,
+      revExpSummary: revExpSummary,
+    }, // will be passed to the page component as props
+  };
 }

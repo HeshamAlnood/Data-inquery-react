@@ -13,6 +13,7 @@ import {
   EyeOutlined,
   DownloadOutlined,
   ZoomInOutlined,
+  Image,
 } from "@ant-design/icons";
 
 const ListOfValues = (props) => {

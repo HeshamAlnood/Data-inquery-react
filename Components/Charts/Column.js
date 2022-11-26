@@ -11,7 +11,7 @@ export const ColumnsChart = (props) => {
   console.log(vdata);*/
 
   let finish = props.finish;
-  if (finish === false || vdata.length === 0) {
+  if (finish === false || vdata?.length === 0) {
     return <Skeleton active />;
   }
 
@@ -21,7 +21,7 @@ export const ColumnsChart = (props) => {
   let vMonth = [];
   let vYear;
 
-  vdata.forEach((e) => {
+  vdata?.forEach((e) => {
     if (e.TYPE === "REVENUE") {
       vSeriesRev.push(Math.trunc(e.AMOUNT, 2));
     } else if (e.TYPE === "PROFIT") {

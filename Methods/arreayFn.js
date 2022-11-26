@@ -14,7 +14,7 @@ const getColumnByQuery = (pquery) => {
 
 export const sumArrayByKey = (obArry, queryName) => {
   let col = getColumnByQuery(queryName) || queryName;
-  console.log(`col `, col);
+  //console.log(`col `, col);
   return Math.round(lodash.sumBy(obArry, col), 2);
 };
 
@@ -66,18 +66,23 @@ export const getSummryA = async (arry, pquery) => {
 };
 
 export const getSummry = (arry, pquery) => {
-  let vArry = getValueByObKey(arry, pquery);
-  console.log("fromarrayFN");
+  try {
+    let vArry = getValueByObKey(arry, pquery);
+    /*console.log("fromarrayFN");
   console.log(arry);
-  console.log(vArry);
-  let summaryOb = sumArray(vArry);
-  let sumKey = sumArrayByKey(arry, pquery);
-  let max = maxArrayValue(vArry);
-  let maxKey = maxArrayValueByKey(arry, pquery);
-  let count = countArray(vArry);
+  console.log(vArry);*/
+    let summaryOb = sumArray(vArry);
+    let sumKey = sumArrayByKey(arry, pquery);
+    let max = maxArrayValue(vArry);
+    let maxKey = maxArrayValueByKey(arry, pquery);
+    let count = countArray(vArry);
 
-  let ob = new obSummary(summaryOb, sumKey, max, maxKey, count);
-  return ob;
+    let ob = new obSummary(summaryOb, sumKey, max, maxKey, count);
+    return ob;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
 };
 
 export const getObSummry = (arry, pquery) => {

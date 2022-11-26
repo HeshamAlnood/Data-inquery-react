@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useContext } from "react";
 import { Container, Grid, Loading, Button } from "@nextui-org/react";
+import lodash from "lodash";
 import {
   Input,
   Space,
@@ -34,14 +35,13 @@ export const tableKey = {
 };
 
 import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+import collapseMotion from "antd/lib/_util/motion";
 const { RangePicker } = DatePicker;
 
 /*import "react-date-range/dist/styles.css"; // main style file react-date-range
 import "react-date-range/dist/theme/default.css"; // theme css file react-date-range
 */
 export default function DataTablesA(props) {
-  console.log(` context props data `, props.data);
-
   let [dataElm, setDataElm] = useState(props.data);
   let [dataRaw, setDataRaw] = useState(props.data);
   let [dataCols, setDataCols] = useState([{ key: 1, label: 1 }]);
@@ -51,6 +51,7 @@ export default function DataTablesA(props) {
   let [showDateRanger, setShowDateRanger] = useState(false);
   let [obSum, setObSum] = useState({});
   let query = props.query ?? "CUSTOMER";
+
   const statProps = function (title, value, color) {
     this.title = title;
     this.value = value;
@@ -97,12 +98,46 @@ export default function DataTablesA(props) {
     //else return pquery;
   };
 
+  const searchTable = (value) => {
+    let vVal = value;
+    let qryu = [];
+
+    try {
+      if (value.length === 0) {
+        resetFilter();
+
+        return;
+      }
+      let data = dataRaw;
+
+      columnKeys.forEach((c) => {
+        try {
+          data.forEach((e) =>
+            e[c]
+              ?.toString()
+              .toLowerCase()
+              .indexOf(vVal?.toString().toLowerCase()) > -1
+              ? qryu.push(e)
+              : ""
+          );
+
+          console.log(`qruy with map`, qryu);
+        } catch (e) {
+          console.log(`err`, e);
+        }
+      });
+
+      console.log(`map data qryu`, qryu);
+      setDataElm([...new Set(qryu)]);
+
+      //qryu.length = 0;
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const fillStateProps = (data, pquery = props.query) => {
     let stat3;
-    let ob = getSummry(data, pquery);
-
-    console.log("printing ob Summary");
-    console.log(ob);
+    let ob = getSummry(data, pquery) || 0;
 
     if (pquery === "PURCHASING") {
       stat3 = sumArrayByKey(data, "PIH_INV_BALANCE");
@@ -150,10 +185,11 @@ export default function DataTablesA(props) {
         defaultSortOrder: "descend",
         filterMode: "tree",
         filterSearch: true,
+        //filteredValue: filteredInfo[e] || null,
         responsive: ["lg", "md"],
         ...getColumnSearchProps(e),
 
-        //  onFilter: (value, record) => record[e].startsWith(value),
+        //onFilter: (value, record) => record[e].startsWith(value),
 
         sorter: (a, b) => {
           //  console.log("check validator");
@@ -214,6 +250,7 @@ export default function DataTablesA(props) {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const searchAllInput = useRef(null);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -368,6 +405,7 @@ export default function DataTablesA(props) {
           style={{
             marginBottom: 8,
             display: "block",
+            borderRadius: "0.5rem",
           }}
         />
         <Space>
@@ -395,7 +433,7 @@ export default function DataTablesA(props) {
           >
             Reset
           </Button>
-          <Button
+          {/* <Button
             type="link"
             size="small"
             style={{
@@ -411,7 +449,7 @@ export default function DataTablesA(props) {
             }}
           >
             Filter
-          </Button>
+          </Button> */}
         </Space>
       </div>
     ),
@@ -422,12 +460,14 @@ export default function DataTablesA(props) {
         }}
       />
     ),
+
     onFilter: (value, record) =>
-      /*record[dataIndex]
+      record[dataIndex]
         ?.toString()
         .toLowerCase()
-        .startsWith(value.toLowerCase())*/
-      record[dataIndex]?.toString().toLowerCase() === value.toLowerCase(),
+        //.startsWith(value.toLowerCase()),
+        .includes(value.toLowerCase()),
+    //record[dataIndex]?.toString().toLowerCase() === value.toLowerCase(),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -472,7 +512,7 @@ export default function DataTablesA(props) {
     setIsLoading(false);
     disableCursor(false);
     setFlagState(true);
-    getDataNoti();
+    //getDataNoti();
     setPagination({
       ...params.pagination,
       total: 200, // 200 is mock data, you should read it from server
@@ -548,6 +588,8 @@ export default function DataTablesA(props) {
     } else {
       showDateRangerFlag(false);
     }
+
+    console.log(document.getElementById("dataTable"));
   }, [flagState]);
 
   if (isLoading === true) {
@@ -657,7 +699,14 @@ export default function DataTablesA(props) {
               <Button color="gradient" onClick={performFilter}>
                 Search
               </Button>
-              <Button color="gradient" onClick={resetFilter}>
+              <Button
+                color="gradient"
+                onClick={() => {
+                  /* resetFilter;
+                  handleReset(clearFilters);*/
+                  handleSearch();
+                }}
+              >
                 Reset
               </Button>
               <Button color="gradient" onClick={HtmlTOExcel}>
@@ -671,7 +720,29 @@ export default function DataTablesA(props) {
         </div>
 
         <DropdownL menu={columnKeys} chng={chngCols} />
-        <TagList cols={vendorList} filterd={setFilterd} qName={query} />
+        <TagList
+          cols={vendorList}
+          filterd={setFilterd}
+          qName={query}
+          width={"100%"}
+          //classList="text-slate-500 !rounded-full"
+          //className="text-slate-500 rounded-full"
+        />
+
+        <Divider> </Divider>
+        <div>
+          <input
+            className=" inputSearch border-slate-300	 focus:border-blue-50 w-full focus:w-full placeholder-shown:w-64	border-2 rounded-full placeholder:text-slate-300	"
+            //id="inputSearch"
+            ref={searchAllInput}
+            type="text"
+            name="search"
+            placeholder="Search All Data..."
+            onKeyUp={(e) => searchTable(e.target.value)}
+          />
+        </div>
+        <Divider> </Divider>
+
         <Table
           id="dataTable"
           //bordered="true"

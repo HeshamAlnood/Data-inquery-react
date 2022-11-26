@@ -370,13 +370,6 @@ const ApproveCollect = (prop) => {
     setStIsLoading(true);
     setCounter();
     setTotalCheckAprv(null);
-    /*document
-      .getElementsByClassName("ant-statistic-content-value-int")[1]
-      .classList.remove("line");
-
-    document
-      .getElementsByClassName("ant-statistic-content-value-int")[1]
-      .classList.add("line");*/
 
     setSelectedRowKeys(newSelectedRowKeys);
 
@@ -547,28 +540,11 @@ const ApproveCollect = (prop) => {
           )}
           <Divider orientation="center"></Divider>
         </div>
-        <div className="inline">
-          <Divider dashed />
+        <div className="flex justify-end	">
           <Space size={1050}>
-            <Grid xs={12} md={3}>
-              <Button.Group size="lg" color="primary" className="bg-blue-500">
-                <Button color="gradient" onClick={performFilter}>
-                  Search
-                </Button>
-                <Button color="gradient" onClick={resetFilter}>
-                  Reset
-                </Button>
-                <Button color="gradient" onClick={HtmlTOExcel}>
-                  Download Excel
-                  <VerticalAlignBottomOutlined
-                    style={{ paddingLeft: "0.5rem" }}
-                  />
-                </Button>
-              </Button.Group>
-            </Grid>
             {/* Add Statics */}
 
-            <div className="inline-flex  	">
+            <div className="inline-flex  ">
               <Space size={150}>
                 <Col>
                   <Statistic
@@ -607,9 +583,7 @@ const ApproveCollect = (prop) => {
             {/*End Add Statics*/}
           </Space>
         </div>
-        <div>
-          <a>{CompName} hh</a>
-        </div>
+        <div>{/* <a>{CompName} hh</a> */}</div>
         <div>
           <DropdownL menu={columnKeys} chng={chngCols} />
           <TagList

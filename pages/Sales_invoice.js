@@ -1,6 +1,6 @@
 import {
   Input,
-  Space,
+  Select,
   Table,
   Button,
   Form,
@@ -8,6 +8,8 @@ import {
   Popconfirm,
   message,
   notification,
+  //Option,
+  InputNumber,
 } from "antd";
 import {
   useCallback,
@@ -16,461 +18,423 @@ import {
   useRef,
   createContext,
   useContext,
+  useReducer,
+  useMemo,
 } from "react";
-const EditableContext = createContext(null);
-import validator from "validator";
 import { getCustomerData, getInventoryData } from "../Methods/DataApi";
-//import { EditTable, EditableRow, EditableCell } from "../Components/EditTable";
-import collapseMotion from "antd/lib/_util/motion";
-
+import { useFieldArray, useForm, Controller } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 const SalesInvoice = (props) => {
-  const { Header, Footer, Sider, Content } = Layout;
-  let [sihInvNo, setSihInvNo] = useState("");
-  let [sihInvDate, setSihInvDate] = useState("");
-  let [sihInvCust, setSihCust] = useState("");
-  let [sihCustName, setSihCustName] = useState("");
-  let [sihInvNetInvAmt, setSihNetInvAmt] = useState("");
-  let [sihInvDiscountAmt, setSihInvDiscountAmt] = useState("");
-  let [sihInvPaidAmt, setSihInvPaidAmt] = useState("");
-  let [sihInvBalanceAmt, setSihInvDBalanceAmt] = useState("");
+  const { Content } = Layout;
+  let [dataObj, setDataObj] = useState({});
+
   let [custData, setCustData] = useState([]);
-  let [insDetailFlag, setInsDetailFlag] = useState(false);
   let [itemData, setItemData] = useState([]);
-  const [count, setCount] = useState(0);
 
-  const openNotification = (placement) => {
-    notification.info({
-      message: `Notification `,
-      description: "Item Requierd !",
-      placement,
-    });
+  let [recordCount, setRecordCount] = useReducer((n) => n + 1, 0);
+
+  let defaultData = {
+    key: "",
+    sil_inv_No: "",
+    sil_inv_part: "",
+    sil_inv_part_name: "",
+    sil_inv_qty: "",
+    sil_inv_price: "",
   };
-
-  let vDate = new Date();
-  //console.log(vDate);
-  const chkInsInvNo = useCallback(
-    (val) => {
-      console.log(`chkInsInvNo`, val, `is number ${validator.isNumeric(val)}`);
-      setSihInvNo(val);
-    },
-    [sihInvNo]
-  );
-
-  const chkInsInvDate = useCallback(
-    (val) => {
-      //console.log(`chkInsInvDate`, val);
-
-      /*if (validator.isDate(val) === false) {
-        //  throw new Error();
-        null;
-      } else*/ setSihInvDate(val);
-    },
-    [sihInvDate]
-  );
-
-  const chksihInvCust = useCallback(
-    (value) => {
-      let val = value.target.value;
-      if (val.length === 0) {
-        openNotification("bottomRight");
-        //throw new Error();
-        value.preventDefault();
-        document.getElementById("SIH_CUST").focus();
-        return;
-      }
-
-      console.log(`chksihInvCust`, val);
-      console.log(
-        `chksihInvCustName`,
-        custData.filter((e) => e.CUST_CUSTOMER === val)[0]?.CUST_NAME
-      );
-      setInsDetailFlag(val.length > 0 ? true : false);
-      setSihCust(val);
-      setSihCustName(
-        custData?.filter((e) => e.CUST_CUSTOMER === val)[0]?.CUST_NAME
-      );
-    },
-    [sihInvCust]
-  );
-
-  //   const chkInsInvNo = useCallback(
-  //     (val) => {
-  //       console.log(`chkInsInvNo`, val);
-  //       setSihInvNo(val);
-  //     },
-  //     [sihInvNo]
-  //   );
-
-  //useEffect(()=> ,[sih_invsihInvCust])
-
-  /* handling detail table */
-
-  let detailOb = [
+  let defaultCols = [
     {
-      key: 1,
-      sil_inv_No: " ",
-      sil_inv_part: " ",
-      sil_inv_qty: "",
-      sil_inv_price: "",
+      key: "key",
+      label: "SRL",
+      require: "",
+      list: "",
+      placeholder: "",
+      disabled: true,
+      type: "text",
+    },
+    {
+      key: "sil_inv_part",
+      label: "Part No ",
+      require: true,
+      list: "itemList",
+      placeholder: "Enter Part No",
+      disabled: false,
+      type: "text",
+    },
+    {
+      key: "sil_inv_part_name",
+      label: "Part Name ",
+      require: false,
+      list: "",
+      placeholder: "Enter Part Name",
+      disabled: true,
+      type: "text",
+    },
+    {
+      key: "sil_inv_qty",
+      label: "Quantity ",
+      require: true,
+      list: "",
+      placeholder: "Enter Qty",
+      disabled: false,
+      type: "text",
+    },
+    {
+      key: "sil_inv_price",
+      label: "Unit Price ",
+      require: true,
+      list: "",
+      placeholder: "Enter Unit Price",
+      disabled: false,
+      type: "text",
+    },
+    {
+      key: "sil_inv_total_price",
+      label: "Total Price ",
+      require: true,
+      list: "",
+      placeholder: "Enter Unit Price",
+      disabled: true,
+      type: "text",
     },
   ];
-  let [dataSource, setDataSource] = useState([]);
-
-  const handleAdd = () => {
-    console.log(`insDetailFlag: `, insDetailFlag);
-    if (insDetailFlag === false) {
-      return message.error("Master Data Must Be Completed");
-    }
-    let data = dataSource;
-    let counter = count + 1;
-    console.table(`dataSource - handle Add `, dataSource);
-    const newData = {
-      key: counter,
-      ...data,
-    };
-
-    console.log(`new Data : `, newData);
-    setDataSource([...data, newData]);
-    setCount(counter);
-  };
-
-  const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, { ...item, ...row });
-    setDataSource(newData);
-  };
-
-  const generateCols = (ob = detailOb) => {
-    //let cols = Object.keys(ob[1]);
-    let cols = [];
-    cols = ob;
-    let colsArr = [];
-
-    cols.forEach((e, i) => {
-      //console.log(`e`, e);
-      let ob = {
-        title: e.replaceAll("_", " ").toUpperCase(),
-        dataIndex: e,
-        sorted: true,
-        width: "5%",
-        visible: false,
-        editable: true,
-
-        defaultSortOrder: "descend",
-        filterMode: "tree",
-        filterSearch: true,
-        responsive: ["lg", "md"],
-
-        sorter: (a, b) => {
-          let sa = a[e] || "";
-          let sb = b[e] || "";
-          validator.isFloat(sa.toString()) + " " + sa;
-
-          if (validator.isFloat(sa.toString()) === true) {
-            return (Number.parseFloat(sa) || 1) - (Number.parseFloat(sb) || -1);
-          } else if (validator.isAlpha(sa.toString()) === true) {
-            return (sa || "a")
-              .toString()
-              .toLowerCase()
-              .localeCompare((sb || "b").toString().toLowerCase());
-          } else {
-            if (sa < sb) {
-              return -1;
-            }
-            if (sa > sb) {
-              return 1;
-            }
-            return 0;
-          }
-        },
-
-        render: (text, record) => (
-          <div style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
-            {text}
-          </div>
-        ),
-        //ellipsis: true,
-        tableLayout: "auto",
-        sortDirections: ["descend", "ascend"],
-      };
-
-      colsArr.push(ob);
-    });
-    colsArr.push({
-      render: (_, record) =>
-        dataSource?.length >= 1 ? (
-          <Popconfirm
-            title="Sure to delete?"
-            onConfirm={() => handleDelete(record.key)}
-          >
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
-    });
-    return colsArr;
-  };
-
-  let cols = [];
-  const [defaultColumns, setDefaultColumns] = useState(
-    generateCols(Object.keys(detailOb[0]))
-  );
-
-  setTimeout(
-    //() => setDefaultColumns(generateCols(Object.keys(detailOb[0]))),
-    () => (cols = generateCols(Object.keys(detailOb[0]))),
-    1000
-  );
-
-  const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave,
-      }),
-    };
-  });
-
-  const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-      <Form form={form} component={false}>
-        <EditableContext.Provider value={form}>
-          <tr {...props} />
-        </EditableContext.Provider>
-      </Form>
-    );
-  };
-
-  const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-  }) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-      if (editing) {
-        inputRef.current.focus();
-      }
-    }, [editing]);
-
-    const toggleEdit = () => {
-      setEditing(!editing);
-      form.setFieldsValue({
-        [dataIndex]: record[dataIndex],
-      });
-    };
-
-    const save = async () => {
-      try {
-        const values = await form.validateFields();
-        toggleEdit();
-        handleSave({ ...record, ...values });
-      } catch (errInfo) {
-        console.log("Save failed:", errInfo);
-      }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-      childNode = editing ? (
-        <Form.Item
-          style={{
-            margin: 0,
-          }}
-          name={dataIndex}
-          rules={[
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ]}
-        >
-          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-        </Form.Item>
-      ) : (
-        <div
-          className="editable-cell-value-wrap"
-          style={{
-            paddingRight: 24,
-          }}
-          onClick={toggleEdit}
-        >
-          {children}
-        </div>
-      );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-  };
-
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell,
-    },
-  };
-  /* End handling Detail Table */
-
+  let [detailTable, setDetailTable] = useState([]);
+  let classTr = "border border-gray-600 ";
+  let classTd = "bg-white-400 border border-gray-2 00";
   useEffect(() => {
     getCustomerData().then((d) => setCustData(d));
     getInventoryData().then((d) => setItemData(d));
-    setDefaultColumns(generateCols(Object.keys(detailOb[0])));
-    setDataSource(detailOb);
-    setCount(count + 1);
+    //setDetailTable([defaultData]);
   }, []);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    control,
+    getValues,
+    setValue,
+    watch,
+    trigger,
+    setFocus,
+  } = useForm({
+    defaultValues: {
+      SIH_INV_NO: "",
+      SIH_INV_DATE: "",
+
+      SIH_CUSTOMER: "",
+      SIH_CUST_CUSTOMER: "",
+
+      SIH_NET_INV_AMT: "",
+      SIH_INV_BALANCE: "",
+    },
+    detail: [defaultData],
+  });
+
+  const { append, fields, insert } = useFieldArray({
+    control,
+    name: "detail",
+  });
+
+  const getItemName = (objItems = [], partNo) =>
+    objItems.find((e) => e.ITEM_PART_NO === partNo)?.ITEM_DESCRIPTION;
+
+  const getCustomerName = (objItems = [], custNo) =>
+    objItems.find((e) => e.CUST_CUSTOMER === custNo)?.CUST_NAME;
+
+  const getQtyTotalPrc = (a, b) => a * b;
+
+  console.log(`errors : `, errors);
+
+  //console.log(`addRecord `, addRecord());
+  const watchFieldArray = watch("detail");
+  const addRecord = () => {
+    let isOk = true;
+
+    for (let obj of watchFieldArray) {
+      if (obj.sil_inv_part.length === 0) {
+        isOk = false;
+        setFocus(`detail.${+obj.key - 1}.sil_inv_part`);
+        break;
+      }
+    }
+    //isOk ?? setFocus('detail.');
+
+    console.log(`watch detail `, watchFieldArray);
+    let sum = watchFieldArray
+      .map((e) => +e.sil_inv_total_price)
+      ?.reduce((a, b) => a + b, 0);
+    setValue("SIH_NET_INV_AMT", sum);
+    setValue("SIH_INV_BALANCE", sum);
+
+    isOk && append(defaultData);
+  };
+
+  const submitForm = (data) => console.log(`data  ${data}`);
+
+  let clsInput =
+    "bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+  let clsInputDetail =
+    "bg-white  border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+  let clsLabel = "text-base	text-start	text-slate-400	";
   return (
     <Layout>
       <Content
         style={{
           padding: "4rem",
-          paddingLeft: "18rem",
+          paddingLeft: "30rem",
           margin: 0,
           minHeight: 280,
           backgroundColor: "transparent",
           //height: "60rem",
         }}
       >
-        <form action="">
-          <div className="InvGrid">
-            <label for="SIH_INV_NO">Invoice No</label>
-            <input
-              type="text"
-              id="SIH_INV_NO"
-              disabled
-              //onPointerLeave={(e) =>
-              className="InputText"
-              onChange={(e) =>
-                /*chkInsInvNo(e.target.value)*/ chkInsInvNo(e.target.value)
-              }
-            ></input>
-            <label for="SIH_INV_DATE">Invoice Date</label>
-            <input
-              type="date"
-              id="SIH_INV_DATE"
-              className="InputText"
-              //</div>value={"2022-09-24"}
-              pattern="\d{2}-\d{2}-\d{4}"
-              onChange={(e) => chkInsInvDate(e.target.value)}
-            ></input>
-            <label for="SIH_CUST">Customer No</label>
-            <input
-              className="InputText"
-              list="custList"
-              type="text"
-              id="SIH_CUST"
-              required
-              pattern=".{1,}"
-              placeholder="Enter Customer Id"
-              onSelect={(e) => chksihInvCust(e)}
-              onKeyDown={(e) =>
-                e.target.value.length === 0
-                  ? e.preventDefault() // document.getElementById("SIH_CUST").focus()
-                  : ""
-              }
-            ></input>
-            <label for="SIH_CUST_CUSTOMER">Customer Name</label>
-            <input
-              className="InputText"
-              type="text"
-              id="SIH_CUST_CUSTOMER"
-              value={sihCustName}
-              disabled
-            ></input>
-            <label for="SIH_INV_NET_INV_AMT">NET AMNT</label>
-            <input
-              className="InputText"
-              type="number"
-              id="SIH_INV_NET_INV_AMT"
-              disabled
-            ></input>
-            <label for="SIH_INV_DISCOUNT">DISCOUNT AMNT</label>
-            <input
-              className="InputText"
-              type="number"
-              id="SIH_INV_DISCOUNT"
-              minLength={1}
-            ></input>
-            <label for="SIH_INV_PAID">PAID AMNT</label>
-            <input
-              className="InputText"
-              type="number"
-              id="SIH_INV_PAID"
-              disabled
-            ></input>
-            <label for="SIH_INV_BALANCE">BALANCE AMNT</label>
-            <input
-              className="InputText"
-              type="number"
-              id="SIH_INV_BALANCE"
-              disabled
-              min="2"
-              max="3"
-            ></input>
+        <form
+          onSubmit={handleSubmit((data) => setDataObj(data))}
+          //className="place-content-center"
+        >
+          {/* <form
+          onSubmit={(e) => {
+            //handleSubmit(submitForm);
+            handleSubmit((data) => console.log(data));
+            e.preventDefault();
+          }}
+        > */}
+          <div>
+            <div className="InvGrid   ">
+              <label htmlFor="SIH_INV_NO" className={clsLabel}>
+                Invoice No
+              </label>
+
+              <input
+                id="SIH_INV_NO"
+                disabled
+                className={clsInput}
+                {...register}
+              />
+              {errors?.SIH_INV_NO && errors?.SIH_INV_NO.message}
+              <label htmlFor="SIH_INV_DATE" className={clsLabel}>
+                Invoice Date
+              </label>
+
+              <input
+                id="SIH_INV_DATE"
+                type="date"
+                className={clsInput}
+                {...register("SIH_INV_DATE", {
+                  valueIsDate: true,
+                  message: "Only Date Allowed !",
+                })}
+              />
+              {errors?.SIH_INV_DATE && errors?.SIH_INV_DATE.message}
+              <label htmlFor="SIH_CUSTOMER" className={clsLabel}>
+                Customer
+              </label>
+
+              <input
+                id="SIH_CUSTOMER"
+                name="SIH_CUSTOMER"
+                className={clsInput}
+                list="custList"
+                {...register("SIH_CUSTOMER", {
+                  minLength: {
+                    value: 3,
+                    message: "Value should be more than 3 digits !",
+                  },
+                  required: { value: true, message: "enter customer " },
+                })}
+                onKeyDown={(e) =>
+                  setValue(
+                    "SIH_CUST_CUSTOMER",
+                    getCustomerName(custData, e.target.value)
+                  )
+                }
+              />
+              {errors?.SIH_CUSTOMER && errors?.SIH_CUSTOMER.message}
+              <label htmlFor="SIH_CUST_CUSTOMER" className={clsLabel}>
+                Customer Name
+              </label>
+
+              <input
+                id="SIH_CUST_CUSTOMER"
+                className={clsInput}
+                disabled
+                {...register("SIH_CUST_CUSTOMER")}
+              />
+              {errors?.SIH_CUST_CUSTOMER && errors?.SIH_CUST_CUSTOMER.message}
+              <label htmlFor="SIH_NET_INV_AMT" className={clsLabel}>
+                Net Amount
+              </label>
+
+              <input
+                id="SIH_NET_INV_AMT"
+                className={clsInput}
+                disabled
+                {...register(
+                  "SIH_NET_INV_AMT",
+
+                  {
+                    validate: (value) =>
+                      isNaN(value) === false || "Only Number pnok",
+                    //message: "Only Number Allowed !",
+                  }
+                )}
+              />
+              {errors?.SIH_NET_INV_AMT && errors?.SIH_NET_INV_AMT.message}
+              <label htmlFor="SIH_INV_BALANCE" className={clsLabel}>
+                Balance
+              </label>
+
+              <input
+                id="SIH_INV_BALANCE"
+                disabled
+                className={clsInput}
+                {...register("SIH_INV_BALANCE", {
+                  validate: (value) =>
+                    isNaN(value) === false || "Only Number pnok",
+                  //message: "Only Number Allowed !",
+                })}
+              />
+              {errors?.SIH_INV_BALANCE && errors?.SIH_INV_BALANCE.message}
+              <br></br>
+              <datalist id="custList">
+                {custData.map((e) => (
+                  <option key={e.CUST_CUSTOMER} value={e.CUST_CUSTOMER}>
+                    {e.CUST_CUSTOMER + " - " + e.CUST_NAME}
+                  </option>
+                ))}
+              </datalist>
+              <div>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addRecord(defaultData);
+                    //                    append(defaultData);
+                  }}
+                >
+                  Add Record
+                </Button>
+              </div>
+              <br />
+            </div>
+            <div className=" mt-16">
+              <table
+                style={{ width: "20rem", borderColor: "white" }}
+                className="table-auto "
+              >
+                <tr className="text-white	">
+                  <th className="bg-blue-400 rounded-l-lg">SRL</th>
+                  <th className="bg-blue-400">PART NO</th>
+                  <th className="bg-blue-400">Part Name</th>
+                  <th className="bg-blue-400">QTY</th>
+
+                  <th className="bg-blue-400">PRICE</th>
+                  <th className="bg-blue-400 rounded-r-lg">TOTAL PRICE</th>
+                </tr>
+                <tbody style={{ border: "1px solid black" }}>
+                  {/* {detailTable.map((r) => ( */}
+                  {fields.map((item, index) => (
+                    <tr
+                      key={item.id + " " + index}
+                      style={{ border: "1px solid black" }}
+                    >
+                      {defaultCols.map((e, i) => (
+                        <td key={"d" + i} className={classTd}>
+                          <input
+                            type={e.type}
+                            value={e.key === "key" ? index + 1 : undefined}
+                            // disabled={e.disabled}
+                            onSelect={() => {
+                              if (e.key === "sil_inv_part") {
+                                setValue(
+                                  `detail.${index}.sil_inv_part_name`,
+                                  getItemName(
+                                    itemData,
+                                    getValues(`detail.${index}.${e.key}`)
+                                  )
+                                );
+                              }
+                            }}
+                            onKeyDown={(bt) => {
+                              if (
+                                e.key === "sil_inv_qty" ||
+                                e.key === "sil_inv_price"
+                              ) {
+                                let qty =
+                                  getValues(`detail.${index}.sil_inv_qty`) || 0;
+                                let untPrc =
+                                  getValues(`detail.${index}.sil_inv_price`) ||
+                                  0;
+                                setValue(
+                                  `detail.${index}.sil_inv_total_price`,
+                                  getQtyTotalPrc(qty, untPrc)
+                                );
+                              }
+                            }}
+                            //disabled={false}
+                            placeholder={e.placeholder}
+                            list={e.list}
+                            className={clsInputDetail}
+                            //requierd={e.require}
+                            key={item.id}
+                            /*id={`detail[${e.key + " " + index}]`}
+                        name={`detail[${e.key + " " + index}]`}*/
+                            //name={e.key}
+                            {...register(`detail.${index}.${e.key}`, {
+                              requierd: {
+                                value: true,
+                                message: "must be enterd",
+                              },
+                              maxLength: {
+                                value: 20,
+                                message: "length is low",
+                              },
+                            })}
+                            disabled={e.disabled}
+
+                            //id={e.key}
+                            //ref={register}
+                            /*{...register(e.key, {
+                          requierd: { value: true, message: "must be enterd" },
+                          maxLength: { value: 2, message: "length is low" },
+                        })}*/
+                          />
+                          {/* {<p>{errors[e.key]?.message}</p>} */}
+
+                          {/* <Controller
+                          render={({ field }) => <input {...field} />}
+                          name={`detail.${index}.${e.key}`}
+                          control={control}
+                        /> */}
+                        </td>
+                        //
+                      ))}{" "}
+                    </tr>
+                  ))}
+                  <datalist id="itemList">
+                    {itemData?.map((e) => (
+                      <option key={e.ITEM_PART_NO} value={e.ITEM_PART_NO}>
+                        {e.ITEM_PART_NO + " - " + e.ITEM_DESCRIPTION}
+                      </option>
+                    ))}
+                  </datalist>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </form>
-        <br></br>
-        <datalist id="custList">
-          {custData.map((e) => (
-            <option value={e.CUST_CUSTOMER}>
-              {e.CUST_CUSTOMER + " - " + e.CUST_NAME}
-            </option>
-          ))}
-        </datalist>
 
-        <div> Invoice No : {sihInvNo}</div>
-        <div> Invoice Date: {sihInvDate}</div>
-
-        <div>
-          {/* <EditTable
-            data={[
-              {
-                key: 1,
-                sil_inv_No: " ",
-                sil_inv_part: " ",
-                sil_inv_qty: "",
-                sil_inv_price: "",
-              },
-            ]}
-            flag={insDetailFlag}
-            lov1={itemData}
-            itemLov1={"SIL_PART_NO"}
-          ></EditTable> */}
-          <Button
-            onClick={handleAdd}
-            type="primary"
-            style={{
-              marginBottom: 16,
-            }}
-          >
-            Add a row
-          </Button>
-          <Table
-            components={components}
-            rowClassName={() => "editable-row"}
-            bordered
-            size="small"
-            dataSource={insDetailFlag === true ? dataSource : []}
-            columns={insDetailFlag === true ? columns : []}
+          <br />
+          <button
+            type="submit"
+            id="submit"
+            className="bg-red-300  rounded-full  
+                       text-sm font-semibold
+                       w-48
+                       hover:bg-blue-300 hover:text-white"
           />
-        </div>
+          {<div> {JSON.stringify(dataObj)}</div>}
+        </form>
       </Content>
     </Layout>
   );

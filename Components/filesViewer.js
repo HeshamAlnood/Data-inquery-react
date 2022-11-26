@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 
 import { formatDate } from "../Methods/arreayFn";
 import ViewerPdf from "./ViewerPdf";
+import { indexOf } from "lodash";
 
 const FileViewer = (props) => {
   let [dataElm, setDataElm] = useState([{ key: 1, label: 1 }]);
@@ -31,6 +32,7 @@ const FileViewer = (props) => {
   let [currSrc, setCurrSrc] = useState("");
   let [currSrcExt, setCurrSrcExt] = useState("");
   let [currFileName, setCurrFileName] = useState("");
+  let [urlFile, setUrlFile] = useState("");
   const [isPreviewVisible, setPreviewVisible] = useState(false);
 
   let [previewFlag, setPreviewFlag] = useState(false);
@@ -70,10 +72,36 @@ const FileViewer = (props) => {
       return <img src="/icons/jpg.png" width={vWidth}></img>;
     } else return pExt;
   };
+  function _base64ToArrayBuffer(base64) {
+    var binary_string = /* base64;*/ window.atob(base64);
+    var len = binary_string.length;
+    var bytes = new Uint8Array(len);
+    for (var i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
 
   const getPreview = (pcurrSrc, pcurrSrcExt, fileName = "") => {
-    console.log(`from show Preview `, pcurrSrc, pcurrSrcExt);
+    console.log(
+      `from show Preview `,
+      //pcurrSrc,
+      pcurrSrcExt,
+      _base64ToArrayBuffer(pcurrSrc)
+    );
     //setPreviewFlag(true);
+    let type =
+      pcurrSrcExt.toLocaleUpperCase() === ".PDF"
+        ? "application/pdf"
+        : "image/jpeg";
+    var blob = new Blob([_base64ToArrayBuffer(pcurrSrc)], {
+      type: type,
+    });
+    var url = URL.createObjectURL(blob);
+
+    console.log(`URL `, blob, url);
+    /*useEffect(() => setUrlFile(url), []);*/
+
     if (pcurrSrcExt.toLocaleUpperCase() === ".PDF") {
       /*return (
         <ViewerPdf
@@ -82,28 +110,54 @@ const FileViewer = (props) => {
           previewFlag={props.previewFlag}
         />
       );*/
+
       return (
-        /*(
-        <object data={pcurrSrc} type="application/pdf">
+        <object
+          data={url}
+          type="application/pdf"
+          height="100%"
+          frameBorder="0"
+          scrolling="no"
+        >
           <iframe
-            src={pcurrSrc}
-            
-            height={1000}
-            frameborder="0"
+            src={url}
+            height="1000"
+            //width=""
+            frameBorder="0"
             scrolling="no"
           ></iframe>
         </object>
-      );*/ <object height={1000} data={pcurrSrc} type="application/pdf">
-          <embed src={pcurrSrc} type="application/pdf" />
-        </object>
+        //  <object
+        //     height={1000}
+        //     //data={`data:application/pdf;base64 ,${pcurrSrc}`}
+        //     data={`data:application/pdf;base64", ${url}`}
+        //     //data={`data:application/pdf;base64 ,${url}`}
+        //     type="application/pdf"
+        //   >
+        //     <embed
+        //       //src={`data:application/pdf;base64 ,${pcurrSrc}`}
+        //       src={`data:application/pdf,${url}`}
+        //       type="application/pdf"
+        //     />
+        //   </object>
       );
     }
 
-    if (pcurrSrcExt.toLocaleUpperCase() === ".JPG" || ".JPEG") {
+    if (
+      pcurrSrcExt.toLocaleUpperCase() === ".JPG" ||
+      pcurrSrcExt.toLocaleUpperCase() === ".PNG" ||
+      pcurrSrcExt.toLocaleUpperCase() === ".JPEG" ||
+      pcurrSrcExt.toLocaleUpperCase() === ".GIF" ||
+      pcurrSrcExt.toLocaleUpperCase() === ".JFIF"
+    ) {
       return (
-        <Image
-          src={pcurrSrc}
-          rootClassName="align-top"
+        //<Image
+        <img
+          src={url}
+          //src={`blob:http://localhost:3000/83e24871-d52d-42f5-bd4c-d8a689c1f3bb`}
+          //src={` ${url}`}
+          //src={`data:image/jpeg;base64,${urlFile}`}
+          /*rootClassName="align-top"
           preview={{
             getContainer: true,
             //width: "50",
@@ -113,11 +167,12 @@ const FileViewer = (props) => {
 
             onVisibleChange: (visible, prevVisible) =>
               setPreviewVisible(visible),
-          }}
+          }}*/
         />
       );
     } else {
       //setPreviewFlag(false);
+
       return (
         /*<iframe src={pcurrSrc} width="100%" height="565px" frameborder="0">
           {" "}
@@ -135,7 +190,7 @@ const FileViewer = (props) => {
   };
 
   const showPreview = (pcurrSrc, pcurrSrcExt, fileName) => {
-    console.log(`show PReview `, pcurrSrc, pcurrSrcExt);
+    //console.log(`show PReview `, pcurrSrc, pcurrSrcExt);
     setCurrSrc(pcurrSrc);
     setCurrSrcExt(pcurrSrcExt);
     setPreviewFlag(true);
@@ -159,7 +214,8 @@ const FileViewer = (props) => {
 
     setIsLoading(true);
 
-    fetch(`http://192.168.0.159:3001/getFiles?type=${vType}&keyVal=${vKeyVal}`)
+    //fetch(`http://192.168.0.159:3001/getFiles?type=${vType}&keyVal=${vKeyVal}`)
+    fetch(`http://localhost:3000/api/getFiles?type=${vType}&keyVal=${vKeyVal}`)
       .then((res) => res.json())
       .then((data) => {
         let cols = data && Object.keys(data[0]);
@@ -232,7 +288,7 @@ const FileViewer = (props) => {
             variant="bordered"
             css={{
               mw: "100rem",
-              width: "40rem",
+              width: "50rem",
               height: "65rem",
               backgroundColor: "rgb(203 213 225)",
             }}
@@ -240,7 +296,7 @@ const FileViewer = (props) => {
             <Card.Body
               css={{
                 mw: "100rem",
-                width: "40rem",
+                width: "100%",
                 height: "65rem",
                 backgroundColor: "rgb(248 250 252)",
               }}
@@ -251,7 +307,7 @@ const FileViewer = (props) => {
         </Col>
         <Col>
           <Divider type="vertical" />
-          <div style={{ width: "32.8rem" }}>
+          <div style={{ width: "35.8rem" }}>
             <Table
               id="dataTable"
               striped
@@ -264,29 +320,33 @@ const FileViewer = (props) => {
               fixed={true}
               onSelectionChange={(keys) => console.log(`keyyys`, keys)}
               onClick={(e) => {
-                console.log(
-                  `e .src `,
-                  //e.target,
-                  e.target.parentElement
-                );
-                console.log(
-                  e.target.parentElement
-                    .querySelector("img")
-                    .src.substring(0, -3)
-                );
+                try {
+                  console.log(
+                    `e .src `,
+                    //e.target,
+                    //e.target.parentElement
+                    e.target.parentElement
+                  );
+                  console.log(
+                    e.target.parentElement.querySelectorAll("tr >td ")[0]
+                      .textContent
+                  );
+                  let fileName =
+                    e.target.parentElement.querySelectorAll("tr >td ")[0]
+                      .textContent;
+                  console.log(`fileName `, fileName);
+                  let fileExt = fileName.substring(fileName.indexOf("."));
+                  //useEffect(() => showPreview(fileName, fileExt), []);
+                  let vsrc = dataElm.find((e) => e.fileName === fileName).src;
 
-                /*console.log(
-                  document
-                    .getElementById("dataTable")
-                    .getElementsByClassName("hover:scale-125")
-                    .getAttribute("currentSrc")
-                )*/
+                  //console.log(`srcs fors file `, vsrc);
+                  if (fileName.length === 0) return;
+                  //setTimeout(() => showPreview(vsrc, fileExt, fileName), 1000);
+                  showPreview(vsrc, fileExt, fileName);
+                } catch (e) {
+                  console.log(`error e`, e);
+                }
               }}
-              //selectionMode="single"
-
-              //sortDescriptor={list.sortDescriptor}
-              //        onSortChange={list.sort}
-
               css={{
                 height: "6",
                 width: "100%",
@@ -306,7 +366,7 @@ const FileViewer = (props) => {
                     className="bg-sky-700 text-slate-50 text-base"
                     isRowHeader
                     //allowsSorting
-
+                    //name={column.label}
                     css={{
                       width: "10px",
                       minWidth: "30px" /* height: "calc($space$14 * 10)" }*/,
@@ -320,7 +380,8 @@ const FileViewer = (props) => {
               <Table.Body items={dataElm}>
                 {(item) => (
                   <Table.Row
-                    key={colKey}
+                    key={item}
+                    id={item}
                     css={{
                       "&:hover": {
                         background: "$yellow100",
@@ -333,9 +394,10 @@ const FileViewer = (props) => {
                       (columnKey) => {
                         if (columnKey === "src") {
                           return (
-                            <Table.Cell>
+                            <Table.Cell id={columnKey}>
                               <Image
-                                src={item[columnKey]}
+                                //src={item[columnKey]}
+                                src={`data:image/jpeg;base64,${item[columnKey]}`}
                                 width={50}
                                 fallback="/icons/file.png"
                                 preview={false}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState, useContext } from "react";
-import Dashboard from "../Components/Dashboard";
+//import Dashboard from "../Components/Dashboard";
 import DataTable from "../Components/DataTables";
 import { Divider } from "antd";
 //import { getStaticProps } from "next/types";

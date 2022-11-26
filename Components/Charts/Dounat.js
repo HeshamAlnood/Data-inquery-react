@@ -99,7 +99,7 @@ export const DounatChart = (props) => {
         options={state.options}
         series={state.series}
         type={vType}
-        width={vWidth}
+        width="100%" /*{vWidth}*/
       />
     </div>
   );

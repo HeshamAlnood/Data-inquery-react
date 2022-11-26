@@ -111,7 +111,7 @@ const pieRose = (props) => {
         options={state.options}
         series={state.series}
         type="polarArea"
-        width={500}
+        width="100%"
       />
     </div>
   );

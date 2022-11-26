@@ -1,4 +1,4 @@
-import { Space, Table, Tag, Skeleton, Button, Drawer } from "antd";
+import { Space, Table, Tag, Skeleton, Button, Drawer, Modal } from "antd";
 import { useEffect, useState } from "react";
 import FileViewer from "./filesViewer";
 
@@ -44,27 +44,16 @@ const ViewArchive = (props) => {
   console.log(`show Flagg `, vshowFlag);
   return (
     <>
-      <Drawer
-        title={`${vType} - ${vKeyVal} Files `}
-        placement="right"
-        size={"large"}
-        width={"50%"}
-        onClose={onClose}
+      <Modal
+        title={`View files for ${vKeyVal}`}
+        centered
         visible={visible}
-        contentWrapperStyle={{ transition: "0.6s" }}
-        className="transition ease-in-out delay-150"
-        //drawerStyle={{ transition: "0.6s" }}
-        extra={
-          <Space>
-            <Button onClick={onClose}>Back</Button>
-            <Button type="primary" onClick={onClose}>
-              OK
-            </Button>
-          </Space>
-        }
+        width={1550}
+        onOk={() => onClose()}
+        onCancel={() => onClose()}
       >
         <FileViewer type={vType} keyVal={vKeyVal} showFlag={vshowFlag} />
-      </Drawer>
+      </Modal>
     </>
   );
 };

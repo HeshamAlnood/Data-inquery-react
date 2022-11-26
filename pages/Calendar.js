@@ -17,7 +17,7 @@ function CalendarData(props) {
   const [listData, setListDate] = useState([]);
   const [dayFlag, setDayFlag] = useState(false);
 
-  console.log(`from server props CalendarData :`, props.data);
+  //console.log(`from server props CalendarData :`, props.data);
 
   const tranDates = async (pDate) => {
     console.log(`Before tranDates , `, pDate.year(), pDate.format("MM"));
@@ -32,15 +32,17 @@ function CalendarData(props) {
 
   const getDaysInfo = async (pYear, pMonth = moment().month()) => {
     //if (pYear.length === 0 || pYear === "") return;
-    console.log(`pYEar : `, pYear);
+    console.log(`pYear : `, pYear);
     console.log(`pMonth : `, pMonth);
+
     let rsp = await fetch(
-      `http://192.168.0.159:3001/DailyTrans?year=${pYear}&month=${
+      `http://localhost:3000/api/getDailyTrans?year=${2016}&month=${
         pMonth || null
       }`
     );
+
     let data = await rsp.json();
-    console.log(`data from api `, data);
+    //console.log(`data from api `, data);
     return data;
   };
 
@@ -53,7 +55,7 @@ function CalendarData(props) {
 
       //setListDate(dayInfo.filter((e) => e.key === value.format("yyyyMMDD")));
       datas = d;
-      console.log(`data getDaysInfo & getDayTrans`, datas);
+      //console.log(`data getDaysInfo & getDayTrans`, datas);
       datas.forEach((e) => {
         //if (e.Day === pDay) {
 
@@ -89,7 +91,7 @@ function CalendarData(props) {
     let dayInfo = [];
 
     let datas = props.data;
-    console.log(`data getDaysInfo & getDayTrans`, datas);
+    //console.log(`data getDaysInfo & getDayTrans`, datas);
     datas.forEach((e) => {
       //if (e.Day === pDay) {
 
@@ -122,7 +124,7 @@ function CalendarData(props) {
     console.log(`start api`);
     setDayFlag(false);
     getDaysInfo(vyear).then((d) => {
-      console.log(`get data api`, d);
+      // console.log(`get data api`, d);
       setMonthInfo(d);
       setDayFlag(true);
       //setTimeout(() => null, 1000);
@@ -160,15 +162,15 @@ function CalendarData(props) {
   };
 
   const monthCellRender = (value) => {
-    console.log(`month cell info`, monthInfo);
+    //console.log(`month cell info`, monthInfo);
     if (dayFlag === false) return;
     let arr = monthInfo.filter((e) => e.MONTH === value.format("MM"));
     let arrInv = arr.filter((e) => e.TYPE === "INVOICE");
     let arrPur = arr.filter((e) => e.TYPE === "PURCHASE");
-    console.log(`arr`, arr);
+    //console.log(`arr`, arr);
     const sumInv = sumArrayByKey(arrInv, "AMOUNT");
     const sumPur = sumArrayByKey(arrPur, "AMOUNT");
-    console.log(`from monthCellRender `, sumInv, sumPur);
+    //console.log(`from monthCellRender `, sumInv, sumPur);
     return sumInv ? (
       <div className="notes-month">
         <ul className="events">
@@ -213,10 +215,10 @@ function CalendarData(props) {
             console.log(` Current `, vyear, vmonth);
             //if ((e.year() === vyear) & (e.month() === vmonth)) return;
             setDate(e);
-            setMonth(e.format("MM"));
-            setYear(e.year());
+            /* setMonth(e.format("MM"));
+            setYear(e.year());*/
             console.log(`print before waint onChange`);
-            setTimeout(() => tranDates(e), 1000);
+            //setTimeout(() => tranDates(e), 1000);
             console.log(`print ater waint onChange`);
             //            tranDates(e);
 
@@ -241,7 +243,7 @@ function CalendarData(props) {
 export async function getServerSideProps() {
   let year = moment().year();
   let month = moment().month();
-  let rsp = await fetch(`http://192.168.0.159:3001/DailyTrans?year=${2016}`);
+  let rsp = await fetch(`http://localhost:3000/api/getDailyTrans?year=${2016}`);
   let data = await rsp.json();
   //let data = [{ hhh: "hello" }];
   //return data;

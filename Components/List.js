@@ -59,7 +59,7 @@ const TagList = (props) => {
   };
 
   return (
-    <div>
+    <div style={{ borderRadius: "5%" }}>
       <Select
         mode="multiple"
         size="large"
@@ -70,15 +70,17 @@ const TagList = (props) => {
         tagRender={props.type === "Cols" ? "" : tagRender}
         //bordered={false}
         //status={"warning"}
-
+        className="rounded-full text-red-500"
+        popupClassName="rounded-full text-red-500"
         style={{
           width: vWidth,
           height: "2.5rem",
-          borderRadius: "20%",
+          //borderRadius: "5%",
         }}
         //defaultValue={[]}
         onChange={handleChange}
         //onDeselect={handleChange}
+        //className="rounded-full"
       >
         {children}
       </Select>

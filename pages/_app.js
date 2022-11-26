@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps, dataq }) {
   console.log(`from myApp props data`, dataq);
   return (
     <NextUIProvider>
-      <Menu companyName={"Assassyat"} componentName={"hello"} />
+      <Menu companyName={"Asassyat"} componentName={"hello"} />
       <Component {...pageProps} />
     </NextUIProvider>
   );

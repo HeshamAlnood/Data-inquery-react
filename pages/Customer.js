@@ -1,5 +1,5 @@
 import {
-  Card,
+  //Card,
   Col,
   Descriptions,
   StatisticCol,
@@ -10,13 +10,13 @@ import {
   DatePicker,
   Space,
   Skeleton,
-  Button,
+  //Button,
   Tag,
   Modal,
   BackTop,
 } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
-import { /*Container, Grid,*/ Loading /*, Button*/ } from "@nextui-org/react";
+import { /*Container, Grid,*/ Loading, Card, Button } from "@nextui-org/react";
 
 import {
   ConsoleSqlOutlined,
@@ -26,10 +26,10 @@ import {
   FileSearchOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import useSwr from "swr";
 
 import ViewerPdf from "../Components/ViewerPdf";
 import ViewArchive from "../Components/ViewArchive";
+import { CustomerByItems } from "../Components/CustomerItmes";
 //import PdfViewer from "../Components/PdfViewer";
 
 import TagList from "../Components/List";
@@ -37,14 +37,15 @@ import ModalScreen from "../Components/Modal";
 import Uploader from "../Components/Uploader";
 import { useEffect, useState, useRef } from "react";
 import Draggable from "react-draggable";
-export default function Customer() {
-  let [customerData, setCustomerData] = useState([{}]);
-  let [customerDataRaw, setCustomerDataRaw] = useState([{}]);
+export default function Customer(props) {
+  let [customerData, setCustomerData] = useState([]);
+  let [customerDataRaw, setCustomerDataRaw] = useState([]);
   let [isDone, setIsDone] = useState(false);
   let [custList, setCustList] = useState([]);
   let [filterd, setFilterd] = useState([]);
   let [currCust, setCurrCust] = useState("");
   let [drawerFlag, setDrawerFlag] = useState(false);
+  let [itemsSummryFlag, setItemsSummryFlag] = useState(false);
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
   let [bounds, setBounds] = useState({
@@ -70,13 +71,25 @@ export default function Customer() {
     console.log(`controlDrawer`, flag);
 
     //drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
+    //setItemsSummryFlag(flag);
     setDrawerFlag(flag);
 
     setCurrCust(cust);
   };
 
+  const controlItemSummry = (cust, flag = false) => {
+    console.log(`controlDrawer`, flag);
+
+    //drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
+    setItemsSummryFlag(flag);
+    //setDrawerFlag(drawerFlag);
+
+    setCurrCust(cust);
+  };
+
   const fetchData = async () => {
-    await fetch(`http://192.168.0.159:3001/dbData?inquery=CUSTOMERINV`)
+    //await fetch(`http://192.168.0.159:3001/dbData?inquery=CUSTOMERINV`)
+    await fetch(`http://localhost:3000/api/requestData?inquery=CUSTOMERINV`)
       .then((res) => res.json())
       .then((data) => {
         setCustomerData(data);
@@ -85,11 +98,6 @@ export default function Customer() {
         fillArry(data);
       });
   };
-
-  useEffect(() => {
-    setIsDone(false);
-    fetchData().then((e) => setIsDone(true));
-  }, []);
 
   const fillArry = (data) => {
     custArr = data.map((e) => e.CUST_CUSTOMER);
@@ -103,6 +111,21 @@ export default function Customer() {
       )
     );
   };
+
+  const setData = async () => {
+    console.log(`start setting data `);
+    console.log(props.data);
+    await setCustomerData([...props.data]);
+    await setCustomerDataRaw([...props.data]);
+    await fillArry(props.data);
+    console.log(`end setting data `);
+    console.log(`data after setting `, customerData);
+  };
+
+  useEffect(() => {
+    setIsDone(false);
+    setData().then(() => setIsDone(true));
+  }, []);
 
   let dataCard = [];
 
@@ -140,11 +163,18 @@ export default function Customer() {
     };
   };
 
-  const Getdata = (data = customerData) => {
+  let ButtonCls =
+    "rounded-full pl-2 pr-2  w-48 h-9  text-sky-400 hover:bg-sky-400 hover:text-white active:translate-y-0.5 shadow-lg shadow-blue-500/50  text-base font-semibold	";
+
+  const Getdata = (data = props.data) => {
+    //let dataP = data.length < 2 ? props.data : data;
+
     dataCard = data.map((e) => {
       let vTitle = `${e.CUST_CUSTOMER} - ${e.CUST_NAME}`;
       //let [key, value] = Object.entries(e);
-
+      console.log(` set is Done`, isDone);
+      console.log(`data props `, props.data);
+      console.log(`customer data `, customerData);
       let obEntry = Object.entries(e);
 
       let vSumNet = e.TOTAL_INVOICE_AMOUNT || 0;
@@ -163,118 +193,260 @@ export default function Customer() {
           </div>
         );
 
+      // try another Card -- NextUI Card
       return (
         <>
-          <Card
-            title={vTitle}
-            hoverable
-            //loading={true}
-            type="inner"
-            //bordered={false}
-            headStyle={{
-              backgroundColor: "#1e81b0  ",
-              color: "white",
-
-              fontStyle: "normal",
-              fontWeight: "bolder",
-            }}
-            style={{
-              width: "80%",
-            }}
-            actions={[
-              <UploadOutlined
-                key="setting"
-                onClick={() => showModal(e.CUST_CUSTOMER)}
-              />,
-              <FileSearchOutlined
-                key="edit"
-                onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
-              />,
-              <EllipsisOutlined
-                key="ellipsis"
-                onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
-              />,
-            ]}
-          >
-            <Descriptions
-              labelStyle={{ fontWeight: "bold" }}
-              column={{
-                xxl: 4,
-                xl: 3,
-                lg: 3,
-                md: 3,
-                sm: 2,
-                xs: 1,
+          <Space size={"number"}>
+            <Card
+              css={{
+                width: "80%",
+                //    borderRadius: "3%",
               }}
+              isHoverable
             >
-              {obEntry.map(([key, val] = entry) => {
-                let bal = key === "CUST_BALANCE" ? val : 0;
-                let vCustomValue;
-                let val1;
-                let color;
+              <Card.Header
+                css={{
+                  backgroundColor: "#1e81b0  ",
+                  color: "white",
+                  //                  borderRadius: "3%",
 
-                let prcnt = bal ?? 1;
-
-                if (key.replaceAll(" ").replaceAll("_", " ") === "PRSN") {
-                  return;
-                }
-
-                if (
-                  key.replaceAll(" ").replaceAll("_", " ") === "CUST STATUS"
-                ) {
-                  if (val === "A") {
-                    val1 = "ACTIVE";
-                    color = "green";
-                  } else if (val === "I") {
-                    val1 = "INACTIVE";
-                    color = "red";
-                  } else if (val === "P") {
-                    val1 = "PROSPECT";
-                    color = "lime";
-                  }
-                  vCustomValue = <Tag color={color}>{val1}</Tag>;
-                }
-
-                return (
-                  <>
-                    <Descriptions.Item
-                      label={key.replaceAll(" ").replaceAll("_", " ")}
-                      contentStyle={{
-                        fontWeight: "bold",
-                        color: "rgb(163 163 163)",
-                      }}
-                    >
-                      {Number.isFinite(val) === true
-                        ? new Intl.NumberFormat("en-us").format(
-                            toFixedTrunc(val, 2)
-                          )
-                        : vCustomValue ?? val}
-                    </Descriptions.Item>
-                  </>
-                );
-              })}
-
-              <Descriptions.Item
-                label={""}
-                contentStyle={{
-                  fontWeight: "bold",
-
-                  color: "rgb(29 78 216)",
+                  fontStyle: "normal",
+                  //fontWeight: "bolder",
                 }}
               >
-                <Progress
-                  format={function (percent, successPercent) {
-                    return " Collection : " + +percent + "%";
+                <b>{vTitle}</b>
+              </Card.Header>
+              <Card.Divider />
+              <Card.Body>
+                <Descriptions
+                  labelStyle={{ fontWeight: "bold" }}
+                  column={{
+                    xxl: 4,
+                    xl: 3,
+                    lg: 3,
+                    md: 3,
+                    sm: 2,
+                    xs: 1,
                   }}
-                  type="circle"
-                  percent={+prsnt}
-                  status="active"
-                  showInfo="true"
-                  width="100px"
-                />
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
+                >
+                  {obEntry.map(([key, val] = entry) => {
+                    let bal = key === "CUST_BALANCE" ? val : 0;
+                    let vCustomValue;
+                    let val1;
+                    let color;
+
+                    let prcnt = bal ?? 1;
+
+                    if (key.replaceAll(" ").replaceAll("_", " ") === "PRSN") {
+                      return;
+                    }
+
+                    if (
+                      key.replaceAll(" ").replaceAll("_", " ") === "CUST STATUS"
+                    ) {
+                      if (val === "A") {
+                        val1 = "ACTIVE";
+                        color = "green";
+                      } else if (val === "I") {
+                        val1 = "INACTIVE";
+                        color = "red";
+                      } else if (val === "P") {
+                        val1 = "PROSPECT";
+                        color = "lime";
+                      }
+                      vCustomValue = <Tag color={color}>{val1}</Tag>;
+                    }
+
+                    return (
+                      <>
+                        <Descriptions.Item
+                          label={key.replaceAll(" ").replaceAll("_", " ")}
+                          contentStyle={{
+                            fontWeight: "bold",
+                            color: "rgb(2 132 199)",
+                          }}
+                          className="text-xl"
+                        >
+                          {Number.isFinite(val) === true
+                            ? new Intl.NumberFormat("en-us").format(
+                                toFixedTrunc(val, 2)
+                              )
+                            : vCustomValue ?? val}
+                        </Descriptions.Item>
+                      </>
+                    );
+                  })}
+
+                  <Descriptions.Item
+                    label={""}
+                    contentStyle={{
+                      fontWeight: "bold",
+
+                      color: "rgb(29 78 216)",
+                    }}
+                  >
+                    <Progress
+                      format={function (percent, successPercent) {
+                        return " Collection : " + +percent + "%";
+                      }}
+                      type="circle"
+                      percent={+prsnt}
+                      status="active"
+                      showInfo="true"
+                      width="100px"
+                    />
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card.Body>
+              <Card.Divider />
+              <Card.Footer className="flex justify-around" isBlurred={"true"}>
+                {/* <Row className="flex justify-around"> */}
+                <button
+                  className={ButtonCls}
+                  onClick={() => showModal(e.CUST_CUSTOMER)}
+                >
+                  Upload Files
+                  <UploadOutlined className="pl-3" />
+                </button>
+                <button
+                  className={ButtonCls}
+                  onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
+                >
+                  View Files
+                  <FileSearchOutlined className="pl-3" />
+                </button>
+
+                <button
+                  className={ButtonCls}
+                  onClick={() => controlItemSummry(e.CUST_CUSTOMER, true)}
+                >
+                  Items Summarys
+                </button>
+                {/* </Row> */}
+              </Card.Footer>
+            </Card>
+          </Space>
+        </>
+      );
+
+      //
+
+      return (
+        <>
+          <Space size={"small"}>
+            <Card
+              title={vTitle}
+              hoverable
+              //loading={true}
+              type="inner"
+              //bordered={false}
+              headStyle={{
+                backgroundColor: "#1e81b0  ",
+                color: "white",
+                borderRadius: "3%",
+
+                fontStyle: "normal",
+                fontWeight: "bolder",
+              }}
+              style={{
+                width: "80%",
+                borderRadius: "3%",
+              }}
+              actions={[
+                <UploadOutlined
+                  key="setting"
+                  onClick={() => showModal(e.CUST_CUSTOMER)}
+                />,
+                <FileSearchOutlined
+                  key="edit"
+                  onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
+                />,
+                <EllipsisOutlined
+                  key="ellipsis"
+                  onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
+                />,
+              ]}
+            >
+              <Descriptions
+                labelStyle={{ fontWeight: "bold" }}
+                column={{
+                  xxl: 4,
+                  xl: 3,
+                  lg: 3,
+                  md: 3,
+                  sm: 2,
+                  xs: 1,
+                }}
+              >
+                {obEntry.map(([key, val] = entry) => {
+                  let bal = key === "CUST_BALANCE" ? val : 0;
+                  let vCustomValue;
+                  let val1;
+                  let color;
+
+                  let prcnt = bal ?? 1;
+
+                  if (key.replaceAll(" ").replaceAll("_", " ") === "PRSN") {
+                    return;
+                  }
+
+                  if (
+                    key.replaceAll(" ").replaceAll("_", " ") === "CUST STATUS"
+                  ) {
+                    if (val === "A") {
+                      val1 = "ACTIVE";
+                      color = "green";
+                    } else if (val === "I") {
+                      val1 = "INACTIVE";
+                      color = "red";
+                    } else if (val === "P") {
+                      val1 = "PROSPECT";
+                      color = "lime";
+                    }
+                    vCustomValue = <Tag color={color}>{val1}</Tag>;
+                  }
+
+                  return (
+                    <>
+                      <Descriptions.Item
+                        label={key.replaceAll(" ").replaceAll("_", " ")}
+                        contentStyle={{
+                          fontWeight: "bold",
+                          color: "rgb(163 163 163)",
+                        }}
+                      >
+                        {Number.isFinite(val) === true
+                          ? new Intl.NumberFormat("en-us").format(
+                              toFixedTrunc(val, 2)
+                            )
+                          : vCustomValue ?? val}
+                      </Descriptions.Item>
+                    </>
+                  );
+                })}
+
+                <Descriptions.Item
+                  label={""}
+                  contentStyle={{
+                    fontWeight: "bold",
+
+                    color: "rgb(29 78 216)",
+                  }}
+                >
+                  <Progress
+                    format={function (percent, successPercent) {
+                      return " Collection : " + +percent + "%";
+                    }}
+                    type="circle"
+                    percent={+prsnt}
+                    status="active"
+                    showInfo="true"
+                    width="100px"
+                  />
+                </Descriptions.Item>
+              </Descriptions>
+            </Card>
+          </Space>
         </>
       );
     });
@@ -284,7 +456,9 @@ export default function Customer() {
 
   const queryFilterd = (valueArr = filterd) => {
     let dataOb = customerDataRaw;
-
+    console.log(
+      `query filter value error :${valueArr} and length ${valueArr.length}`
+    );
     let intersection;
     if (valueArr.length > 0) {
       //intersection = dataOb.filter((e) => e.VEND_VENDOR.includes(valueArr));
@@ -294,7 +468,7 @@ export default function Customer() {
 
       setCustomerData(intersection);
     } else {
-      setCustomerData(customerDataRaw);
+      setCustomerData(props.data);
     }
     //getSummry(dataElm, query).then((e) => setObSum(e));
   };
@@ -303,26 +477,9 @@ export default function Customer() {
     queryFilterd();
   }, [filterd]);
 
-  /*return (
-    <Layout>
-      <Content
-        style={{
-          padding: "4rem",
-          paddingLeft: "29rem",
-          margin: 0,
-          minHeight: 280,
-          backgroundColor: "transparent",
-        }}
-      >
-        <ViewerPdf />
-      </Content>
-    </Layout>
-  );*/
-
   return (
     <Layout>
       <BackTop />
-
       <Content
         style={{
           padding: "4rem",
@@ -338,11 +495,11 @@ export default function Customer() {
           cols={custList}
           filterd={setFilterd}
           qName={`CUSTOMER`}
-          width={"100.5rem"}
+          width={"80%"}
         />
 
         <Row justify="center">
-          <Col>{Getdata(customerData)}</Col>
+          <Col>{isDone && Getdata(customerData)}</Col>
         </Row>
         <Modal
           title={`Upload files for ${currCust}`}
@@ -361,6 +518,25 @@ export default function Customer() {
         keyVal={currCust}
         type="Customer"
       />
+      {itemsSummryFlag && (
+        <CustomerByItems
+          showFlag={itemsSummryFlag}
+          setShowFlag={controlItemSummry}
+          keyVal={currCust}
+          type="Customer"
+        />
+      )}
     </Layout>
   );
+}
+export async function getServerSideProps(context) {
+  let rsp = await fetch(
+    `http://localhost:3000/api/requestData?inquery=CUSTOMERINV`
+  );
+
+  let data = await rsp.json();
+
+  return {
+    props: { data: data }, // will be passed to the page component as props
+  };
 }

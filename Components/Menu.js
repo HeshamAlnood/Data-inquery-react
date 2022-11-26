@@ -35,7 +35,7 @@ let vLabelClasses =
 const items = [
   //getItem("DashBoard", "1", <PieChartOutlined />),
   getItem(
-    <Link href="/article">
+    <Link href="/DashBoard">
       <a className={vLabelClasses}>DashBoard</a>
     </Link>,
     "1",
@@ -77,37 +77,44 @@ const items = [
   ]),
   getItem(
     <Link href="/Customer">
-      <a className={vLabelClasses}>Customer</a>
+      <a className={vLabelClasses}>Customer Card</a>
     </Link>,
     "10",
+    <DesktopOutlined />
+  ),
+  getItem(
+    <Link href="/Inventory">
+      <a className={vLabelClasses}>Inventory</a>
+    </Link>,
+    "11",
     <DesktopOutlined />
   ),
   getItem(
     <Link href="/Calendar" key={"Calendar"}>
       <a className={vLabelClasses}>Calendar</a>
     </Link>,
-    "11",
+    "12",
     <CalendarOutlined />
   ),
   getItem(
     <Link href="/Account" key={"Account"}>
       <a className={vLabelClasses}>Account</a>
     </Link>,
-    "12",
+    "13",
     <ContainerOutlined />
   ),
   getItem(
     <Link href="/ApproveInvoices" key={"Approve Collection"}>
       <a className={vLabelClasses}>Approve Collection</a>
     </Link>,
-    "13",
+    "14",
     <ContainerOutlined />
   ),
   getItem(
     <Link href="/Sales_invoice" key={"Sales Invoice"}>
       <a className={vLabelClasses}>Sales Invoice</a>
     </Link>,
-    "14",
+    "15",
     <ContainerOutlined />
   ),
   ,
@@ -121,7 +128,6 @@ function menuOb(key, href) {
 let menuArr = [];
 items.forEach((e) => {
   if (e.key === "sub1") {
-    console.log(`Childern `, e.children);
     e.children?.forEach((c) =>
       menuArr.push(new menuOb(c.key, c.label.props.href))
     );
@@ -137,8 +143,8 @@ const MenuBar = (props) => {
   const [collapsed, setCollapsed] = useState(false);
   let menuVArr = [];
   let router = useRouter();
-  console.log("menuArr", menuArr);
-  console.log(`router `, router.pathname);
+  /*console.log("menuArr", menuArr);
+  console.log(`router `, router.pathname);*/
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -172,11 +178,11 @@ const MenuBar = (props) => {
         collapsedWidth="0"
         collapsible
         onBreakpoint={(broken) => {
-          console.log(broken);
+          //console.log(broken);
         }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
+        /*onCollapse={(collapsed, type) => {
+          // console.log(collapsed, type);
+        }}*/
       >
         <div
           style={{
@@ -218,7 +224,7 @@ const MenuBar = (props) => {
               defaultOpenKeys={["sub1"]}
               mode="inline"
               theme="dark"
-              inlineCollapsed={collapsed}
+              // inlineCollapsed={collapsed}
               items={items}
               //className={"bg-slate-300"}
               triggerSubMenuAction={"hover"}

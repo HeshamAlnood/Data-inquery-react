@@ -17,7 +17,8 @@ export default function RunDataTables({ data }) {
 export async function getServerSideProps(context) {
   console.log(`context `, context.params.id);
   let rsp = await fetch(
-    `http://192.168.0.159:3001/dbData?inquery=${context.params.id}`
+    //`http://192.168.0.159:3001/dbData?inquery=${context.params.id}`
+    `http://192.168.0.159:3000/api/requestData?inquery=${context.params.id}`
   );
 
   let data = await rsp.json();
