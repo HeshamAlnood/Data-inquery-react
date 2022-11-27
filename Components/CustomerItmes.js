@@ -194,7 +194,7 @@ export const CustomerByItems = (props) => {
 
         setCustItemReturn(getReturnItem(data));
         setCustItemReturnCols(
-          generateCols(Object?.keys(getReturnItem(data)[1]))
+          generateCols(Object?.keys(getReturnItem(data)[1] || {}))
         );
         setSummary(data || []);
         setIsDone(true);
@@ -202,6 +202,7 @@ export const CustomerByItems = (props) => {
       });
   }, []);
 
+  let StatisticClass = `rounded-lg  hover:duration-100  hvr-underline-from-center`;
   useEffect(() => {
     //setShowFLag(props.showFlag);
     props.showFlag === true ? setVisible(true) : setVisible(false);
@@ -238,7 +239,7 @@ export const CustomerByItems = (props) => {
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
-            className="rounded-lg hover:border-blue-200 hover:border-2  hover:duration-100   hover:ring-offset-8"
+            className={StatisticClass}
           />
           <Statistic
             title="Total Quantiny Sold"
@@ -248,7 +249,7 @@ export const CustomerByItems = (props) => {
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
-            className="rounded-lg hover:border-blue-200 hover:border-2  hover:duration-100   hover:ring-offset-8"
+            className={StatisticClass}
           />
 
           <Statistic
@@ -259,7 +260,7 @@ export const CustomerByItems = (props) => {
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
-            className="rounded-lg hover:border-blue-200 hover:border-2  hover:duration-100   hover:ring-offset-8"
+            className={StatisticClass}
           />
           <Statistic
             title="Total Quantity Returned"
@@ -269,7 +270,7 @@ export const CustomerByItems = (props) => {
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
-            className="rounded-lg hover:border-blue-200 hover:border-2  hover:duration-100   hover:ring-offset-8"
+            className={StatisticClass}
           />
           <Statistic
             title="Total  Returned Amount"
@@ -279,7 +280,7 @@ export const CustomerByItems = (props) => {
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
-            className="rounded-lg hover:border-blue-200 hover:border-2  hover:duration-100   hover:ring-offset-8"
+            className={StatisticClass}
           />
         </div>
 

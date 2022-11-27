@@ -163,7 +163,7 @@ export default function Customer(props) {
   };
 
   let ButtonCls =
-    "rounded-full pl-2 pr-2  w-48 h-9  text-teal-400 hover:bg-teal-400 hover:text-white active:translate-y-0.5 shadow-lg shadow-teal  -500/50  text-base font-semibold	";
+    "rounded-full pl-2 pr-2  w-48 h-9  text-teal-400 hover:bg-teal-400 hover:text-white active:translate-y-0.5 shadow-lg shadow-teal  -500/50  text-base font-semibold hvr-float-shadow	";
 
   const Getdata = (data = props.data, index = null) => {
     //let dataP = data.length < 2 ? props.data : data;
