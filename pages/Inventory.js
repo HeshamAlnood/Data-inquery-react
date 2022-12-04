@@ -18,9 +18,11 @@ import {
 const { Header, Footer, Sider, Content } = Layout;
 import { /*Container, Grid,*/ Loading, Card, Button } from "@nextui-org/react";
 import ItemMovment from "../Components/ItemMovment";
+import ItemChart from "../Components/itemChart";
 import { VariableSizeGrid } from "react-window";
 import { AutoSizer, List } from "react-virtualized";
 import moment from "moment";
+import lodash from "lodash";
 import {
   ConsoleSqlOutlined,
   EditOutlined,
@@ -114,6 +116,7 @@ export default function Customer(props) {
   const setData = async () => {
     console.log(`start setting data `);
     console.log(props.data);
+    console.log(`group by SALES`, lodash.groupBy(...props.data, "SALES"));
     await setItemsData(props.data);
     await setItemsDataRaw(props.data);
     await fillArry(props.data);
@@ -578,9 +581,19 @@ export default function Customer(props) {
 
                                 <button
                                   className={ButtonCls}
-                                  onClick={() =>
-                                    controlItemSummry(e.PART_NO, true)
-                                  }
+                                  onClick={() => {
+                                    //controlItemSummry(e.PART_NO, true)
+                                    console.log(
+                                      `on cloick ITEM CHART`,
+                                      itemsData.filter(
+                                        (r) => r.PART_NO === e.PART_NO
+                                      )
+                                    );
+
+                                    setCurrItem(e.PART_NO);
+                                    // setVisible(true);
+                                    setDrawerFlag(true);
+                                  }}
                                 >
                                   Items Summarys
                                 </button>
@@ -616,6 +629,15 @@ export default function Customer(props) {
             <ItemMovment partno={currItem} />
           </div>
         </Modal>
+        <div>
+          {drawerFlag && (
+            <ItemChart
+              isVisible={drawerFlag}
+              partno={currItem}
+              setShowFlag={setDrawerFlag}
+            />
+          )}
+        </div>
       </Content>
 
       {/* {itemsSummryFlag && (

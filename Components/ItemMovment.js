@@ -281,7 +281,7 @@ const ItemMovment = (props) => {
                 css={{
                   background: item.CATEGORY === "Summary" ? "#e5e7eb" : "",
                   fontSize: item.CATEGORY === "Summary" ? "1.2rem" : "",
-
+                  //position: item.CATEGORY === "Summary" ? "static" : "",
                   //color: item.CATEGORY === "summary" ? "#e5e7eb" : "white",
                   "&:hover": {
                     background: "$yellow100",

@@ -7,8 +7,8 @@ import { Skeleton } from "antd";
 
 export const BarChart = (props) => {
   let vdata = props.data;
-  /*  console.log("data of class item");
-  console.log(vdata);*/
+  console.log("data of class item");
+  console.log(vdata);
 
   let finish = props.finish;
   if (finish === false || vdata.length === 0) {

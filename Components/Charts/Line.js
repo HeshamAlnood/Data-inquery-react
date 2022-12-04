@@ -4,6 +4,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export const AreaChart = (props) => {
+  console.log(`props AreaChart`, props);
   let vSeries1 = props.series1 || [31, 40, 28, 51, 42, 109, 100];
   let vSeries2 = props.series2 || [11, 32, 45, 32, 34, 52, 41];
   let vType = props.type || "area";
@@ -20,14 +21,14 @@ export const AreaChart = (props) => {
     "2018-09-19T06:30:00.000Z",
   ];
 
-  state = {
+  let state = {
     series: [
       {
-        name: "series1",
+        name: props.seriesLabel1,
         data: vSeries1,
       },
       {
-        name: "series2",
+        name: props.seriesLabel2,
         data: vSeries2,
       },
     ],
@@ -35,6 +36,23 @@ export const AreaChart = (props) => {
       chart: {
         height: 350,
         type: vType,
+
+        zoom: {
+          enabled: true,
+          type: "x",
+          autoScaleYaxis: false,
+          zoomedArea: {
+            fill: {
+              color: "#90CAF9",
+              opacity: 0.4,
+            },
+            stroke: {
+              color: "#0D47A1",
+              opacity: 0.4,
+              width: 1,
+            },
+          },
+        },
       },
       dataLabels: {
         enabled: false,
@@ -42,13 +60,29 @@ export const AreaChart = (props) => {
       stroke: {
         curve: "smooth",
       },
+      grid: {
+        borderColor: "#90A4AE",
+        strokeDashArray: 0,
+        position: "back",
+        row: {
+          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+          opacity: 0.5,
+        },
+      },
       xaxis: {
         type: "datetime",
         categories: vCatg,
+        tickPlacement: "on",
       },
       tooltip: {
         x: {
-          format: "dd/MM/yy",
+          format: "dd/MM/yyyy",
+        },
+      },
+      lengend: {
+        onItemClick: { toggleDataSeries: true },
+        onItemHover: {
+          highlightDataSeries: true,
         },
       },
     },
