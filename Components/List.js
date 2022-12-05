@@ -73,7 +73,7 @@ const TagList = (props) => {
         className="rounded-full text-red-500"
         popupClassName="rounded-full text-red-500"
         style={{
-          width: vWidth,
+          width: "60rem", // vWidth,
           height: "2.5rem",
           //borderRadius: "5%",
         }}

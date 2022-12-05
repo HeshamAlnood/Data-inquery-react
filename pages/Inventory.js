@@ -2,7 +2,7 @@ import {
   //Card,
   Col,
   Descriptions,
-  StatisticCol,
+  Radio,
   Row,
   Layout,
   Divider,
@@ -34,11 +34,6 @@ import {
 /*import outOfStoke from "../public/icons/out_of_stock.png";
 import available from "../public/icons/Available.png";*/
 
-import ViewerPdf from "../Components/ViewerPdf";
-import ViewArchive from "../Components/ViewArchive";
-import { CustomerByItems } from "../Components/CustomerItmes";
-//import PdfViewer from "../Components/PdfViewer";
-
 import TagList from "../Components/List";
 import ModalScreen from "../Components/Modal";
 import Uploader from "../Components/Uploader";
@@ -55,6 +50,7 @@ export default function Customer(props) {
   let [itemsSummryFlag, setItemsSummryFlag] = useState(false);
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
+  let [radioValue, setRadioValue] = useState(0);
 
   let [bounds, setBounds] = useState({
     left: 0,
@@ -92,7 +88,17 @@ export default function Customer(props) {
     setItemCust(cust);*/
   };
 
-  let ItemArr;
+  const chngRaido = (value) => {
+    let data = itemsDataRaw;
+    setRadioValue(value);
+    if (value === "1") {
+      setItemsData(data.filter((e) => e.ITEM_ON_HAND_QTY > 0));
+    } else if (value === "-1") {
+      setItemsData(data.filter((e) => e.ITEM_ON_HAND_QTY === 0));
+    } else setItemsData(itemsDataRaw);
+
+    console.log(`chng Radio `, value);
+  };
 
   const fillArry = (data) => {
     let itemArr = data.map((e, i) => e.PART_NO);
@@ -302,20 +308,6 @@ export default function Customer(props) {
               <Card.Divider />
               <Card.Footer className="flex justify-around" isBlurred={"true"}>
                 {/* <Row className="flex justify-around"> */}
-                <button
-                  className={ButtonCls}
-                  onClick={() => showModal(e.CUST_CUSTOMER)}
-                >
-                  Upload Files
-                  <UploadOutlined className="pl-3" />
-                </button>
-                <button
-                  className={ButtonCls}
-                  onClick={() => controlDrawer(e.CUST_CUSTOMER, true)}
-                >
-                  View Files
-                  <FileSearchOutlined className="pl-3" />
-                </button>
 
                 <button
                   className={ButtonCls}
@@ -355,6 +347,15 @@ export default function Customer(props) {
     queryFilterd();
   }, [filterd]);
 
+  let optionButton = [
+    { label: "All", value: 0 },
+    { label: "Out of Stock", value: "-1" },
+    {
+      label: "Avaliable",
+      value: "1",
+    },
+  ];
+
   function rowRenderer({ key, index, style }) {
     return (
       <div key={key} style={style}>
@@ -376,17 +377,27 @@ export default function Customer(props) {
         }}
       >
         {isDone ?? <Skeleton active />}
-
         <TagList
           cols={itemList}
           filterd={setFilterd}
           qName={`ITEMS`}
           width={"80%"}
         />
-
         {/* <Row justify="center"> */}
         {/* <Col> */}
-        <div className="w-4/5 ">
+        <div className="grid justify-items-center    mt-6  mr-64 ">
+          <Radio.Group
+            options={optionButton}
+            onChange={({ target: { value } }) => chngRaido(value)}
+            defaultValue={radioValue}
+            value={radioValue}
+            optionType="button"
+            buttonStyle="solid"
+            size="large"
+            className="ml-64"
+          />
+        </div>
+        <div className="w-4/5 mr-4">
           <div
             style={{ width: "100%", height: "100vh", paddingTop: "1rem" }}
             className="overflow-hidden"
@@ -571,13 +582,6 @@ export default function Customer(props) {
                                 >
                                   Item Movment
                                 </button>
-                                <button
-                                  className={ButtonCls}
-                                  onClick={() => controlDrawer(e.PART_NO, true)}
-                                >
-                                  View Files
-                                  <FileSearchOutlined className="pl-3" />
-                                </button>
 
                                 <button
                                   className={ButtonCls}
@@ -606,7 +610,7 @@ export default function Customer(props) {
                     }
                   }
                   width={width}
-                  style={{ overflow: "unset" }}
+                  style={{ overFlow: "unset" }}
                   className="  	ml-48  scroll-smooth		"
                 />
               )}

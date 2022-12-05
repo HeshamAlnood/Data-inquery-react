@@ -80,54 +80,50 @@ const ItemChart = (props) => {
   console.log(`itemSalesRet`, itemSalesRet);
   console.log(`category`, category);
 
-  useEffect(() => {
-    fetch(
+  const fetchDataArr = async () => {
+    let rsp = await fetch(
       `http://localhost:3000/api/getItemsData?type=itemRank&keyVal=${vKeyVal}`
-    )
-      .then((rsp) => rsp.json())
-      .then((data) => {
-        setData(data);
-        fillArrays(data);
-        /*setItemSales(
-          data
-            .filter((e) => e.TYPE === "SALES")
-            .map((e) => e.CUSTOMER_VENDOR || e.TOTAL_QTY)
-        );*/
-      });
+    );
 
-    fetch(
-      `http://localhost:3000/api/getItemsData?type=itemCardMovment&keyVal=${props.partno}`
-    )
-      .then((rs) => rs.json())
-      .then((data) => {
-        console.log(
-          `getItemsData `,
-          //data,
-          lodash.orderBy(data, ["INV_DATE"], ["desc"]),
-          lodash
-            .orderBy(data, ["INV_DATE"], ["desc"])
-            .filter((e) => e.CATEGORY === "PURCHASE")
-            .map((e) => e.IN_QTY || 0)
-        );
+    let data = await rsp.json();
 
-        setItemPurchaseAr(
-          lodash
-            .orderBy(data, ["INV_DATE"], ["desc"])
-            .filter((e) => e.CATEGORY === "PURCHASE")
-            .map((e) => e.IN_QTY || 0)
-        );
-        setItemSalesAr(
-          lodash
-            .orderBy(data, ["INV_DATE"], ["desc"])
-            .filter((e) => e.CATEGORY === "SALES")
-            .map((e) => e.OUT_QTY || 0)
-        );
-        setDateAr(
-          lodash
-            .orderBy(data, ["INV_DATE"], ["desc"])
-            .map((e) => e.INV_DATE || 0)
-        );
-      });
+    setData(data);
+    fillArrays(data);
+
+    rsp = await fetch(
+      `http://localhost:3000/api/getItemsData?type=itemCardMovment&keyVal=${vKeyVal}`
+    );
+    data = await rsp.json();
+
+    console.log(
+      `getItemsData `,
+      //data,
+      lodash.orderBy(data, ["INV_DATE"], ["desc"]),
+      lodash
+        .orderBy(data, ["INV_DATE"], ["desc"])
+        .filter((e) => e.CATEGORY === "PURCHASE")
+        .map((e) => e.IN_QTY || 0)
+    );
+
+    setItemPurchaseAr(
+      lodash
+        .orderBy(data, ["INV_DATE"], ["desc"])
+        .filter((e) => e.CATEGORY === "PURCHASE")
+        .map((e) => e.IN_QTY || 0)
+    );
+    setItemSalesAr(
+      lodash
+        .orderBy(data, ["INV_DATE"], ["desc"])
+        .filter((e) => e.CATEGORY === "SALES")
+        .map((e) => e.OUT_QTY || 0)
+    );
+    setDateAr(
+      lodash.orderBy(data, ["INV_DATE"], ["desc"]).map((e) => e.INV_DATE || 0)
+    );
+  };
+
+  useEffect(() => {
+    fetchDataArr();
   }, [props.partno]);
 
   return (

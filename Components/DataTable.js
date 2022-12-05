@@ -642,7 +642,7 @@ export default function DataTablesA(props) {
           </Col>
         </Row>
         <div>
-          {showDateRanger && (
+          {/* {showDateRanger && (
             <>
               <Divider orientation="center"></Divider>
 
@@ -672,10 +672,8 @@ export default function DataTablesA(props) {
                   size={"large"}
                 />
               </Row>
-            </>
-          )}
-          <Divider orientation="center"></Divider>
-
+            </> */}
+          {/* <Divider orientation="center"></Divider> */}
           {/*showDateRanger && (
               <DateRangePicker
                 //onSelect={setColumnKeys}
@@ -694,43 +692,23 @@ export default function DataTablesA(props) {
         </div>
         <div>
           <Divider dashed />
-          <Grid xs={12} md={3}>
-            <Button.Group size="lg" color="primary" className="bg-blue-500">
-              <Button color="gradient" onClick={performFilter}>
-                Search
-              </Button>
-              <Button
-                color="gradient"
-                onClick={() => {
-                  /* resetFilter;
-                  handleReset(clearFilters);*/
-                  handleSearch();
-                }}
-              >
-                Reset
-              </Button>
-              <Button color="gradient" onClick={HtmlTOExcel}>
-                Download Excel
-                <VerticalAlignBottomOutlined
-                  style={{ paddingLeft: "0.5rem" }}
-                />
-              </Button>
-            </Button.Group>
-          </Grid>
+          <Grid xs={12} md={3}></Grid>
         </div>
 
-        <DropdownL menu={columnKeys} chng={chngCols} />
-        <TagList
-          cols={vendorList}
-          filterd={setFilterd}
-          qName={query}
-          width={"100%"}
-          //classList="text-slate-500 !rounded-full"
-          //className="text-slate-500 rounded-full"
-        />
+        <div className="flex justify-items-start ">
+          <DropdownL menu={columnKeys} chng={chngCols} />
+          <TagList
+            cols={vendorList}
+            filterd={setFilterd}
+            qName={query}
+            width={"100%"}
 
+            //classList="text-slate-500 !rounded-full"
+            //className="text-slate-500 rounded-full"
+          />
+        </div>
         <Divider> </Divider>
-        <div>
+        <div className="flex justifiy-items-start">
           <input
             className=" inputSearch border-slate-300	 focus:border-blue-50 w-full focus:w-full placeholder-shown:w-64	border-2 rounded-full placeholder:text-slate-300	"
             //id="inputSearch"
@@ -740,6 +718,43 @@ export default function DataTablesA(props) {
             placeholder="Search All Data..."
             onKeyUp={(e) => searchTable(e.target.value)}
           />
+          {showDateRanger && (
+            <RangePicker
+              ranges={{
+                Yesterday: [moment().day(-1), moment().day(-1)],
+
+                Today: [moment(), moment()],
+                "This Week": [moment().day(-7), moment().day(0)],
+                "This Month": [
+                  moment().startOf("month"),
+                  moment().endOf("month"),
+                ],
+                "3 Months": [moment().day(-90), moment().day(0)],
+                "6 Months": [moment().day(-180), moment().day(0)],
+                Year: [moment().day(-365), moment().day(0)],
+                "This Year": [moment().startOf("year"), moment().endOf("year")],
+              }}
+              format="YYYY/MM/DD"
+              onChange={onChangeDateRange}
+              size={"large"}
+              style={{ marginLeft: "3rem" }}
+            />
+          )}
+          <Button.Group
+            size="lg"
+            color="primary"
+            className="bg-blue-500 ml-16 "
+          >
+            <Button
+              size="lg"
+              color="primary"
+              className="bg-blue-500 "
+              onClick={HtmlTOExcel}
+            >
+              Download Excel
+              <VerticalAlignBottomOutlined style={{ paddingLeft: "0.5rem" }} />
+            </Button>
+          </Button.Group>
         </div>
         <Divider> </Divider>
 
