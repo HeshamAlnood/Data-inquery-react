@@ -4,6 +4,7 @@ import { Table, Loading } from "@nextui-org/react";
 import lodash from "lodash";
 import { DatePicker, Layout, Empty } from "antd";
 import moment from "moment";
+
 const ItemMovment = (props) => {
   let [itemMovmentData, setItemMovmentData] = useState([]);
   let [itemMovmentDataRaw, setItemMovmentDataRaw] = useState([]);
@@ -213,7 +214,7 @@ const ItemMovment = (props) => {
           //height: "50rem",
           minHeight: "10rem",
           maxHeight: "53rem",
-          overflowY: "scroll",
+          //  overflowY: "scroll",
           //position: "relative",
         }}
       >
@@ -221,18 +222,19 @@ const ItemMovment = (props) => {
           id="ItemMovementDataTable"
           striped
           lined={true}
-          //sticked
+          //sticked={"true"}
           bordered={false}
           aria-label="Example static striped collection table"
-          hoverable="true"
+          hoverable={"true"}
           borderWeight="black"
           lineWeight="light"
           fixed={true}
-          onSelectionChange={(keys) => console.log(`keyyys`, keys)}
-          css={{
-            height: "50%",
+          containerCss={{
+            //height: "50%",
+            height: "53rem",
             width: "100%",
-            //overflowY: "scroll",
+            position: "sticky",
+            overflowY: "scroll",
             //minWidth: "50%",
 
             //position: "relative",
@@ -258,9 +260,8 @@ const ItemMovment = (props) => {
                   //width: "10px",
                   minWidth: "30px" /* height: "calc($space$14 * 10)" }*/,
                   maxHeight: "100px",
-                  position: "sticky",
 
-                  zIndex: 3,
+                  zIndex: 300,
                   position: "sticky",
                   top: "0px",
                 }}
@@ -274,15 +275,17 @@ const ItemMovment = (props) => {
             items={itemMovmentData}
             //onLoadMore={itemMovmentData.loadMore}
           >
-            {(item, i) => (
+            {(item) => (
               <Table.Row
-                key={item + i}
-                id={item + i}
+                key={item.INV_NO + item.CATEGORY || 1}
+                //id={+i}
+
                 css={{
                   background: item.CATEGORY === "Summary" ? "#e5e7eb" : "",
                   fontSize: item.CATEGORY === "Summary" ? "1.2rem" : "",
-                  //position: item.CATEGORY === "Summary" ? "static" : "",
-                  //color: item.CATEGORY === "summary" ? "#e5e7eb" : "white",
+                  position: item.CATEGORY === "Summary" ? "sticky" : "",
+                  top: item.CATEGORY === "Summary" ? "0px" : "",
+                  //color: item.CATEGORY === "Summary" ? "#e5e7eb" : "white",
                   "&:hover": {
                     background: "$yellow100",
                     color: "$blue400",

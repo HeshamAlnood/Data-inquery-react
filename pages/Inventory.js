@@ -23,14 +23,7 @@ import { VariableSizeGrid } from "react-window";
 import { AutoSizer, List } from "react-virtualized";
 import moment from "moment";
 import lodash from "lodash";
-import {
-  ConsoleSqlOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
-  FileSearchOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+
 /*import outOfStoke from "../public/icons/out_of_stock.png";
 import available from "../public/icons/Available.png";*/
 
@@ -51,6 +44,9 @@ export default function Customer(props) {
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
   let [radioValue, setRadioValue] = useState(0);
+
+  let activeButnClass = `flex h-full items-center justify-center rounded-full bg-gradient-to-r from-blue-300 to-blue-500 px-4 text-xl text-white hvr-float-shadow`;
+  let notActiveButnClass = `flex h-full items-center justify-center rounded-full px-4 text-xl transition-all duration-150 ease-in-out hover:bg-blue-500/10 hvr-float-shadow`;
 
   let [bounds, setBounds] = useState({
     left: 0,
@@ -98,6 +94,7 @@ export default function Customer(props) {
     } else setItemsData(itemsDataRaw);
 
     console.log(`chng Radio `, value);
+    console.log(`current class `, activeButnClass);
   };
 
   const fillArry = (data) => {
@@ -347,14 +344,14 @@ export default function Customer(props) {
     queryFilterd();
   }, [filterd]);
 
-  let optionButton = [
-    { label: "All", value: 0 },
-    { label: "Out of Stock", value: "-1" },
-    {
-      label: "Avaliable",
-      value: "1",
-    },
-  ];
+  // let optionButton = [
+  //   { label: "All", value: 0 },
+  //   { label: "Out of Stock", value: "-1" },
+  //   {
+  //     label: "Avaliable",
+  //     value: "1",
+  //   },
+  // ];
 
   function rowRenderer({ key, index, style }) {
     return (
@@ -377,16 +374,17 @@ export default function Customer(props) {
         }}
       >
         {isDone ?? <Skeleton active />}
-        <TagList
-          cols={itemList}
-          filterd={setFilterd}
-          qName={`ITEMS`}
-          width={"80%"}
-        />
+
         {/* <Row justify="center"> */}
         {/* <Col> */}
-        <div className="grid justify-items-center    mt-6  mr-64 ">
-          <Radio.Group
+        <div className="grid justify-items-center    mt-6  mr-80 ">
+          <TagList
+            cols={itemList}
+            filterd={setFilterd}
+            qName={`ITEMS`}
+            width={"80%"}
+          />
+          {/* <Radio.Group
             options={optionButton}
             onChange={({ target: { value } }) => chngRaido(value)}
             defaultValue={radioValue}
@@ -395,7 +393,38 @@ export default function Customer(props) {
             buttonStyle="solid"
             size="large"
             className="ml-64"
-          />
+          /> */}
+        </div>
+        <div class="flex items-center justify-between ml-80 mt-8 ">
+          <div className="flex h-14 items-center space-x-1 rounded-full  bg-slate-200 p-2 ml-64 ">
+            <button
+              onClick={() => chngRaido("0")}
+              //className="flex h-full items-center justify-center rounded-full bg-gradient-to-r from-blue-300 to-blue-500 px-4 text-xl text-white"
+              className={
+                radioValue === "0" ? activeButnClass : notActiveButnClass
+              }
+            >
+              All
+            </button>
+            <button
+              onClick={() => chngRaido("-1")}
+              // className="flex h-full items-center justify-center rounded-full px-4 text-xl transition-all duration-150 ease-in-out hover:bg-blue-500/10"
+              className={
+                radioValue === "-1" ? activeButnClass : notActiveButnClass
+              }
+            >
+              Out Of Stock
+            </button>
+            <button
+              onClick={() => chngRaido("1")}
+              //className="flex h-full items-center justify-center rounded-full px-4 text-xl transition-all duration-150 ease-in-out hover:bg-blue-500/10"
+              className={
+                radioValue === "1" ? activeButnClass : notActiveButnClass
+              }
+            >
+              Available
+            </button>
+          </div>
         </div>
         <div className="w-4/5 mr-4">
           <div
@@ -466,9 +495,27 @@ export default function Customer(props) {
                                     if (
                                       key
                                         .replaceAll(" ")
-                                        .replaceAll("_", " ") === "PRSN"
+                                        .replaceAll("_", " ") === "PRSNT"
                                     ) {
                                       return;
+                                      vCustomValue = (
+                                        <Progress
+                                          type="circle"
+                                          percent={+val}
+                                          status={
+                                            val === "0" ? "exception" : "active"
+                                          }
+                                          showInfo="true"
+                                          width="100px"
+                                          strokeColor={
+                                            +val > 69
+                                              ? "#ef4444"
+                                              : +val > 30 && +val < 70
+                                              ? "#facc15"
+                                              : "#16a34a"
+                                          }
+                                        />
+                                      );
                                     }
 
                                     if (
@@ -546,28 +593,48 @@ export default function Customer(props) {
                                         className="w-24 "
                                       />
                                     )}
-                                    {/*
-                                    <Progress
-                                      format={function (
-                                        percent,
-                                        successPercent
-                                      ) {
-                                        return e.ITEM_ON_HAND_QTY === 0
-                                          ? " Out Of Stock  "
-                                          : "Available";
-                                      }}
-                                      type="circle"
-                                      percent={+prsnt}
-                                      status={
-                                        e.ITEM_ON_HAND_QTY === 0
-                                          ? "exception"
-                                          : "active"
-                                      }
-                                      showInfo="true"
-                                      width="100px"
-                                    />{" "}
-                                    */}
                                   </Descriptions.Item>
+
+                                  {
+                                    <Descriptions.Item
+                                      label={""}
+                                      contentStyle={{
+                                        fontWeight: "bold",
+
+                                        color: "rgb(29 78 216)",
+                                      }}
+                                    >
+                                      <Progress
+                                        className="w-24 mt-0"
+                                        type="circle"
+                                        format={(percent) =>
+                                          //  +percent=== `${+percent} Sold `
+                                          +percent > 69 && +percent < 100
+                                            ? `${+percent}% Almoust finish `
+                                            : +percent > 0 && +percent < 70
+                                            ? `${+percent}%  Sold  `
+                                            : +percent > 99
+                                            ? `${+percent}%  Total Sold`
+                                            : ` Not  Sold Yet `
+                                        }
+                                        percent={Math.trunc(+e.PRSNT)}
+                                        status={
+                                          e.PRSNT === "0"
+                                            ? "exception"
+                                            : "active"
+                                        }
+                                        showInfo="true"
+                                        width="120px"
+                                        strokeColor={
+                                          +e.PRSNT > 69
+                                            ? "#ef4444"
+                                            : +e.PRSNT > 30 && +e.PRSNT < 70
+                                            ? "#facc15"
+                                            : "#16a34a"
+                                        }
+                                      />
+                                    </Descriptions.Item>
+                                  }
                                 </Descriptions>
                               </Card.Body>
                               <Card.Divider />

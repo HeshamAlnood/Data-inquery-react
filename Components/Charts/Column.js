@@ -92,6 +92,8 @@ export const ColumnsChart = (props) => {
       chart: {
         type: "bar",
         height: 500,
+        background: props.bgcolor,
+        foreColor: "white",
       },
       plotOptions: {
         bar: {

@@ -9,7 +9,7 @@ function CalendarData(props) {
   const [dayInfo, setDayInfo] = useState([]);
   const [vday, setDay] = useState("");
   const [vmonth, setMonth] = useState(moment().month() + 1);
-  const [vyear, setYear] = useState(moment().subtract(6, "years").year());
+  const [vyear, setYear] = useState(moment().subtract(0, "years").year());
   const [date, setDate] = useState("");
   const { Header, Footer, Sider, Content } = Layout;
   const [currDate, setCurrDate] = useState("");
@@ -36,7 +36,7 @@ function CalendarData(props) {
     console.log(`pMonth : `, pMonth);
 
     let rsp = await fetch(
-      `http://localhost:3000/api/getDailyTrans?year=${2016}&month=${
+      `http://localhost:3000/api/getDailyTrans?year=${pYear}&month=${
         pMonth || null
       }`
     );
@@ -209,7 +209,8 @@ function CalendarData(props) {
         )}
         <Calendar
           dateCellRender={dayFlag === true ? dateCellRender : ""}
-          defaultValue={moment().subtract(6, "years")}
+          //defaultValue={moment().subtract(6, "years")}
+          defaultValue={moment().subtract(0, "years")}
           onChange={(e) => {
             console.log(` on Change `, e.format("yyyyMM"));
             console.log(` Current `, vyear, vmonth);
@@ -243,7 +244,7 @@ function CalendarData(props) {
 export async function getServerSideProps() {
   let year = moment().year();
   let month = moment().month();
-  let rsp = await fetch(`http://localhost:3000/api/getDailyTrans?year=${2016}`);
+  let rsp = await fetch(`http://localhost:3000/api/getDailyTrans?year=${year}`);
   let data = await rsp.json();
   //let data = [{ hhh: "hello" }];
   //return data;

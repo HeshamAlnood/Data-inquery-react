@@ -1,12 +1,14 @@
 import { Container, Row, /*Card,*/ Text } from "@nextui-org/react";
 import Dashboard from "./Dashboard";
 import DataTable from "./DataTables";
-import { Card, Avatar } from "antd";
+import { Card, Avatar, Skeleton } from "antd";
 
 //import RevnueImg from "../public/icons/revnue.png";
 const { Meta } = Card;
 
 export default function Statscis(props) {
+  let isDone = props.isDone;
+  console.log(`statics isDone`, isDone, props.isDone, props.title);
   return (
     <Card
       bordered={false}
@@ -18,15 +20,20 @@ export default function Statscis(props) {
         borderRadius: "4%",
         backgroundColor: "transparent",
       }}
-      className="glassy md:w-96 lg:h-full"
+      className="glassy md:w-96 lg:h-48 md:h-32 max-h-40 "
       // title="Daily Revenue"
     >
-      <div className="text-2xl text-slate-500">{props.title}</div>
-      <div className="flex flex-row-reverse ">
-        <img src={`../icons/${props.type}.png`} className="w-16 " />
+      <div className="text-2xl text-slate-500 relative flex  ">
+        {props.title}
+      </div>
+      <div className="flex justify-between ">
+        <div className="text-4xl  pt-8 pb-16">
+          {props.isDone && props.value}
+          {props.isDone ?? <Skeleton.Input active={true} size={"small"} />}
+        </div>
+        <img src={`../icons/${props.type}.png`} className="w-16 pb-16" />
       </div>
 
-      <div className="text-4xl">{props.value} </div>
       {/* <Meta
         //avatar={<Avatar src="../icons/revnue.png" className="w-96" />}
         title="Daily Revenue"

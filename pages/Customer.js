@@ -30,6 +30,7 @@ import {
 import ViewerPdf from "../Components/ViewerPdf";
 import ViewArchive from "../Components/ViewArchive";
 import { CustomerByItems } from "../Components/CustomerItmes";
+import UnPaidInv from "../Components/UnColleted";
 //import PdfViewer from "../Components/PdfViewer";
 
 import TagList from "../Components/List";
@@ -48,6 +49,7 @@ export default function Customer(props) {
   let [itemsSummryFlag, setItemsSummryFlag] = useState(false);
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
+  let [unPaidModal, setUnPaidModal] = useState(false);
   let [bounds, setBounds] = useState({
     left: 0,
     top: 0,
@@ -77,6 +79,11 @@ export default function Customer(props) {
     setCurrCust(cust);
   };
 
+  const controlUnpaid = (cust, flag = false) => {
+    setUnPaidModal(flag);
+    setCurrCust(cust);
+  };
+
   const controlItemSummry = (cust, flag = false) => {
     console.log(`controlDrawer`, flag);
 
@@ -87,7 +94,7 @@ export default function Customer(props) {
     setCurrCust(cust);
   };
 
-  const fetchData = async () => {
+  /*const fetchData = async () => {
     //await fetch(`http://192.168.0.159:3001/dbData?inquery=CUSTOMERINV`)
     await fetch(`http://localhost:3000/api/requestData?inquery=CUSTOMERINV`)
       .then((res) => res.json())
@@ -97,7 +104,7 @@ export default function Customer(props) {
 
         fillArry(data);
       });
-  };
+  };*/
 
   const fillArry = (data) => {
     custArr = data.map((e) => e.CUST_CUSTOMER);
@@ -138,6 +145,7 @@ export default function Customer(props) {
   const handleCancel = (e) => {
     console.log(e);
     setVisible(false);
+    setUnPaidModal(false);
   };
 
   const showModal = (cust) => {
@@ -321,6 +329,13 @@ export default function Customer(props) {
                   onClick={() => controlItemSummry(e.CUST_CUSTOMER, true)}
                 >
                   Items Summarys
+                </button>
+
+                <button
+                  className={ButtonCls}
+                  onClick={() => controlUnpaid(e.CUST_CUSTOMER, true)}
+                >
+                  UnPaid Invocies
                 </button>
                 {/* </Row> */}
               </Card.Footer>
@@ -524,6 +539,14 @@ export default function Customer(props) {
           setShowFlag={controlItemSummry}
           keyVal={currCust}
           type="Customer"
+        />
+      )}
+      {unPaidModal && (
+        <UnPaidInv
+          isVisible={unPaidModal}
+          setIsVisible={controlUnpaid}
+          custno={currCust}
+          // type="Customer"
         />
       )}
     </Layout>

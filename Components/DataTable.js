@@ -10,6 +10,8 @@ import {
   Row,
   DatePicker,
   Layout,
+  Progress,
+  Empty,
 } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import validator from "validator";
@@ -71,6 +73,30 @@ export default function DataTablesA(props) {
 
   const getTableKey = (pquery = query) => {
     return tableKey[pquery];
+  };
+
+  const getProgress = (value) => {
+    let valueFormtd = Math.trunc(100 - value);
+    let color =
+      valueFormtd > 69
+        ? "#ef4444"
+        : valueFormtd > 30 && valueFormtd < 70
+        ? "#facc15"
+        : "#16a34a";
+    return (
+      <div
+        style={{
+          width: 100,
+        }}
+      >
+        <Progress
+          percent={valueFormtd}
+          size="small"
+          status="active"
+          strokeColor={color}
+        />
+      </div>
+    );
   };
 
   let queryArr = {
@@ -201,7 +227,7 @@ export default function DataTablesA(props) {
             //  console.log("sort Numbers");
             return (Number.parseFloat(sa) || 1) - (Number.parseFloat(sb) || -1);
           } else if (validator.isAlpha(sa.toString()) === true) {
-            //console.log("sort Strings");
+            //            console.log("sort Strings");
             return (sa || "a")
               .toString()
               .toLowerCase()
@@ -219,7 +245,8 @@ export default function DataTablesA(props) {
 
         render: (text, record) => (
           <div style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
-            {text}
+            {/* {text} */}
+            {e === "REMAIN_PRSNT" ? getProgress(text) : text}
           </div>
         ),
         //ellipsis: true,
@@ -261,7 +288,7 @@ export default function DataTablesA(props) {
   const queryFilterd = (valueArr = filterd) => {
     let dataOb = dataRaw;
 
-    let intersection;
+    let intersection = [];
     if (valueArr.length > 0) {
       //intersection = dataOb.filter((e) => e.VEND_VENDOR.includes(valueArr));
       intersection = dataOb.filter(
@@ -462,11 +489,17 @@ export default function DataTablesA(props) {
     ),
 
     onFilter: (value, record) =>
-      record[dataIndex]
-        ?.toString()
-        .toLowerCase()
-        //.startsWith(value.toLowerCase()),
-        .includes(value.toLowerCase()),
+      validator.isFloat(value.toString()) === true
+        ? record[dataIndex]
+            ?.toString()
+            .toLowerCase()
+            .startsWith(value.toLowerCase())
+        : //.includes(value.toLowerCase()
+          record[dataIndex]
+            ?.toString()
+            .toLowerCase()
+            //.startsWith(value.toLowerCase()),
+            .includes(value.toLowerCase()),
     //record[dataIndex]?.toString().toLowerCase() === value.toLowerCase(),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
@@ -696,7 +729,7 @@ export default function DataTablesA(props) {
         </div>
 
         <div className="flex justify-items-start ">
-          <DropdownL menu={columnKeys} chng={chngCols} />
+          {/* <DropdownL menu={columnKeys} chng={chngCols} /> */}
           <TagList
             cols={vendorList}
             filterd={setFilterd}
@@ -737,7 +770,13 @@ export default function DataTablesA(props) {
               format="YYYY/MM/DD"
               onChange={onChangeDateRange}
               size={"large"}
-              style={{ marginLeft: "3rem" }}
+              //style={{ marginLeft: "3rem" }}
+              style={{
+                marginLeft: "3rem",
+                borderRadius: "9999999px",
+                textAlign: "justify",
+              }}
+              className="text-lg text-justify	"
             />
           )}
           <Button.Group
@@ -756,8 +795,9 @@ export default function DataTablesA(props) {
             </Button>
           </Button.Group>
         </div>
-        <Divider> </Divider>
 
+        <Divider> </Divider>
+        <DropdownL menu={columnKeys} chng={chngCols} />
         <Table
           id="dataTable"
           //bordered="true"
