@@ -32,6 +32,7 @@ import ModalScreen from "../Components/Modal";
 import Uploader from "../Components/Uploader";
 import { useEffect, useState, useRef } from "react";
 import Draggable from "react-draggable";
+
 export default function Customer(props) {
   let [itemsData, setItemsData] = useState([]);
   let [itemsDataRaw, setItemsDataRaw] = useState([]);
@@ -88,9 +89,15 @@ export default function Customer(props) {
     let data = itemsDataRaw;
     setRadioValue(value);
     if (value === "1") {
-      setItemsData(data.filter((e) => e.ITEM_ON_HAND_QTY > 0));
+      setItemsData(data.filter((e) => +e.ITEM_ON_HAND_QTY > 0));
     } else if (value === "-1") {
-      setItemsData(data.filter((e) => e.ITEM_ON_HAND_QTY === 0));
+      setItemsData(data.filter((e) => +e.ITEM_ON_HAND_QTY === 0));
+    } else if (value === "3") {
+      setItemsData(data.filter((e) => +e.PRSNT > 69 && +e.PRSNT < 100));
+    } else if (value === "2") {
+      setItemsData(
+        data.filter((e) => +e.PRSNT === 0 && +e.ITEM_ON_HAND_QTY > 0)
+      );
     } else setItemsData(itemsDataRaw);
 
     console.log(`chng Radio `, value);
@@ -395,7 +402,7 @@ export default function Customer(props) {
             className="ml-64"
           /> */}
         </div>
-        <div class="flex items-center justify-between ml-80 mt-8 ">
+        <div className="flex items-center justify-between ml-80 mt-8 ">
           <div className="flex h-14 items-center space-x-1 rounded-full  bg-slate-200 p-2 ml-64 ">
             <button
               onClick={() => chngRaido("0")}
@@ -423,6 +430,26 @@ export default function Customer(props) {
               }
             >
               Available
+            </button>
+
+            <button
+              onClick={() => chngRaido("2")}
+              //className="flex h-full items-center justify-center rounded-full px-4 text-xl transition-all duration-150 ease-in-out hover:bg-blue-500/10"
+              className={
+                radioValue === "2" ? activeButnClass : notActiveButnClass
+              }
+            >
+              Not Sold
+            </button>
+
+            <button
+              onClick={() => chngRaido("3")}
+              //className="flex h-full items-center justify-center rounded-full px-4 text-xl transition-all duration-150 ease-in-out hover:bg-blue-500/10"
+              className={
+                radioValue === "3" ? activeButnClass : notActiveButnClass
+              }
+            >
+              Almost Finish
             </button>
           </div>
         </div>

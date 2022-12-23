@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from "antd";
 //const { RangePicker } = DatePicker;
-
+import { getDashBoardData, requestData } from "../Methods/DataApi";
 const { Header, Footer, Sider, Content } = Layout;
 
 const DashBoard = (props) => {
@@ -23,10 +23,10 @@ const DashBoard = (props) => {
   const [dailyExpense, setDailyExpense] = useState();
   const [dailyProfit, setDailyProfit] = useState();
 
-  let [dateFrom, setDateFrom] = useState(
-    moment().startOf("year").format("yyyyMMDD")
-  );
-  let [dateTo, setDateTo] = useState(moment().endOf("year").format("yyyyMMDD"));
+  let [dateFrom, setDateFrom] = useState();
+  //moment().startOf("year").format("yyyyMMDD")
+  let [dateTo, setDateTo] =
+    useState(/*moment().endOf("year").format("yyyyMMDD")*/);
 
   const [statsRevnue, setStatsRevnue] = useState(0);
   const [statsExpense, setStatsExpense] = useState(0);
@@ -115,10 +115,11 @@ const DashBoard = (props) => {
     ];
 
     return (
-      <div class="flex items-center justify-between ml-96 mt-8 mb-8">
+      <div className="flex items-center justify-between ml-96 mt-8 mb-8">
         <div className="flex h-14 items-center space-x-1 rounded-full  bg-slate-200 p-2 ml-64 ">
           {vals.map((e, i) => (
             <Tooltip
+              key={i}
               placement="topLeft"
               title={`From ${formatDate(
                 Periods[e.replace(/\s/g, "")][0]
@@ -142,6 +143,9 @@ const DashBoard = (props) => {
 
   useEffect(() => {
     let dataDaily = props.dataDaily;
+
+    let dataYearly = props.dataYearly;
+    console.log(`dataYearly`, dataYearly);
     setDailyRevnue(
       dataDaily
         ?.filter((e) => e.TYPE === "REVENUE")
@@ -162,6 +166,28 @@ const DashBoard = (props) => {
         .map((e) => e.AMOUNT)
         .reduce((e, c) => e + c, 0)
     );
+
+    setStatsExpense(
+      dataYearly
+        ?.filter((e) => e.TYPE === "EXPENSES")
+        .map((e) => e.AMOUNT)
+        .reduce((e, c) => e + c, 0)
+    );
+
+    setStatsRevnue(
+      dataYearly
+        ?.filter((e) => e.TYPE === "REVENUE")
+        .map((e) => e.AMOUNT)
+        .reduce((e, c) => e + c, 0)
+    );
+
+    setStatsProfit(
+      dataYearly
+        ?.filter((e) => e.TYPE === "PROFIT")
+        .map((e) => e.AMOUNT)
+        .reduce((e, c) => e + c, 0)
+    );
+    setIsDone(true);
 
     setRevExpSummary(props.dataExpRev);
   }, []);
@@ -185,10 +211,12 @@ const DashBoard = (props) => {
   };
 
   useEffect(() => {
+    if (dateFrom === undefined || dateTo === undefined) return;
     setIsDone(false);
     fetch(
       `http://localhost:3000/api/getDashBoardData?inquery=null&dfrom=${dateFrom}&dto=${dateTo}`
     )
+      //getDashBoardData(null, dateFrom, dateTo)
       .then((rsp) => rsp.json())
       .then((data) => {
         setStatsExpense(
@@ -311,7 +339,7 @@ const DashBoard = (props) => {
                 bgcolor={"rgb(55 65 81)"}
               />
             </Card>
-            <div>{<MostSale title={"Total Class Sales"} />}</div>
+            <div className="">{<MostSale title={"Total Class Sales"} />}</div>
           </div>
         </Content>
       </Layout>
@@ -327,10 +355,11 @@ export async function getServerSideProps(context) {
 
   let curDate = moment().format("yyyyMMDD");
   //let curDate = "20161205";
-  let rqs = await fetch(
+  /*let rqs = await fetch(
     `http://localhost:3000/api/getDashBoardData?inquery=null&dfrom=${curDate}&dto=${curDate}`
   );
-  const dataDaily = await rqs.json();
+  const dataDaily = await rqs.json();*/
+  const dataDaily = await getDashBoardData(null, curDate, curDate);
 
   /*get Weekly */
   /*let from_date = today.startOf("week").format("yyyyMMDD");
@@ -344,16 +373,18 @@ export async function getServerSideProps(context) {
   /* get Yearly */
   let from_date = today.startOf("year").format("yyyyMMDD");
   let to_date = today.endOf("year").format("yyyyMMDD");
-  rqs = await fetch(
+  /*rqs = await fetch(
     `http://localhost:3000/api/getDashBoardData?inquery=null&dfrom=${from_date}&dto=${to_date}`
-  );
-  let dataYearly = await rqs.json();
+  );*/
+  //let dataYearly = await rqs.json();
+  let dataYearly = await getDashBoardData(null, from_date, to_date);
 
   /* get rexExpSummary */
-  rqs = await fetch(
+  /*rqs = await fetch(
     `http://localhost:3000/api/requestData?inquery=REVEXPSUMMARY&dfrom=${20220101}&dto=${20221231}`
   );
-  let dataExpRev = await rqs.json();
+  let dataExpRev = await rqs.json();*/
+  let dataExpRev = await requestData("REVEXPSUMMARY", 20220101, 20221231);
 
   return {
     props: {

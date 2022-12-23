@@ -6,7 +6,8 @@ import { DatePicker, Layout, Empty, Modal, Button } from "antd";
 import moment from "moment";
 import { requestData } from "../Methods/DataApi";
 import { VerticalAlignBottomOutlined } from "@ant-design/icons";
-import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+//import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+import HtmlTOExcel from "../Methods/exportExcel";
 
 const UnPaidInv = (props) => {
   let [invData, setInvData] = useState([]);
@@ -24,13 +25,20 @@ const UnPaidInv = (props) => {
 
   console.log(`from UnPaid Inv `, props.custno, props);
 
-  const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
-    var elt = document.getElementById("unpaidinv");
-    var wb = utils.table_to_book(elt, { sheet: "sheet1" });
+  /*const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
+    //var elt = document.getElementById("unpaidinv");
+    //var wb = utils.table_to_book(elt, { sheet: "sheet1" });
+    var ws = utils.json_to_sheet(invData);
+    //let ws = utils.sheet_;
+
+    var wb = utils.book_new();
+
+    utils.book_append_sheet(wb, ws, "Unpaid");
+
     return dl
       ? write(wb, { bookType: type, bookSST: true, type: "base64" })
-      : writeFile(wb, fun || `UnPaid Invoices ${props.custno}` + ".xlsx");
-  };
+      : writeFile(wb, fun || `UnPaid_Invoices_${props.custno}` + ".xlsx");
+  };*/
 
   const InfoData = {
     SIH_INV_NO: "Invoice No",
@@ -109,7 +117,13 @@ const UnPaidInv = (props) => {
           type="primary"
           className="bg-blue-500  float-right mb-4"
           shape="round"
-          onClick={HtmlTOExcel}
+          onClick={() =>
+            HtmlTOExcel(
+              invData,
+              dataCols.map((e) => e.key),
+              `Unpaid Invoices for ${props.custno}`
+            )
+          }
         >
           Download Excel
           <VerticalAlignBottomOutlined style={{ paddingLeft: "0.5rem" }} />

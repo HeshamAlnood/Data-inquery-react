@@ -36,7 +36,8 @@ export const tableKey = {
   INVENTORY: "ITEM_PART_NO",
 };
 
-import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+//import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+import HtmlTOExcel from "../Methods/exportExcel";
 import collapseMotion from "antd/lib/_util/motion";
 const { RangePicker } = DatePicker;
 
@@ -375,13 +376,43 @@ export default function DataTablesA(props) {
     setSearchText("");
   };
 
-  const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
-    var elt = document.getElementById("dataTable");
-    var wb = utils.table_to_book(elt, { sheet: "sheet1" });
+  /*const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
+     
+    console.log(
+      `dataCols`,
+      dataCols.map((e) => e.dataIndex)
+    );
+     console.log(
+      `lodash`,
+      dataElm.map((e) =>
+        lodash.pick(
+          e,
+          dataCols.map((e) => e.dataIndex)
+        )
+      )
+    );
+    let ws = utils.json_to_sheet(
+      dataElm.map((e) =>
+        lodash.pick(
+          e,
+          dataCols.map((e) => e.dataIndex)
+        )
+      )
+    );
+
+    var wb = utils.book_new();
+
+    utils.book_append_sheet(wb, ws, query);
+
     return dl
       ? write(wb, { bookType: type, bookSST: true, type: "base64" })
+      : writeFile(wb, fun || `UnPaid_Invoices_${props.custno}` + ".xlsx");
+  };*/
+
+  /* return dl
+      ? write(wb, { bookType: type, bookSST: true, type: "base64" })
       : writeFile(wb, fun || query + ".xlsx");
-  };
+  };*/
 
   const disableCursor = (flag = true) => {
     flag === true
@@ -788,7 +819,12 @@ export default function DataTablesA(props) {
               size="lg"
               color="primary"
               className="bg-blue-500 "
-              onClick={HtmlTOExcel}
+              onClick={() =>
+                HtmlTOExcel(
+                  dataElm,
+                  dataCols.map((e) => e.dataIndex)
+                )
+              }
             >
               Download Excel
               <VerticalAlignBottomOutlined style={{ paddingLeft: "0.5rem" }} />

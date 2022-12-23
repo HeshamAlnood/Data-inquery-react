@@ -285,7 +285,7 @@ export const CustomerByItems = (props) => {
         </div>
 
         <Divider>{vKeyVal} Items Transctions</Divider>
-        <div class="grid grid-cols-2 gap-24">
+        <div className="grid grid-cols-2 gap-24">
           <div className="">
             <div className="w-2/2	">
               <Divider>Items Sold</Divider>
