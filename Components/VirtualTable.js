@@ -9,11 +9,10 @@ const VirtualTable = (props) => {
   const [tableWidth, setTableWidth] = useState(0);
   const widthColumnCount = 11; /* columns.filter(({ width }) => !width).length*/
   const mergedColumns = columns.map((column) => {
-    if (column.width) {
-      return column;
-    }
-
-    return { ...column, width: Math.floor(tableWidth / widthColumnCount) };
+    return {
+      ...column,
+      width: Math.floor(tableWidth / widthColumnCount),
+    };
   });
   console.log(`from virtual table `, columns, tableWidth, widthColumnCount);
   const gridRef = useRef();
@@ -43,6 +42,21 @@ const VirtualTable = (props) => {
       columnIndex: 0,
       shouldForceUpdate: true,
     });
+  };
+
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        "selectedRows: ",
+        selectedRows
+      );
+    },
+    getCheckboxProps: (record) => ({
+      disabled: record.name === "Disabled User",
+      // Column configuration not to be checked
+      name: record.name,
+    }),
   };
 
   useEffect(() => resetVirtualGrid, [tableWidth]);
@@ -97,6 +111,12 @@ const VirtualTable = (props) => {
         className="virtual-table"
         columns={mergedColumns}
         pagination={false}
+        /*rowSelection={{
+          type: "checkbox",
+          ...rowSelection,
+        }}*/
+        size="large"
+        //bordered="true"
         components={{
           body: renderVirtualList,
         }}

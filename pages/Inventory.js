@@ -154,7 +154,6 @@ export default function Customer(props) {
   const listRef = useRef(null);
 
   const showModal = (item) => {
-    console.log(`Go Go Modal Modal`, item);
     setCurrItem(item);
     setVisible(true);
 

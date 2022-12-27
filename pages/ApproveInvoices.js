@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useReducer, useContext } from "react";
-import { Container, Grid, Loading, Button } from "@nextui-org/react";
+import { Container, Grid, Loading, /*Table,*/ Button } from "@nextui-org/react";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "../Components/Stats";
 import moment from "moment";
@@ -101,6 +101,27 @@ const ApproveCollect = (prop) => {
     setSelectionRange(date);
     /*console.log(`handleSelect`);
     console.log(date); // native Date object*/
+  };
+
+  const InfoData = {
+    SRL: "SR",
+    SIC_COLLECT_NO: "COLLECT NO",
+    //  PART_NO: "Part No",
+    SIC_COLLECT_DATE: "COLLECT DATE",
+    SIC_RECEIPT_NO: "RECEIPT NO",
+    SIC_AMOUNT: "Collect AMOUNT",
+    //NAME: "Customer / Vendor Name",
+    SIC_INVOICE_AMT: "INVOICE AMT",
+    SIH_NET_INV_AMT: "NET_INV AMT",
+    SIH_INV_DATE: "INV DATE",
+    SIC_INVOICE_REF_NO: "INVOICE REF NO",
+
+    SIC_CUST_NAME: "CUSTOMER NAME",
+    SIC_STATUS: "STATUS",
+  };
+
+  const getColLabel = (plabel) => {
+    return InfoData[plabel];
   };
   const onChangeDateRange = (dates, dateStrings) => {
     if (dates) {
@@ -353,11 +374,20 @@ const ApproveCollect = (prop) => {
         setValueList([...new Set(listUnqique)]);
         let ndAprv = data
           .filter((e) => e.SIC_STATUS != 9)
-          .map((e) => e.SIC_AMOUNT);
+          .map((e) => +e.SIC_AMOUNT);
 
         let sumNdAprv = ndAprv.reduce((a, e) => a + e, 0);
         setTotalNeedAprv(Math.round(sumNdAprv, 2));
+        /*colsArr.length = 0;
+        cols.forEach((e, i) => {
+          let ob = { key: e, label: e };
 
+          colsArr.push(ob);
+        });*/
+
+        setDataCols(colsArr);
+        console.log(`data cols :`, dataCols);
+        console.log(`data  :`, data);
         //fillArry(data);
       });
 
@@ -374,7 +404,7 @@ const ApproveCollect = (prop) => {
     setSelectedRowKeys(newSelectedRowKeys);
 
     setTotalCheckAprv(
-      selectedRows.map((e) => e.SIC_AMOUNT).reduce((a, b) => a + b, 0)
+      selectedRows.map((e) => +e.SIC_AMOUNT).reduce((a, b) => +a + +b, 0)
     );
 
     setTimeout(() => setStIsLoading(false), 10);
@@ -390,6 +420,39 @@ const ApproveCollect = (prop) => {
     //onSelect:(record)=> {},
     onSelectInvert: (rows) => console.log(`rows inverted: `, rows),
     columnWidth: 5,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+      {
+        key: "odd",
+        text: "Select Odd Row",
+        onSelect: (changableRowKeys) => {
+          let newSelectedRowKeys = [];
+          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
+            if (index % 2 !== 0) {
+              return false;
+            }
+            return true;
+          });
+          setSelectedRowKeys(newSelectedRowKeys);
+        },
+      },
+      {
+        key: "even",
+        text: "Select Even Row",
+        onSelect: (changableRowKeys) => {
+          let newSelectedRowKeys = [];
+          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
+            if (index % 2 !== 0) {
+              return true;
+            }
+            return false;
+          });
+          setSelectedRowKeys(newSelectedRowKeys);
+        },
+      },
+    ],
     getCheckboxProps: (record) => {
       //const rowIndex = data.findIndex((item) => item.key === record.key);
 
@@ -612,32 +675,131 @@ const ApproveCollect = (prop) => {
           pagination={{ defaultPageSize: 50 }}
           loading={setIsLoading}
           onChange={handleChange}
-          /*scroll={{
-            //y: 240,
-            x: "80vw",
-            //y:300,
-          }}*/
           scroll={{ y: "240", x: "80vw" }}
-          components={VList({
-            height: "80vw",
-          })}
         />
 
-        {
-          /* <VirtualTable
+        {/* <VirtualTable
           id="dataTable"
           columns={dataCols}
           dataSource={data}
           rowKey={(record) => record["SRL"]}
           rowSelection={{ ...rowSelection }}
-          scroll={{
-            /*y: 300,
-            x: "100vw",*/
-          //y: 900,
-          //x: "40vw",
-          //y: 500,
-          // x: "100vw",                  /> */
-        }
+          /*rowKey={(record) => record["SRL"]}
+          rowSelection={{ ...rowSelection }}*/
+        /*scroll={{
+            y: 1300,
+            x: "100vw",
+          }}
+        /> */}
+        {/* <Table
+          id="aproveInv"
+          //striped
+          lined={true}
+          //sticked={"true"}
+          selectionMode="multiple"
+          color={"primary"}
+          bordered={false}
+          aria-label="Example static striped collection table"
+          hoverable={"true"}
+          borderWeight="black"
+          lineWeight="light"
+          fixed={true}
+          animated={false}
+          //showSelectionCheckboxes={false}
+
+          onSelectionChange={(keys) => {
+            //whenSelectChange([...keys]);
+            //keys.push(-1);
+            console.log(`se;elctoin 1`, keys);
+          }}
+          css={{
+            height: "auto",
+            //minWidth: "100%",
+          }}
+          containerCss={{
+            //height: "50%",
+            height: "53rem",
+            width: "100%",
+            position: "sticky",
+            overflowY: "scroll",
+            //minWidth: "50%",
+
+            //position: "relative",
+            //   height: "calc($space$14 * 10)",
+          }}
+        >
+          <Table.Header
+            columns={dataCols}
+            className="bg-sky-600 text-slate-50 text-base   "
+          >
+            {(column) => (
+              <Table.Column
+                key={column.key || "1"}
+                align="start"
+                className="bg-sky-600 text-slate-50 text-base   "
+                //isRowHeader={true}
+                //selectionMode="multiple"
+                //headerLined={true}
+                //allowsSorting
+                //name={column.label}
+                css={{
+                  //width: "10px",
+                  /minWidth: "30px" 
+                  // height: "calc($space$14 * 10)" }
+                  maxHeight: "100px",
+
+                  zIndex: 300,
+                  position: "sticky",
+                  top: "15px",
+                }}
+              >
+                {""}
+                {getColLabel(column.label)}
+              </Table.Column>
+            )}
+          </Table.Header>
+          <Table.Body
+            items={data}
+            //onLoadMore={itemMovmentData.loadMore}
+          >
+            {(item) => (
+              <Table.Row
+                key={item.SRL}
+                //id={+i}
+
+                css={{
+                  background: item.CATEGORY === "Summary" ? "#e5e7eb" : "",
+                  fontSize: item.CATEGORY === "Summary" ? "1.2rem" : "",
+                  position: item.CATEGORY === "Summary" ? "sticky" : "",
+                  top: item.CATEGORY === "Summary" ? "0px" : "",
+                  //color: item.CATEGORY === "Summary" ? "#e5e7eb" : "white",
+                  "&:hover": {
+                    background: "$yellow100",
+                    color: "$blue400",
+                  },
+                }}
+              >
+                {
+                 
+                  (columnKey) => {
+                    return (
+                      <Table.Cell
+                        css={{
+                          width: "10px",
+                          minWidth: "2px" 
+                          //* height: "calc($space$14 * 10)" }
+                          ,
+                        }}
+                      >
+                        {item[columnKey]}
+                      </Table.Cell>
+                    );
+                  }
+                }
+              </Table.Row>
+            )}
+          </Table.Body>
+        </Table> */}
       </Content>
     </Layout>
   );
