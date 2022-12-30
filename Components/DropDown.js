@@ -2,9 +2,9 @@ import { Dropdown, message, Checkbox, Row, Col } from "antd";
 
 export const DropdownL = (props) => {
   let vMenus = props.menu;
-
+  console.log(`vMenus`, vMenus);
   let gridChickBox = vMenus.map((e) => {
-    <Col span={3}>
+    <Col span={8}>
       <Checkbox value={e}>e</Checkbox>
     </Col>;
   });
@@ -30,7 +30,9 @@ export const DropdownL = (props) => {
       overlayStyle={{
         backgroundColor: "white",
         //borderRadius: "4%",
-        width: "30%",
+        //width: "50%",
+        minWidth: "20%",
+        maxWidth: "100%",
         height: "7rem",
       }}
       placement="topLeft"
@@ -47,13 +49,15 @@ export const DropdownL = (props) => {
           onChange={onChange}
           defaultValue={vMenus}
           style={{
-            width: "80%",
+            width: "100%",
             height: "3rem",
             overflow: "visible",
             justifyContent: "flex-start",
           }}
         >
-          <Row justify="space-between">{gridChickBox}</Row>
+          <Row justify="start" gutter={8}>
+            {gridChickBox}
+          </Row>
         </Checkbox.Group>
       }
     >

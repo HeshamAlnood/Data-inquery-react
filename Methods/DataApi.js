@@ -57,3 +57,12 @@ export const getItemsData = async (pType, pPartno) => {
   let data = await rsp.json();
   return data;
 };
+
+export const aproveCollection = async (pInvs, pUser) => {
+  const rsp = await fetch(
+    `${url}/aproveCollection?invs=${pInvs}&user=${pUser}`,
+    { method: "POST" }
+  );
+  let data = await rsp.json();
+  return data;
+};

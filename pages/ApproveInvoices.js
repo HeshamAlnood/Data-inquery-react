@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useReducer, useContext } from "react";
-import { Container, Grid, Loading, /*Table,*/ Button } from "@nextui-org/react";
+import { Container, Grid, Loading /*Table,*/ } from "@nextui-org/react";
 import { SearchOutlined } from "@ant-design/icons";
 import Stats from "../Components/Stats";
 import moment from "moment";
@@ -19,6 +19,9 @@ import { VList } from "virtual-table-ant-design";
 //import CSSTransition from "react-addons-css-transition-group";
 //import { CSSTransition, Transition } from "react-transition-group";
 import { CompanyName } from "./_app";
+import HtmlTOExcel from "../Methods/exportExcel";
+
+import { aproveCollection } from "../Methods/DataApi";
 import {
   Input,
   Space,
@@ -30,6 +33,8 @@ import {
   DatePicker,
   Layout,
   Statistic,
+  Button,
+  notification,
 } from "antd";
 
 const ApproveCollect = (prop) => {
@@ -45,6 +50,17 @@ const ApproveCollect = (prop) => {
   const [columnKeys, setColumnKeys] = useState(
     colKey.map((column) => column.key)
   );
+  const openNotification = (placement) => {
+    let totAmount = totalCheckAprv || 0;
+    notification.success({
+      message: `Aproved Success`,
+      description: `Aprvoed ${selectedRowKeys.length} Collection and ${totAmount} Amount`,
+      //placement,
+
+      duration: 3,
+    });
+  };
+
   const [valueList, setValueList] = useState([""]);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
@@ -57,6 +73,8 @@ const ApproveCollect = (prop) => {
 
   const [counter, setCounter] = useReducer((n) => n + 1, 1);
   const [stIslodaing, setStIsLoading] = useState(false);
+  const [buttonIslodaing, setButtonIslodaing] = useState(false);
+  const searchAllInput = useRef(null);
   const CompName = useContext(CompanyName);
 
   let [filterd, setFilterd] = useState([]);
@@ -73,21 +91,49 @@ const ApproveCollect = (prop) => {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-  const performFilter = () => {
-    let vStartDate = moment(selectionRange.startDate);
-    let vEndDate = moment(selectionRange.endDate);
-    let dataOb = data;
 
-    var resultProductData = dataOb.filter((a) => {
-      let startDate = new Date(vStartDate);
-      let endDate = new Date(vEndDate);
-      let vObDateCol = "SIC_COLLECT_DATE";
-      var date = new Date(a[vObDateCol]);
-      return (date >= startDate) & (date <= endDate);
-    });
+  const resetFilter = () => {
+    setData(dataRaw);
 
-    setData(resultProductData);
-    //fillStateProps(resultProductData, props.query);
+    setSearchText("");
+  };
+
+  const searchTable = (value) => {
+    let vVal = value;
+    let qryu = [];
+
+    try {
+      if (value.length === 0) {
+        resetFilter();
+
+        return;
+      }
+      let data = dataRaw;
+
+      columnKeys.forEach((c) => {
+        try {
+          data.forEach((e) =>
+            e[c]
+              ?.toString()
+              .toLowerCase()
+              .indexOf(vVal?.toString().toLowerCase()) > -1
+              ? qryu.push(e)
+              : ""
+          );
+
+          console.log(`qruy with map`, qryu);
+        } catch (e) {
+          console.log(`err`, e);
+        }
+      });
+
+      console.log(`map data qryu`, qryu);
+      setData([...new Set(qryu)]);
+
+      //qryu.length = 0;
+    } catch (e) {
+      console.log(e);
+    }
   };
   let now = moment();
 
@@ -96,68 +142,6 @@ const ApproveCollect = (prop) => {
     endDate: now._d,
     key: "selection",
   });
-
-  const handleSelect = (date) => {
-    setSelectionRange(date);
-    /*console.log(`handleSelect`);
-    console.log(date); // native Date object*/
-  };
-
-  const InfoData = {
-    SRL: "SR",
-    SIC_COLLECT_NO: "COLLECT NO",
-    //  PART_NO: "Part No",
-    SIC_COLLECT_DATE: "COLLECT DATE",
-    SIC_RECEIPT_NO: "RECEIPT NO",
-    SIC_AMOUNT: "Collect AMOUNT",
-    //NAME: "Customer / Vendor Name",
-    SIC_INVOICE_AMT: "INVOICE AMT",
-    SIH_NET_INV_AMT: "NET_INV AMT",
-    SIH_INV_DATE: "INV DATE",
-    SIC_INVOICE_REF_NO: "INVOICE REF NO",
-
-    SIC_CUST_NAME: "CUSTOMER NAME",
-    SIC_STATUS: "STATUS",
-  };
-
-  const getColLabel = (plabel) => {
-    return InfoData[plabel];
-  };
-  const onChangeDateRange = (dates, dateStrings) => {
-    if (dates) {
-      let vStartDate = moment(dates[0]);
-      let vEndDate = moment(dates[1]);
-      let dataOb = data;
-
-      var resultProductData = dataOb.filter((a) => {
-        let startDate = new Date(vStartDate);
-        let endDate = new Date(vEndDate);
-        let vObDateCol = "SIC_COLLECT_DATE";
-        var date = new Date(a[vObDateCol]);
-        return (date >= startDate) & (date <= endDate);
-      });
-
-      setData(resultProductData);
-      //fillStateProps(resultProductData, props.query);
-    } else {
-      resetFilter();
-    }
-  };
-
-  const resetFilter = () => {
-    setData(dataRaw);
-    //fillStateProps(dataRaw, props.query);
-
-    setSearchText("");
-  };
-
-  const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
-    var elt = document.getElementById("dataTable");
-    var wb = utils.table_to_book(elt, { sheet: "sheet1" });
-    return dl
-      ? write(wb, { bookType: type, bookSST: true, type: "base64" })
-      : writeFile(wb, fun || query + ".xlsx");
-  };
 
   const generateCols = (ob = []) => {
     //let cols = Object.keys(ob[1]);
@@ -350,11 +334,14 @@ const ApproveCollect = (prop) => {
       ),*/
   });
 
-  useEffect(() => {
+  const getData = () => {
+    setIsLoading(true);
+    //setSelectedRowKeys((prev) => (prev = []));
+
     fetch(`http://192.168.0.159:3001/dbData?inquery=INVNEEDAPPROVE`)
       .then((res) => res.json())
       .then((data) => {
-        //console.log(`data`, data);
+        console.log(`data`, data);
         let cols = Object.keys(data[1]);
 
         setData(data);
@@ -378,20 +365,24 @@ const ApproveCollect = (prop) => {
 
         let sumNdAprv = ndAprv.reduce((a, e) => a + e, 0);
         setTotalNeedAprv(Math.round(sumNdAprv, 2));
-        /*colsArr.length = 0;
-        cols.forEach((e, i) => {
-          let ob = { key: e, label: e };
-
-          colsArr.push(ob);
-        });*/
-
+        setTotalCheckAprv(0);
         setDataCols(colsArr);
         console.log(`data cols :`, dataCols);
         console.log(`data  :`, data);
+        setTimeout(() => {
+          setSelectedRowKeys(["0"]);
+        }, 1000);
+        setIsLoading(false);
+        //setSelectedRowKeys((prev) => (prev = []));
+
+        console.log(`selectedRowKeys : `, selectedRowKeys);
+
         //fillArry(data);
       });
+  };
 
-    return () => {};
+  useEffect(() => {
+    getData();
   }, [mounted]);
 
   /*begin selection*/
@@ -403,9 +394,11 @@ const ApproveCollect = (prop) => {
 
     setSelectedRowKeys(newSelectedRowKeys);
 
-    setTotalCheckAprv(
-      selectedRows.map((e) => +e.SIC_AMOUNT).reduce((a, b) => +a + +b, 0)
-    );
+    let totCheckAprv = selectedRows
+      .map((e) => +e.SIC_AMOUNT)
+      .reduce((a, b) => +a + +b, 0);
+
+    setTotalCheckAprv(totCheckAprv);
 
     setTimeout(() => setStIsLoading(false), 10);
     //                          animation: "2s anim-lineUp ease-out",
@@ -418,40 +411,14 @@ const ApproveCollect = (prop) => {
   const rowSelection = {
     onChange: onSelectChange,
     //onSelect:(record)=> {},
+
     onSelectInvert: (rows) => console.log(`rows inverted: `, rows),
+
     columnWidth: 5,
     selections: [
       Table.SELECTION_ALL,
       Table.SELECTION_INVERT,
       Table.SELECTION_NONE,
-      {
-        key: "odd",
-        text: "Select Odd Row",
-        onSelect: (changableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-      {
-        key: "even",
-        text: "Select Even Row",
-        onSelect: (changableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
     ],
     getCheckboxProps: (record) => {
       //const rowIndex = data.findIndex((item) => item.key === record.key);
@@ -461,22 +428,15 @@ const ApproveCollect = (prop) => {
         disabled: record.SIC_STATUS === 9, //enable first 2 rows only
       };
     },
-
-    /* (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },*/
   };
+
   const hasSelected = selectedRowKeys.length > 0;
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
 
-  const queryFilterd = (valueArr = filterd) => {
+  const queryFilterd = (valueArr = filterd, typ = 0) => {
     let dataOb = dataRaw;
 
     let intersection;
@@ -524,6 +484,48 @@ const ApproveCollect = (prop) => {
 
   /*end selecion */
 
+  /* approve */
+
+  const aprove = (invs) => {
+    console.log(`invs `, invs);
+    let sicCol = [];
+
+    invs?.forEach((e, i) =>
+      sicCol.push(data.filter((d) => d.SRL === e).map((k) => k.SIC_COLLECT_NO))
+    );
+    console.log(`sicCol , `, sicCol.flat());
+    sicCol = sicCol.flat();
+    //return;
+
+    if (sicCol.length === 0) {
+      alert(`No Invoices Selected !`);
+      return;
+    }
+
+    setButtonIslodaing(true);
+    //setMounted(false);
+
+    aproveCollection(sicCol, "admin")
+      .then((d) => {
+        //d === "10000";
+        console.log(`response from procedure `, d);
+        setButtonIslodaing(false);
+
+        getData();
+        openNotification("topRight");
+        //        setMounted(true);
+
+        /*queryFilterd(invs[0]);
+        queryFilterd(invs[1]);*/
+      })
+      .catch((c) => {
+        console.log(c);
+        setButtonIslodaing(false);
+      });
+  };
+
+  /* approve */
+
   if (isLoading === true) {
     return (
       <div className="flex justify-center">
@@ -545,71 +547,34 @@ const ApproveCollect = (prop) => {
           backgroundColor: "transparent",
         }}
       >
-        {/* <Row justify="space-around">
-          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-            <Stats
-              title={state1.title}
-              value={state1.value}
-              color={state1.color}
-            />
-          </Col>
-          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-            <Stats
-              title={state2.title}
-              value={state2.value}
-              color={state2.color}
-            />
-          </Col>
-          <Col className="gutter-row" span={30} lg={{ span: 6, offset: 2 }}>
-            <Stats
-              title={state3.title}
-              value={state3.value}
-              color={state3.color}
-            />
-          </Col>
-        </Row> */}
         <div>
-          {showDateRanger && (
-            <>
-              <Divider orientation="center"></Divider>
-
-              <Row justify="start" className="space-x-4">
-                <h className="text-lg px-px"> Search Date : </h>
-
-                <RangePicker
-                  ranges={{
-                    Yesterday: [moment().day(-1), moment().day(-1)],
-
-                    Today: [moment(), moment()],
-                    "This Week": [moment().day(-7), moment().day(0)],
-                    "This Month": [
-                      moment().startOf("month"),
-                      moment().endOf("month"),
-                    ],
-                    "3 Months": [moment().day(-90), moment().day(0)],
-                    "6 Months": [moment().day(-180), moment().day(0)],
-                    Year: [moment().day(-365), moment().day(0)],
-                    "This Year": [
-                      moment().startOf("year"),
-                      moment().endOf("year"),
-                    ],
-                  }}
-                  format="YYYY/MM/DD"
-                  onChange={onChangeDateRange}
-                  size={"large"}
-                />
-              </Row>
-            </>
-          )}
           <Divider orientation="center"></Divider>
         </div>
-        <div className="flex justify-end	">
-          <Space size={1050}>
+        <div className="flex  justify-between     	">
+          <Space size={2050}>
             {/* Add Statics */}
 
-            <div className="inline-flex  ">
+            <div className="inline-flex justify-start 	 ">
               <Space size={150}>
                 <Col>
+                  <div className="flex justify-items-start space-x-1.5   mb-4">
+                    <input
+                      className=" inputSearch border-slate-300	hover:border-blue-300 focus:border-blue-50  focus:w-96	select:w-96 placeholder-shown:w-64	border-2 rounded-full placeholder:text-slate-300	"
+                      //id="inputSearch"
+                      ref={searchAllInput}
+                      type="text"
+                      name="search"
+                      placeholder="Search All Data..."
+                      onKeyUp={(e) => searchTable(e.target.value)}
+                    />
+                    <TagList
+                      cols={valueList}
+                      filterd={setFilterd}
+                      qName={"Invoice Ref"}
+                    />
+                  </div>
+                </Col>
+                <Col className="">
                   <Statistic
                     title="Total Need Approve"
                     value={totalNeedAprv}
@@ -631,14 +596,42 @@ const ApproveCollect = (prop) => {
                   />
                 </Col>
                 <Col>
-                  <Button
-                    type="primary"
-                    //loading={loadings[0]}
-                    onClick={() => setTimeout(() => null, 3000)}
-                    //    disabled={selectedRowKeys.length > 0 ? false : true}
-                  >
-                    Approve
-                  </Button>
+                  <div className="flex  justify-end	">
+                    <div className="flex flex-col gap-4 sticky  ">
+                      <Button
+                        type="primary"
+                        //loading={loadings[0]}
+                        onClick={() => aprove(selectedRowKeys)}
+                        //    disabled={selectedRowKeys.length > 0 ? false : true}
+                        size="large"
+                        shape="round"
+                        loading={buttonIslodaing}
+                        //block={true}
+                        className="w-48 h-48 hvr-glow "
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        type="primary"
+                        size="large"
+                        shape="round"
+                        loading={buttonIslodaing}
+                        //block={true}
+                        className="w-48 h-48 hvr-glow "
+                        onClick={() =>
+                          HtmlTOExcel(
+                            data,
+                            dataCols.map((e) => e.dataIndex)
+                          )
+                        }
+                      >
+                        Download Excel
+                        <VerticalAlignBottomOutlined
+                          style={{ paddingLeft: "0.5rem" }}
+                        />
+                      </Button>
+                    </div>
+                  </div>
                 </Col>
               </Space>
             </div>
@@ -647,21 +640,31 @@ const ApproveCollect = (prop) => {
           </Space>
         </div>
         <div>{/* <a>{CompName} hh</a> */}</div>
-        <div>
-          <DropdownL menu={columnKeys} chng={chngCols} />
+        {/* <div className="flex justify-items-start space-x-1.5   mb-4">
+          <input
+            className=" inputSearch border-slate-300	hover:border-blue-300 focus:border-blue-50 w-full focus:w-96 placeholder-shown:w-64	border-2 rounded-full placeholder:text-slate-300	"
+            //id="inputSearch"
+            ref={searchAllInput}
+            type="text"
+            name="search"
+            placeholder="Search All Data..."
+            onKeyUp={(e) => searchTable(e.target.value)}
+          />
           <TagList
             cols={valueList}
             filterd={setFilterd}
             qName={"Invoice Ref"}
           />
-          <span
-            style={{
-              marginLeft: 8,
-            }}
-          >
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
-          </span>
-        </div>
+        </div> */}
+        <DropdownL menu={columnKeys} chng={chngCols} />
+
+        {/* {isLoading && (
+          <div className="flex justify-center">
+            <div className="article ">
+              <Loading size="xl">Loading ...</Loading>
+            </div>
+          </div>
+        )} */}
 
         <Table
           id="dataTable"
@@ -677,129 +680,6 @@ const ApproveCollect = (prop) => {
           onChange={handleChange}
           scroll={{ y: "240", x: "80vw" }}
         />
-
-        {/* <VirtualTable
-          id="dataTable"
-          columns={dataCols}
-          dataSource={data}
-          rowKey={(record) => record["SRL"]}
-          rowSelection={{ ...rowSelection }}
-          /*rowKey={(record) => record["SRL"]}
-          rowSelection={{ ...rowSelection }}*/
-        /*scroll={{
-            y: 1300,
-            x: "100vw",
-          }}
-        /> */}
-        {/* <Table
-          id="aproveInv"
-          //striped
-          lined={true}
-          //sticked={"true"}
-          selectionMode="multiple"
-          color={"primary"}
-          bordered={false}
-          aria-label="Example static striped collection table"
-          hoverable={"true"}
-          borderWeight="black"
-          lineWeight="light"
-          fixed={true}
-          animated={false}
-          //showSelectionCheckboxes={false}
-
-          onSelectionChange={(keys) => {
-            //whenSelectChange([...keys]);
-            //keys.push(-1);
-            console.log(`se;elctoin 1`, keys);
-          }}
-          css={{
-            height: "auto",
-            //minWidth: "100%",
-          }}
-          containerCss={{
-            //height: "50%",
-            height: "53rem",
-            width: "100%",
-            position: "sticky",
-            overflowY: "scroll",
-            //minWidth: "50%",
-
-            //position: "relative",
-            //   height: "calc($space$14 * 10)",
-          }}
-        >
-          <Table.Header
-            columns={dataCols}
-            className="bg-sky-600 text-slate-50 text-base   "
-          >
-            {(column) => (
-              <Table.Column
-                key={column.key || "1"}
-                align="start"
-                className="bg-sky-600 text-slate-50 text-base   "
-                //isRowHeader={true}
-                //selectionMode="multiple"
-                //headerLined={true}
-                //allowsSorting
-                //name={column.label}
-                css={{
-                  //width: "10px",
-                  /minWidth: "30px" 
-                  // height: "calc($space$14 * 10)" }
-                  maxHeight: "100px",
-
-                  zIndex: 300,
-                  position: "sticky",
-                  top: "15px",
-                }}
-              >
-                {""}
-                {getColLabel(column.label)}
-              </Table.Column>
-            )}
-          </Table.Header>
-          <Table.Body
-            items={data}
-            //onLoadMore={itemMovmentData.loadMore}
-          >
-            {(item) => (
-              <Table.Row
-                key={item.SRL}
-                //id={+i}
-
-                css={{
-                  background: item.CATEGORY === "Summary" ? "#e5e7eb" : "",
-                  fontSize: item.CATEGORY === "Summary" ? "1.2rem" : "",
-                  position: item.CATEGORY === "Summary" ? "sticky" : "",
-                  top: item.CATEGORY === "Summary" ? "0px" : "",
-                  //color: item.CATEGORY === "Summary" ? "#e5e7eb" : "white",
-                  "&:hover": {
-                    background: "$yellow100",
-                    color: "$blue400",
-                  },
-                }}
-              >
-                {
-                 
-                  (columnKey) => {
-                    return (
-                      <Table.Cell
-                        css={{
-                          width: "10px",
-                          minWidth: "2px" 
-                          //* height: "calc($space$14 * 10)" }
-                          ,
-                        }}
-                      >
-                        {item[columnKey]}
-                      </Table.Cell>
-                    );
-                  }
-                }
-              </Table.Row>
-            )}
-          </Table.Body>
-        </Table> */}
       </Content>
     </Layout>
   );
