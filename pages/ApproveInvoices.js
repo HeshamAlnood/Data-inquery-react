@@ -35,6 +35,7 @@ import {
   Statistic,
   Button,
   notification,
+  Popconfirm,
 } from "antd";
 
 const ApproveCollect = (prop) => {
@@ -50,11 +51,11 @@ const ApproveCollect = (prop) => {
   const [columnKeys, setColumnKeys] = useState(
     colKey.map((column) => column.key)
   );
-  const openNotification = (placement) => {
+  const openNotification = (placement, type, message, desc) => {
     let totAmount = totalCheckAprv || 0;
-    notification.success({
-      message: `Aproved Success`,
-      description: `Aprvoed ${selectedRowKeys.length} Collection and ${totAmount} Amount`,
+    notification[type]({
+      message: message, //`Aproved Success`,
+      description: desc, //`Aprvoed ${selectedRowKeys.length} Collection and ${totAmount} Amount`,
       //placement,
 
       duration: 3,
@@ -498,7 +499,13 @@ const ApproveCollect = (prop) => {
     //return;
 
     if (sicCol.length === 0) {
-      alert(`No Invoices Selected !`);
+      //alert(`No Invoices Selected !`);
+      openNotification(
+        "topRight",
+        "error",
+        "No Collection Selected",
+        `You need to select a Collection to Approve`
+      );
       return;
     }
 
@@ -512,7 +519,12 @@ const ApproveCollect = (prop) => {
         setButtonIslodaing(false);
 
         getData();
-        openNotification("topRight");
+        openNotification(
+          "topRight",
+          "success",
+          "Approve Check",
+          `Aprvoed ${selectedRowKeys.length} Collection and ${totalCheckAprv} Amount`
+        );
         //        setMounted(true);
 
         /*queryFilterd(invs[0]);
@@ -544,20 +556,22 @@ const ApproveCollect = (prop) => {
           paddingLeft: "18rem",
           margin: 0,
           minHeight: 280,
+          minWidth: "50%",
+          maxWidth: "100%",
           backgroundColor: "transparent",
         }}
       >
         <div>
           <Divider orientation="center"></Divider>
         </div>
-        <div className="flex  justify-between     	">
-          <Space size={2050}>
+        <div className="  max-w-full min-w-48   	">
+          <Space size={1050}>
             {/* Add Statics */}
 
             <div className="inline-flex justify-start 	 ">
               <Space size={150}>
                 <Col>
-                  <div className="flex justify-items-start space-x-1.5   mb-4">
+                  <div className=" space-y-1.5 gap-4  mb-4">
                     <input
                       className=" inputSearch border-slate-300	hover:border-blue-300 focus:border-blue-50  focus:w-96	select:w-96 placeholder-shown:w-64	border-2 rounded-full placeholder:text-slate-300	"
                       //id="inputSearch"
@@ -598,24 +612,67 @@ const ApproveCollect = (prop) => {
                 <Col>
                   <div className="flex  justify-end	">
                     <div className="flex flex-col gap-4 sticky  ">
-                      <Button
-                        type="primary"
-                        //loading={loadings[0]}
-                        onClick={() => aprove(selectedRowKeys)}
-                        //    disabled={selectedRowKeys.length > 0 ? false : true}
-                        size="large"
-                        shape="round"
-                        loading={buttonIslodaing}
-                        //block={true}
-                        className="w-48 h-48 hvr-glow "
+                      <Popconfirm
+                        title="Procced To Approve  ? "
+                        okText="YES"
+                        //disabled={selectedRowKeys.length > 0 ? false : true}
+                        cancelText="NO"
+                        disabled={
+                          selectedRowKeys.length > 0 && +selectedRowKeys[0] > 0
+                            ? false
+                            : true
+                        }
+                        onConfirm={() =>
+                          selectedRowKeys.length > 0 && +selectedRowKeys[0] > 0
+                            ? aprove(selectedRowKeys)
+                            : openNotification(
+                                "topRight",
+                                "error",
+                                "No Collection Selected",
+                                `You need to select a Collection to Approve`
+                              )
+                        }
                       >
-                        Approve
-                      </Button>
+                        <Button
+                          type="primary"
+                          //loading={loadings[0]}
+                          onClick={(e) => {
+                            //   e.preventDefault();
+                            console.log(
+                              `lengh selection `,
+                              selectedRowKeys,
+                              selectedRowKeys.length,
+                              +selectedRowKeys.length === 0 ||
+                                +selectedRowKeys[0] === 0
+                            );
+                            if (
+                              +selectedRowKeys.length === 0 ||
+                              +selectedRowKeys[0] === 0
+                            ) {
+                              openNotification(
+                                "topRight",
+                                "error",
+                                "No Collection Selected",
+                                `You need to select a Collection to Approve`
+                              );
+                              return;
+                            }
+                          }}
+                          //disabled={selectedRowKeys.length > 0 ? false : true}
+                          size="large"
+                          shape="round"
+                          loading={buttonIslodaing}
+                          //block={true}
+                          className="w-48 h-48 hvr-glow "
+                        >
+                          Approve
+                        </Button>
+                      </Popconfirm>
                       <Button
                         type="primary"
                         size="large"
                         shape="round"
-                        loading={buttonIslodaing}
+                        //loading={buttonIslodaing}
                         //block={true}
                         className="w-48 h-48 hvr-glow "
                         onClick={() =>
