@@ -127,7 +127,9 @@ export const MostSale = (props) => {
         setDataItem(data);
         setDataItemRaw(data);
         setIsDone(true);
-      });
+        data.length > 0 ? setIsDone(true) : setIsEmpty(true);
+      })
+      .catch((e) => setIsEmpty(true));
   }, []);
 
   useEffect(() => {
@@ -141,12 +143,16 @@ export const MostSale = (props) => {
       `http://localhost:3000/api/requestData?inquery=MOSTSALE&dfrom=${dateFrom}&dto=${dateTo}`
     )
       .then((rsp) => rsp.json())*/
-    requestData("MOSTSALE", dateFrom, dateTo).then((data) => {
-      setDataItem(data);
-      setDataItemRaw(data);
-      data.length > 0 ? setIsDone(true) : setIsEmpty(true);
-    });
+    requestData("MOSTSALE", dateFrom, dateTo)
+      .then((data) => {
+        setDataItem(data);
+        setDataItemRaw(data);
+        data.length > 0 ? setIsDone(true) : setIsEmpty(true);
+      })
+      .catch((e) => setIsEmpty(true));
   }, [dateFrom, dateTo]);
+
+  console.log(`set is Empty `, isEmpty, dataItem.length, dataItem);
 
   return (
     <>

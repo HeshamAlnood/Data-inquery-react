@@ -39,6 +39,7 @@ export const tableKey = {
 //import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
 import HtmlTOExcel from "../Methods/exportExcel";
 import collapseMotion from "antd/lib/_util/motion";
+import { data } from "autoprefixer";
 const { RangePicker } = DatePicker;
 
 /*import "react-date-range/dist/styles.css"; // main style file react-date-range

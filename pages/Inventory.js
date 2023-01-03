@@ -38,6 +38,7 @@ export default function Customer(props) {
   let [itemsDataRaw, setItemsDataRaw] = useState([]);
   let [isDone, setIsDone] = useState(false);
   let [itemList, setItemList] = useState([]);
+  let [itemListDesc, setItemListDesc] = useState([]);
   let [filterd, setFilterd] = useState([]);
   let [currItem, setCurrItem] = useState("");
   let [drawerFlag, setDrawerFlag] = useState(false);
@@ -119,6 +120,19 @@ export default function Customer(props) {
           .localeCompare((b || "b").toString().toLowerCase())
       )
     );
+    //let itemArrDesc = data.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION);
+    //let itemArrDesc = data;
+    //itemArrDesc = [...new Set(itemArrDesc)];
+    /*itemArrDesc = lodash.uniqBy(itemArrDesc, "PART_NO");
+    lodash.sortBy(itemArrDesc, ["PART_NO"]);
+    console.log(
+      `part desc `,
+      itemArrDesc.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION)
+    );
+    setItemListDesc(
+      itemArrDesc.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION)
+    );
+    setItemList(itemArrDesc.map((e) => e.PART_NO));*/
 
     return itemArr;
   };
@@ -386,6 +400,7 @@ export default function Customer(props) {
         <div className="grid justify-items-center    mt-6  mr-80 ">
           <TagList
             cols={itemList}
+            desc={itemListDesc}
             filterd={setFilterd}
             qName={`ITEMS`}
             width={"80%"}

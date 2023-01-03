@@ -6,8 +6,16 @@ import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 let selectTag = [];
 
 const TagList = (props) => {
-  const children = props.cols.map((e) => (
-    <Option key={e} className="rounded-full"></Option>
+  const children = props.cols.map((e, i) => (
+    <Option
+      key={e + i}
+      className="rounded-full"
+      value={e}
+
+      //labelInValue={true}
+    >
+      {props.desc || e}
+    </Option>
   ));
 
   let vWidth = props.width || "100%";
@@ -71,14 +79,16 @@ const TagList = (props) => {
         //bordered={false}
         //status={"warning"}
         className="rounded-full text-red-500"
-        popupClassName="rounded-full text-red-500"
+        //popupClassName="rounded-full text-red-500"
         style={{
           width: "30rem", // vWidth,
           height: "2.5rem",
           //borderRadius: "5%",
         }}
         //defaultValue={[]}
+
         onChange={handleChange}
+
         //onDeselect={handleChange}
         //className="rounded-full"
       >
