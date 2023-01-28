@@ -25,21 +25,6 @@ const UnPaidInv = (props) => {
 
   console.log(`from UnPaid Inv `, props.custno, props);
 
-  /*const HtmlTOExcel = (type = ".xlsx", fun, dl) => {
-    //var elt = document.getElementById("unpaidinv");
-    //var wb = utils.table_to_book(elt, { sheet: "sheet1" });
-    var ws = utils.json_to_sheet(invData);
-    //let ws = utils.sheet_;
-
-    var wb = utils.book_new();
-
-    utils.book_append_sheet(wb, ws, "Unpaid");
-
-    return dl
-      ? write(wb, { bookType: type, bookSST: true, type: "base64" })
-      : writeFile(wb, fun || `UnPaid_Invoices_${props.custno}` + ".xlsx");
-  };*/
-
   const InfoData = {
     SIH_INV_NO: "Invoice No",
     SIH_INV_DATE: "Invoice Date",

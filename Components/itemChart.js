@@ -28,15 +28,17 @@ const ItemChart = (props) => {
         .orderBy(data, ["TOTAL_SALES"], ["desc"])
         .map((e) => e.TOTAL_SALES)
         .filter((e) => e > 0)
+        .sort((a, b) => b - a)
     );
     setItemPurchase(
       lodash
         .orderBy(data, ["TOTAL_PURCHASE"], ["desc"])
         .map((e) => e.TOTAL_PURCHASE)
-        .filter((e) => e > 0) || []
+        .filter((e) => e > 0)
+        .sort((a, b) => b - a) || []
     );
     setItemSalesRet(
-      data.map((e) => e.TOTAL_SALES_RETUERN || []).filter((e) => e > 0)
+      data.map((e) => e.TOTAL_SALES_RETURN || []).filter((e) => e > 0)
     );
     setItemPurchaseRet(
       data.map((e) => e.TOTAL_PURCHASE_RETURN || []).filter((e) => e > 0)
@@ -115,10 +117,14 @@ const ItemChart = (props) => {
       lodash
         .orderBy(data, ["INV_DATE"], ["desc"])
         .filter((e) => e.CATEGORY === "SALES")
+        .filter((e) => e.OUT_QTY > 0)
         .map((e) => e.OUT_QTY || 0)
     );
     setDateAr(
-      lodash.orderBy(data, ["INV_DATE"], ["desc"]).map((e) => e.INV_DATE || 0)
+      lodash
+        .orderBy(data, ["INV_DATE"], ["desc"])
+        .filter((e) => +e.OUT_QTY > 0)
+        .map((e) => e.INV_DATE || 0)
     );
   };
 
@@ -220,27 +226,32 @@ const ItemChart = (props) => {
 
         <div>
           <Divider> Trend</Divider>
-          <Card
-            bordered={false}
-            hoverable="true"
-            style={{
-              //width: "60.5rem",
-              //height: "38.9rem",
-              marginLeft: "6.45rem",
-              borderRadius: "1%",
-              backgroundColor: "transparent",
-            }}
-            className="glassy"
-          >
-            <AreaChart
-              series1={itemSalesAr}
-              seriesLabel1={`Sales QTY `}
-              series2={itemPurchaseAr}
-              seriesLabel2={`Purchase QTY `}
-              label={"hello"}
-              catg={dateAr}
-            />
-          </Card>
+          <div>
+            <Card
+              bordered={false}
+              hoverable="true"
+              style={{
+                //width: "60.5rem",
+                minHeight: "15.9rem",
+                maxHeight: "36.9rem",
+                marginLeft: "14.45rem",
+                borderRadius: "2%",
+                backgroundColor: /*"transparent"*/ "rgb(55 65 81)",
+                minWidth: "50%",
+                maxWidth: "80%",
+              }}
+              className="glassy bg-gray-700 "
+            >
+              <AreaChart
+                series1={itemSalesAr}
+                seriesLabel1={`Sales QTY `}
+                series2={itemPurchaseAr}
+                seriesLabel2={`Purchase QTY `}
+                label={"hello"}
+                catg={dateAr}
+              />
+            </Card>
+          </div>
         </div>
         {/* </div> */}
         {/* </div> */}

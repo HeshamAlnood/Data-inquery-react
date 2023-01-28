@@ -36,6 +36,8 @@ export const AreaChart = (props) => {
       chart: {
         height: 350,
         type: vType,
+        background: "transparent",
+        foreColor: "white",
 
         zoom: {
           enabled: true,
@@ -43,16 +45,45 @@ export const AreaChart = (props) => {
           autoScaleYaxis: false,
           zoomedArea: {
             fill: {
-              color: "#90CAF9",
-              opacity: 0.4,
+              //  color: "#90CAF9",
+              color: "white",
+              //opacity: 0.4,
             },
             stroke: {
               color: "#0D47A1",
-              opacity: 0.4,
+              //  opacity: 0.4,
               width: 1,
             },
           },
         },
+      },
+      markers: {
+        size: 5,
+        //  colors: ["white"],
+        strokeColor: "white",
+        strokeWidth: 3,
+        tooltip: {
+          shared: false,
+          intersect: true,
+        },
+        discrete: [
+          {
+            seriesIndex: 0,
+            dataPointIndex: 7,
+            fillColor: "#e3e3e3",
+            strokeColor: "#fff",
+            size: 5,
+            shape: "square", // "circle" | "square" | "rect"
+          },
+          {
+            seriesIndex: 2,
+            dataPointIndex: 11,
+            fillColor: "#f7f4f3",
+            strokeColor: "#eee",
+            size: 4,
+            shape: "square", // "circle" | "square" | "rect"
+          },
+        ],
       },
       dataLabels: {
         enabled: false,
@@ -60,15 +91,7 @@ export const AreaChart = (props) => {
       stroke: {
         curve: "smooth",
       },
-      grid: {
-        borderColor: "#90A4AE",
-        strokeDashArray: 0,
-        position: "back",
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
-      },
+
       xaxis: {
         type: "datetime",
         categories: vCatg,

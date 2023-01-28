@@ -21,10 +21,14 @@ export const BarChartGrouped = (props) => {
   let vHeight = props.height || 1000;
 
   let obKeys = [];
-
+  let defaultArr = [0, 0, 0];
   vCatg = props.catg || [];
   let vSeries1 = props.series1;
   let vSeries2 = props.series2;
+
+  if (vSeries1.length < 3) {
+    vSeries1 = [...vSeries1, ...defaultArr];
+  }
 
   /** */
 

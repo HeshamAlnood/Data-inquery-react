@@ -32,7 +32,7 @@ import ViewArchive from "../Components/ViewArchive";
 import { CustomerByItems } from "../Components/CustomerItmes";
 import UnPaidInv from "../Components/UnColleted";
 //import PdfViewer from "../Components/PdfViewer";
-
+import lodash from "lodash";
 import TagList from "../Components/List";
 import ModalScreen from "../Components/Modal";
 import Uploader from "../Components/Uploader";
@@ -43,6 +43,8 @@ export default function Customer(props) {
   let [customerDataRaw, setCustomerDataRaw] = useState([]);
   let [isDone, setIsDone] = useState(false);
   let [custList, setCustList] = useState([]);
+  let [custArrLabel, setCustArrLabel] = useState([]);
+
   let [filterd, setFilterd] = useState([]);
   let [currCust, setCurrCust] = useState("");
   let [drawerFlag, setDrawerFlag] = useState(false);
@@ -58,6 +60,7 @@ export default function Customer(props) {
   });
   const draggleRef = useRef(null);
   let custArr;
+  //let custArrLabel = [];
   //const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
   function toFixedTrunc(x, n) {
@@ -108,7 +111,10 @@ export default function Customer(props) {
 
   const fillArry = (data) => {
     custArr = data.map((e) => e.CUST_CUSTOMER);
-
+    let custArrLabel = data.map((e) =>
+      lodash.pick(e, ["CUST_CUSTOMER", "CUST_NAME"])
+    );
+    console.log(`lodash pick `, custArrLabel);
     setCustList(
       custArr.sort((a, b) =>
         (a || "a")
@@ -116,6 +122,23 @@ export default function Customer(props) {
           .toLowerCase()
           .localeCompare((b || "b").toString().toLowerCase())
       )
+    );
+    setCustArrLabel;
+    custArrLabel = lodash.sortBy(custArrLabel, ["CUST_CUSTOMER"]);
+
+    //.map((e) => e.CUST_CUSTOMER + " - " + e.CUST_NAME);
+    console.log(
+      `custArrLabel `,
+      custArrLabel.map((e) => ({
+        value: e.CUST_CUSTOMER,
+        label: e.CUST_CUSTOMER + " - " + e.CUST_NAME,
+      }))
+    );
+    setCustArrLabel(
+      custArrLabel.map((e) => ({
+        value: e.CUST_CUSTOMER,
+        label: e.CUST_CUSTOMER + " - " + e.CUST_NAME,
+      }))
     );
   };
 
@@ -506,13 +529,15 @@ export default function Customer(props) {
       >
         {isDone ?? <Skeleton active />}
 
-        <TagList
-          cols={custList}
-          filterd={setFilterd}
-          qName={`CUSTOMER`}
-          width={"80%"}
-        />
-
+        <div className="max-w-7xl	 mb-4">
+          <TagList
+            cols={custList}
+            filterd={setFilterd}
+            qName={`CUSTOMER`}
+            //  width={"100%"}
+            options={custArrLabel}
+          />
+        </div>
         <Row justify="center">
           <Col>{isDone && Getdata(customerData)}</Col>
         </Row>

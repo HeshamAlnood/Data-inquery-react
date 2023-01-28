@@ -1,11 +1,14 @@
 import { Select, Tag } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 const { Option } = Select;
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 
 let selectTag = [];
 
 const TagList = (props) => {
+  let [options, setOptions] = useState(props.options || []);
+
+  console.log(`label from props `, options);
   const children = props.cols.map((e, i) => (
     <Option
       key={e + i}
@@ -14,7 +17,7 @@ const TagList = (props) => {
 
       //labelInValue={true}
     >
-      {props.desc || e}
+      {/* {label[i]} */}
     </Option>
   ));
 
@@ -23,12 +26,13 @@ const TagList = (props) => {
   const handleChange = (value) => {
     console.log(`selected ${value}`);
 
-    console.log(`selectTag`);
+    console.log(`selectTag`, value);
     //console.log(selectTag);
-    console.log(value);
+
     selectTag = value;
 
     props.filterd(selectTag);
+    setOptions(props.options);
   };
 
   /*for (let i = 10; i < 36; i++) {
@@ -36,6 +40,26 @@ const TagList = (props) => {
       <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
     );
   }*/
+
+  const handleSearch = (str) => {
+    console.log(`length of input search `, str.length);
+    if (str.length > 0) {
+      //data.filter((e) => e.label.toLowerCase.indexOf(str.toLowerCase));
+      let data = props.options;
+
+      data = data.filter(
+        (e) =>
+          e.label
+            .toString()
+            .toLowerCase()
+            .indexOf(str?.toString().toLowerCase()) > -1
+      );
+      console.log(`input search `, str, data);
+      setOptions(data);
+      //setTimeout(() => "", 1000);
+    } else setOptions(props.options);
+  };
+  console.log(`options is = `, options);
   const tagRender = (props) => {
     const { label, value, closable, onClose } = props;
 
@@ -61,10 +85,12 @@ const TagList = (props) => {
           fontSize: "1rem",
         }}
       >
-        {label}
+        {value}
       </Tag>
     );
   };
+
+  useEffect(() => setOptions(props.options), [props.options]);
 
   return (
     <div style={{ borderRadius: "5%" }}>
@@ -73,6 +99,8 @@ const TagList = (props) => {
         size="large"
         allowClear
         showArrow
+        showSearch
+        filterOption={false}
         placeholder={`Please Select ${props.qName ?? "Vendors"}`}
         //defaultValue={props.type === "Cols" ? props.cols : ""}
         tagRender={props.type === "Cols" ? "" : tagRender}
@@ -81,18 +109,18 @@ const TagList = (props) => {
         className="rounded-full text-red-500"
         //popupClassName="rounded-full text-red-500"
         style={{
-          width: "30rem", // vWidth,
+          width: vWidth || "50rem",
           height: "2.5rem",
           //borderRadius: "5%",
         }}
         //defaultValue={[]}
-
+        options={options}
         onChange={handleChange}
-
+        onSearch={handleSearch}
         //onDeselect={handleChange}
         //className="rounded-full"
       >
-        {children}
+        {/* {children} */}
       </Select>
     </div>
   );

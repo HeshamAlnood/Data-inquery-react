@@ -190,6 +190,7 @@ const DashBoard = (props) => {
     setIsDone(true);
 
     setRevExpSummary(props.dataExpRev);
+    console.log(`navigator `, window.navigator);
   }, []);
 
   const chngRaido = (value) => {

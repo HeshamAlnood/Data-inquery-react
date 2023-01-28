@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { Table, Loading } from "@nextui-org/react";
+import { VerticalAlignBottomOutlined } from "@ant-design/icons";
+
 import lodash from "lodash";
-import { DatePicker, Layout, Empty } from "antd";
+import { DatePicker, Layout, Empty, Button } from "antd";
 import moment from "moment";
+import HtmlTOExcel from "../Methods/exportExcel";
 
 const ItemMovment = (props) => {
   let [itemMovmentData, setItemMovmentData] = useState([]);
@@ -188,7 +191,25 @@ const ItemMovment = (props) => {
     /*style={{ width: "78.8rem" }}*/
     <div className="  relative  ">
       <div className="flex flex-col">
-        <h1 className="text-lg	"> Chose Date :</h1>
+        <div className="flex justify-between">
+          <h1 className="text-lg	"> Chose Date :</h1>
+          <Button
+            size="lg"
+            type="primary"
+            className="bg-blue-500  float-right mb-4 order-last"
+            shape="round"
+            onClick={() =>
+              HtmlTOExcel(
+                itemMovmentData,
+                dataCols.map((e) => e.key),
+                `Item Movment `
+              )
+            }
+          >
+            Download Excel
+            <VerticalAlignBottomOutlined style={{ paddingLeft: "0.5rem" }} />
+          </Button>
+        </div>
         <RangePicker
           ranges={{
             Yesterday: [moment().day(-1), moment().day(-1)],

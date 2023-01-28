@@ -106,35 +106,20 @@ export default function Customer(props) {
   };
 
   const fillArry = (data) => {
-    let itemArr = data.map((e, i) => e.PART_NO);
-    console.log(`before set`, itemArr.length);
-    itemArr = [...new Set(itemArr)];
+    let itemArrLabel = data.map((e) =>
+      lodash.pick(e, ["PART_NO", "ITEM_DESCRIPTION"])
+    );
 
-    console.log(`after set`, itemArr.length);
-    console.log(`cust arr set`, itemArr);
-    setItemList(
-      itemArr.sort((a, b) =>
-        (a || "a")
-          .toString()
-          .toLowerCase()
-          .localeCompare((b || "b").toString().toLowerCase())
-      )
-    );
-    //let itemArrDesc = data.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION);
-    //let itemArrDesc = data;
-    //itemArrDesc = [...new Set(itemArrDesc)];
-    /*itemArrDesc = lodash.uniqBy(itemArrDesc, "PART_NO");
-    lodash.sortBy(itemArrDesc, ["PART_NO"]);
-    console.log(
-      `part desc `,
-      itemArrDesc.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION)
-    );
+    itemArrLabel = lodash.sortBy(itemArrLabel, ["PART_NO"]);
+
     setItemListDesc(
-      itemArrDesc.map((e, i) => e.PART_NO + " " + e.ITEM_DESCRIPTION)
+      itemArrLabel.map((e) => ({
+        value: e.PART_NO,
+        label: e.PART_NO + " - " + e.ITEM_DESCRIPTION,
+      }))
     );
-    setItemList(itemArrDesc.map((e) => e.PART_NO));*/
 
-    return itemArr;
+    //return itemArr;
   };
 
   const setData = async () => {
@@ -288,8 +273,9 @@ export default function Customer(props) {
                           contentStyle={{
                             fontWeight: "bold",
                             color: "rgb(2 132 199)",
+                            //color:'wheat'
                           }}
-                          className="text-xl"
+                          className="text-xl "
                         >
                           {Number.isFinite(val) === true
                             ? new Intl.NumberFormat("en-us").format(
@@ -394,17 +380,19 @@ export default function Customer(props) {
         }}
       >
         {isDone ?? <Skeleton active />}
-
+        <div className="max-w-7xl	ml-48 mb-4">
+          <TagList
+            cols={itemList}
+            //desc={itemListDesc}
+            filterd={setFilterd}
+            qName={`ITEMS`}
+            //width={"80%"}
+            options={itemListDesc}
+          />
+        </div>
         {/* <Row justify="center"> */}
         {/* <Col> */}
         <div className="grid justify-items-center    mt-6  mr-80 ">
-          <TagList
-            cols={itemList}
-            desc={itemListDesc}
-            filterd={setFilterd}
-            qName={`ITEMS`}
-            width={"80%"}
-          />
           {/* <Radio.Group
             options={optionButton}
             onChange={({ target: { value } }) => chngRaido(value)}
@@ -477,7 +465,7 @@ export default function Customer(props) {
                 <List
                   height={height}
                   rowCount={itemsData.length}
-                  rowHeight={500}
+                  rowHeight={520}
                   rowRenderer={({ key, index, style, parent }) =>
                     //Getdata(itemsData, index)
                     {

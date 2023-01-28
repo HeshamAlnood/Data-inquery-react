@@ -235,7 +235,7 @@ export const CustomerByItems = (props) => {
             title="Total Amount Sold"
             value={ItemTotal.totalSold}
             valueStyle={{
-              color: "rgb(21 128 61)",
+              //   color: "rgb(21 128 61)",
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
@@ -245,7 +245,7 @@ export const CustomerByItems = (props) => {
             title="Total Quantiny Sold"
             value={ItemTotal.totalQuantitySold}
             valueStyle={{
-              color: "rgb(6 182 212)",
+              //  color: "rgb(6 182 212)",
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
@@ -256,7 +256,7 @@ export const CustomerByItems = (props) => {
             title="Most Item Sold"
             value={ItemTotal.mostItemSold}
             valueStyle={{
-              color: "rgb(59 130 246)",
+              // color: "rgb(59 130 246)",
               borderBottomWidth: "2px",
               textAlign: "end",
             }}
@@ -266,7 +266,7 @@ export const CustomerByItems = (props) => {
             title="Total Quantity Returned"
             value={ItemTotal.totalQuantityReturned}
             valueStyle={{
-              color: "rgb(248 113 113)",
+              //   color: "rgb(248 113 113)",
               borderBottomWidth: "2px",
               textAlign: "end",
             }}

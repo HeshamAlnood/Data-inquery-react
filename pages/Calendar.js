@@ -243,6 +243,7 @@ function CalendarData(props) {
 
 export async function getServerSideProps() {
   let year = moment().year();
+  year = 2022;
   let month = moment().month();
   let rsp = await fetch(`http://localhost:3000/api/getDailyTrans?year=${year}`);
   let data = await rsp.json();

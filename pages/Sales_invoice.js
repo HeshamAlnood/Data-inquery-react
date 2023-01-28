@@ -21,7 +21,7 @@ import {
   useReducer,
   useMemo,
 } from "react";
-import { getCustomerData, getInventoryData } from "../Methods/DataApi";
+
 import { useFieldArray, useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -100,10 +100,16 @@ const SalesInvoice = (props) => {
   ];
   let [detailTable, setDetailTable] = useState([]);
   let classTr = "border border-gray-600 ";
-  let classTd = "bg-white-400 border border-gray-2 00";
+  let classTd = "bg-white-400 border border-gray-2 00   ";
   useEffect(() => {
-    getCustomerData().then((d) => setCustData(d));
-    getInventoryData().then((d) => setItemData(d));
+    //getCustomerData().then((d) => setCustData(d));
+    fetch(`http://localhost:3000/api/requestData?inquery=customer`)
+      .then((rsp) => rsp.json())
+      .then((d) => setCustData(d));
+    fetch(`http://localhost:3000/api/requestData?inquery=inventory`)
+      .then((rsp) => rsp.json())
+      .then((d) => setItemData(d.filter((e) => e.ITEM_ON_HAND_QTY > 0)));
+    //getInventoryData().then((d) => setItemData(d));
     //setDetailTable([defaultData]);
   }, []);
 
@@ -149,6 +155,15 @@ const SalesInvoice = (props) => {
 
   //console.log(`addRecord `, addRecord());
   const watchFieldArray = watch("detail");
+
+  const calcTotals = () => {
+    let sum = watchFieldArray
+      .map((e) => +e.sil_inv_total_price)
+      ?.reduce((a, b) => a + b, 0);
+    setValue("SIH_NET_INV_AMT", sum);
+    setValue("SIH_INV_BALANCE", sum);
+  };
+
   const addRecord = () => {
     let isOk = true;
 
@@ -162,21 +177,22 @@ const SalesInvoice = (props) => {
     //isOk ?? setFocus('detail.');
 
     console.log(`watch detail `, watchFieldArray);
-    let sum = watchFieldArray
+    /*  let sum = watchFieldArray
       .map((e) => +e.sil_inv_total_price)
       ?.reduce((a, b) => a + b, 0);
     setValue("SIH_NET_INV_AMT", sum);
     setValue("SIH_INV_BALANCE", sum);
-
+*/
+    calcTotals();
     isOk && append(defaultData);
   };
 
   const submitForm = (data) => console.log(`data  ${data}`);
 
   let clsInput =
-    "bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+    "bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm rounded-lg";
   let clsInputDetail =
-    "bg-white  border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+    "bg-white  border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm  active:bg-yellow-100 focus:bg-yellow-100";
   let clsLabel = "text-base	text-start	text-slate-400	";
   return (
     <Layout>
@@ -323,7 +339,7 @@ const SalesInvoice = (props) => {
                 style={{ width: "20rem", borderColor: "white" }}
                 className="table-auto "
               >
-                <tr className="text-white	">
+                <tr className="text-white	h-8 ">
                   <th className="bg-blue-400 rounded-l-lg">SRL</th>
                   <th className="bg-blue-400">PART NO</th>
                   <th className="bg-blue-400">Part Name</th>
@@ -338,6 +354,7 @@ const SalesInvoice = (props) => {
                     <tr
                       key={item.id + " " + index}
                       style={{ border: "1px solid black" }}
+                      className="select:bg-red-100 "
                     >
                       {defaultCols.map((e, i) => (
                         <td key={"d" + i} className={classTd}>
@@ -370,6 +387,7 @@ const SalesInvoice = (props) => {
                                   `detail.${index}.sil_inv_total_price`,
                                   getQtyTotalPrc(qty, untPrc)
                                 );
+                                calcTotals();
                               }
                             }}
                             //disabled={false}
@@ -392,21 +410,7 @@ const SalesInvoice = (props) => {
                               },
                             })}
                             disabled={e.disabled}
-
-                            //id={e.key}
-                            //ref={register}
-                            /*{...register(e.key, {
-                          requierd: { value: true, message: "must be enterd" },
-                          maxLength: { value: 2, message: "length is low" },
-                        })}*/
                           />
-                          {/* {<p>{errors[e.key]?.message}</p>} */}
-
-                          {/* <Controller
-                          render={({ field }) => <input {...field} />}
-                          name={`detail.${index}.${e.key}`}
-                          control={control}
-                        /> */}
                         </td>
                         //
                       ))}{" "}
@@ -415,7 +419,11 @@ const SalesInvoice = (props) => {
                   <datalist id="itemList">
                     {itemData?.map((e) => (
                       <option key={e.ITEM_PART_NO} value={e.ITEM_PART_NO}>
-                        {e.ITEM_PART_NO + " - " + e.ITEM_DESCRIPTION}
+                        {e.ITEM_PART_NO +
+                          " - " +
+                          e.ITEM_DESCRIPTION +
+                          " - Stock :" +
+                          e.ITEM_ON_HAND_QTY}
                       </option>
                     ))}
                   </datalist>
@@ -425,14 +433,18 @@ const SalesInvoice = (props) => {
           </div>
 
           <br />
-          <button
-            type="submit"
+          <Button
+            htmlType="submit"
             id="submit"
-            className="bg-red-300  rounded-full  
+            type="primary"
+            shape="round"
+            className="bg-blue-100  rounded-full  
                        text-sm font-semibold
                        w-48
                        hover:bg-blue-300 hover:text-white"
-          />
+          >
+            Save
+          </Button>
           {<div> {JSON.stringify(dataObj)}</div>}
         </form>
       </Content>

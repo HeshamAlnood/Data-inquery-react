@@ -173,27 +173,34 @@ const MenuBar = (props) => {
     //   className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
     // >
     <Layout>
-      <Sider
+      {/* <Sider
         breakpoint="lg"
         collapsedWidth="0"
         collapsible
         onBreakpoint={(broken) => {
           //console.log(broken);
         }}
+
         /*onCollapse={(collapsed, type) => {
           // console.log(collapsed, type);
         }}*/
+      /*>  */}
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
       >
         <div
           style={{
             overflow: "unset",
-            width: 256,
+            //width: 256,
             height: "auto",
             backgroundColor: "#001529",
           }}
           id="docs-sidebar"
           //className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 "
-          className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60] w-64 bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
+          className="hs-sidebar hs-sidebar-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden fixed top-0 left-0 bottom-0 z-[60]   bg-white border-r border-gray-200 pt-7 pb-10 overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 dark:scrollbar-y dark:bg-gray-800 dark:border-gray-700 			  		"
         >
           <Button
             type="primary"
@@ -206,10 +213,10 @@ const MenuBar = (props) => {
           </Button>
 
           <nav
-            className="  w-full flex flex-col flex-wrap divide-y divide-slate-400"
+            className="  w-full flex flex-col flex-wrap divide-y 0"
             id="sidebar"
           >
-            <div className="divide-y divide-slate-400">
+            <div className="divide-y  ">
               <a
                 className="flex-none text-3xl text-white font-semibold dark:text-white  text-center  "
                 href="#"
@@ -224,14 +231,16 @@ const MenuBar = (props) => {
               defaultOpenKeys={["sub1"]}
               mode="inline"
               theme="dark"
-              // inlineCollapsed={collapsed}
+              inlineCollapsed={collapsed}
               items={items}
               //className={"bg-slate-300"}
               triggerSubMenuAction={"hover"}
               subMenuOpenDelay={1}
+              collapsedWidth={10}
+              width={50}
               //  className="items-center gap-x-3 py-2 px-2.5 text-xl text-orange-50 hover:text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-300"
               style={{
-                //width: 256,
+                //  width: 256,
                 height: "100%",
                 overflow: "unset",
                 hover: { transition: " 9.5s", backgroundColor: "green" },

@@ -27,11 +27,6 @@ const handler = async (rqs, res) => {
     getItemsData,
   };
 
-  //  return funcs[querys](2016);
-
-  //return { inquery: inquery, funcName: funcName };
-
-  //res.status(200).json({ inquery: rqs.query.inquery });
   let data = await funcs[querys](
     year || inquery || type,
     month || dfrom || keyVal,
