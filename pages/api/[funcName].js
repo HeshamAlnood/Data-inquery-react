@@ -5,6 +5,7 @@ import {
   getFiles,
   getDashBoardData,
   getItemsData,
+  //getCustHist,
 } from "../../Methods/DataApi";
 import moment from "moment";
 

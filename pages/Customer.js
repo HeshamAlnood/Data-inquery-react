@@ -31,6 +31,7 @@ import ViewerPdf from "../Components/ViewerPdf";
 import ViewArchive from "../Components/ViewArchive";
 import { CustomerByItems } from "../Components/CustomerItmes";
 import UnPaidInv from "../Components/UnColleted";
+import StatOfAccntC from "../Components/StatOfAccntC";
 //import PdfViewer from "../Components/PdfViewer";
 import lodash from "lodash";
 import TagList from "../Components/List";
@@ -52,6 +53,8 @@ export default function Customer(props) {
   let [visible, setVisible] = useState(false);
   let [disabled, setDisabled] = useState(false);
   let [unPaidModal, setUnPaidModal] = useState(false);
+  let [customerHistModal, setCustomerHistModal] = useState(false);
+
   let [bounds, setBounds] = useState({
     left: 0,
     top: 0,
@@ -87,6 +90,10 @@ export default function Customer(props) {
     setCurrCust(cust);
   };
 
+  const controlStat = (cust, flag = false) => {
+    setCustomerHistModal(flag);
+    setCurrCust(cust);
+  };
   const controlItemSummry = (cust, flag = false) => {
     console.log(`controlDrawer`, flag);
 
@@ -169,6 +176,7 @@ export default function Customer(props) {
     console.log(e);
     setVisible(false);
     setUnPaidModal(false);
+    setCustomerHistModal(false);
   };
 
   const showModal = (cust) => {
@@ -359,6 +367,12 @@ export default function Customer(props) {
                   onClick={() => controlUnpaid(e.CUST_CUSTOMER, true)}
                 >
                   UnPaid Invocies
+                </button>
+                <button
+                  className={ButtonCls}
+                  onClick={() => controlStat(e.CUST_CUSTOMER, true)}
+                >
+                  Stat Of Accnt
                 </button>
                 {/* </Row> */}
               </Card.Footer>
@@ -571,6 +585,14 @@ export default function Customer(props) {
           isVisible={unPaidModal}
           setIsVisible={controlUnpaid}
           custno={currCust}
+          // type="Customer"
+        />
+      )}
+      {customerHistModal && (
+        <StatOfAccntC
+          isVisible={customerHistModal}
+          setIsVisible={controlStat}
+          currCustomer={currCust}
           // type="Customer"
         />
       )}

@@ -66,3 +66,11 @@ export const aproveCollection = async (pInvs, pUser) => {
   let data = await rsp.json();
   return data;
 };
+
+export const getCustHist = async (pCust, pDateFrom, pDateTo) => {
+  const rsp = await fetch(
+    `${url}/CustomerHist?customer=${pCust}&dfrom=${pDateFrom}&dto=${pDateTo}`
+  );
+  let data = await rsp.json();
+  return data;
+};
