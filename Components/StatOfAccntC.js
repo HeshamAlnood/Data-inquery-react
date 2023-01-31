@@ -21,18 +21,19 @@ const StatOfAccntC = (props) => {
 
   //let []
 
-  const calcBal = () => {
-    let openBal = customerHist.map((e) => e.OPEN_BALANCE)[1];
-    setOpenBal(+openBal);
-    let currBal = customerHist[customerHist.length - 1 || 0]?.BAL;
-    setCurrBal(+currBal);
-    let totalCr = customerHist
+  const calcBal = (data) => {
+    let openBal = data.map((e) => +e.OPEN_BALANCE || 0)[1];
+    console.log(`using protoyupe `, openBal.formatNum(openBal));
+    setOpenBal(openBal.formatNum(openBal));
+    let currBal = data[data.length - 1 || 0]?.BAL;
+    setCurrBal(currBal.formatNum(currBal));
+    let totalCr = data
       .map((e) => +e.CH_CREDIT_AMT)
       .reduce((a, b) => +a + +b, 0);
-    let totalDb = customerHist
-      .map((e) => +e.CH_DEBIT_AMT)
-      .reduce((a, b) => +a + +b, 0);
-    setCloseBal(+totalCr - +totalDb);
+    let totalDb = data.map((e) => +e.CH_DEBIT_AMT).reduce((a, b) => +a + +b, 0);
+    let vCloseBal = +totalDb - +totalCr;
+    setCloseBal(vCloseBal.formatNum(vCloseBal));
+    console.log(`cvalc val `, `openBal ${openBal} currBal ${currBal} `);
   };
 
   console.log(`is Done or Loading  ? `, !isDone, isDone);
@@ -53,6 +54,27 @@ const StatOfAccntC = (props) => {
   ];
   let [dataCols, setDataCols] = useState(columns);
 
+  const toFixedTrunc = (x, n) => {
+    const v = (typeof x === "string" ? x : x.toString()).split(".");
+    if (n <= 0) return v[0];
+    let f = v[1] || "";
+    if (f.length > n) return `${v[0]}.${f.substr(0, n)}`;
+    while (f.length < n) f += "0";
+    return `${v[0]}.${f}`;
+  };
+
+  const formatNum = (num) => {
+    //return toFixedTrunc(num, 2);
+    return new Intl.NumberFormat("en-IN", {
+      //maximumSignificantDigits: 3,
+    }).format(+toFixedTrunc(num, 2));
+  };
+
+  Number.prototype.formatNum = function (f) {
+    console.log(`print from number proto `, f);
+    return formatNum(f);
+  };
+
   const getCustHist = () => {
     console.log(`prp for cals `, props.currCustomer, dateR[0], dateR[1]);
     let dateF = dateR[0].format("YYYYMMDD");
@@ -66,7 +88,7 @@ const StatOfAccntC = (props) => {
       .then((data) => {
         setIsDone(true);
         setCustomerHist(data);
-        calcBal();
+        calcBal(data);
       });
   };
 

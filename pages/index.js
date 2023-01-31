@@ -14,6 +14,7 @@ export default function Home({ dataq }) {
     companyName: "Asassyat",
     label: "DashBoard",
   };
+
   return (
     <div>
       <Head>
