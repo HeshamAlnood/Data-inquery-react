@@ -76,8 +76,6 @@ export default function Customer(props) {
   }
 
   const controlDrawer = (cust, flag = false) => {
-    console.log(`controlDrawer`, flag);
-
     //drawerFlag === false ? setDrawerFlag(true) : setDrawerFlag(false);
     //setItemsSummryFlag(flag);
     setDrawerFlag(flag);
@@ -121,7 +119,6 @@ export default function Customer(props) {
     let custArrLabel = data.map((e) =>
       lodash.pick(e, ["CUST_CUSTOMER", "CUST_NAME"])
     );
-    console.log(`lodash pick `, custArrLabel);
     setCustList(
       custArr.sort((a, b) =>
         (a || "a")
@@ -134,13 +131,7 @@ export default function Customer(props) {
     custArrLabel = lodash.sortBy(custArrLabel, ["CUST_CUSTOMER"]);
 
     //.map((e) => e.CUST_CUSTOMER + " - " + e.CUST_NAME);
-    console.log(
-      `custArrLabel `,
-      custArrLabel.map((e) => ({
-        value: e.CUST_CUSTOMER,
-        label: e.CUST_CUSTOMER + " - " + e.CUST_NAME,
-      }))
-    );
+
     setCustArrLabel(
       custArrLabel.map((e) => ({
         value: e.CUST_CUSTOMER,
@@ -150,13 +141,9 @@ export default function Customer(props) {
   };
 
   const setData = async () => {
-    console.log(`start setting data `);
-    console.log(props.data);
     await setCustomerData([...props.data]);
     await setCustomerDataRaw([...props.data]);
     await fillArry(props.data);
-    console.log(`end setting data `);
-    console.log(`data after setting `, customerData);
   };
 
   useEffect(() => {

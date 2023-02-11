@@ -5,7 +5,9 @@ const HtmlTOExcel = (pdata, cols, name = "export", type = ".xlsx", fun, dl) => {
   //var elt = document.getElementById("dataTable");
   //var wb = utils.table_to_book(elt, { sheet: "sheet1" })  ;
 
-  let ws = utils.json_to_sheet(pdata.map((e) => lodash.pick(e, cols)));
+  console.log(`pdata `, pdata, cols);
+
+  let ws = utils.json_to_sheet(pdata.map((e) => lodash.pick(e, cols)) || pdata);
 
   var wb = utils.book_new();
 

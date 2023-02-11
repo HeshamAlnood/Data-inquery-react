@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { Descriptions, Button, DatePicker, Modal, Divider } from "antd";
 import moment from "moment";
 import { Table, Loading } from "@nextui-org/react";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { VerticalAlignBottomOutlined } from "@ant-design/icons";
+//import HtmlTOExcel from "../Methods/exportExcel";
+//import { wrtie, utils, writeFileXLSX, writeFile } from "xlsx";
+//import * as XLSX from "xlsx-js-style";
+import { printExcel } from "../Methods/StatOfAcntExcel";
 
 const { RangePicker } = DatePicker;
 
@@ -21,12 +25,20 @@ const StatOfAccntC = (props) => {
 
   //let []
 
+  function formatNum(num) {
+    //return toFixedTrunc(num, 2);
+    return new Intl.NumberFormat("en-IN", {
+      //maximumSignificantDigits: 3,
+    }).format(+toFixedTrunc(Math.abs(num), 2));
+  }
+
   const calcBal = (data) => {
     let openBal = data.map((e) => +e.OPEN_BALANCE || 0)[1];
     console.log(`using protoyupe `, openBal.formatNum(openBal));
     setOpenBal(openBal.formatNum(openBal));
-    let currBal = data[data.length - 1 || 0]?.BAL;
-    setCurrBal(currBal.formatNum(currBal));
+    let currBal = +data[data.length - 1 || 0]?.BAL || 0;
+    console.log(`curr bal `, currBal, currBal.formatNum(+currBal));
+    setCurrBal(currBal.formatNum(+currBal));
     let totalCr = data
       .map((e) => +e.CH_CREDIT_AMT)
       .reduce((a, b) => +a + +b, 0);
@@ -61,18 +73,6 @@ const StatOfAccntC = (props) => {
     if (f.length > n) return `${v[0]}.${f.substr(0, n)}`;
     while (f.length < n) f += "0";
     return `${v[0]}.${f}`;
-  };
-
-  const formatNum = (num) => {
-    //return toFixedTrunc(num, 2);
-    return new Intl.NumberFormat("en-IN", {
-      //maximumSignificantDigits: 3,
-    }).format(+toFixedTrunc(num, 2));
-  };
-
-  Number.prototype.formatNum = function (f) {
-    console.log(`print from number proto `, f);
-    return formatNum(f);
   };
 
   const getCustHist = () => {
@@ -126,6 +126,10 @@ const StatOfAccntC = (props) => {
   };
 
   useEffect(() => {
+    Number.prototype.formatNum = function (f) {
+      console.log(`print from number proto `, f);
+      return formatNum(f);
+    };
     getData();
     //getCustHist();
   }, []);
@@ -309,7 +313,7 @@ const StatOfAccntC = (props) => {
       <div>
         {getHeaderData()}
         <Divider />
-        <div className="pb-4 flex justify-between">
+        <div className="pb-4 flex justify-end">
           <RangePicker
             ranges={{
               Yesterday: [moment().day(-1), moment().day(-1)],
@@ -342,6 +346,27 @@ const StatOfAccntC = (props) => {
           >
             {" "}
             Search
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            shape="round"
+            //block={true}
+            className="w-32 h-48 hvr-glow"
+            onClick={() =>
+              /* HtmlTOExcel(
+                [...currCustomer],
+                dataCols.map((e) => e.key),
+                `Statment of Account `
+              )*/ printExcel(currCustomer, customerHist, {
+                openBalance: openBal,
+                currbal: currBal,
+                closeBal: closeBal,
+              })
+            }
+          >
+            Excel
+            <VerticalAlignBottomOutlined style={{ paddingLeft: "0.5rem" }} />
           </Button>
         </div>
         {getTableData()}
