@@ -10,7 +10,7 @@ export const printExcel = (cData, hData, calcData) => {
 
   let colsO = colsCust.map((e) => {
     return {
-      v: e === "RNK" ? "SRL NO" : e,
+      v: e.replaceAll("_", " "),
       t: "s",
       s: {
         fill: { fgColor: { rgb: "76adf5" } },
@@ -20,7 +20,12 @@ export const printExcel = (cData, hData, calcData) => {
   });
   let cDataVal = cData.map((e, i) => Object.entries(e).map((e) => e[1])).flat();
 
-  let cDataHistVal = hData.map((e, i) => Object.entries(e).map((e) => e[1]));
+  //let cDataHistVal = hData.map((e, i) => Object.entries(e).map((e) => e[1]));
+  let cDataHistVal = hData;
+  cDataHistVal.forEach(
+    (e) => (e.CH_DATE = moment(new Date(e.CH_DATE)).format("DD/MM/YYYY"))
+  );
+  cDataHistVal = hData.map((e, i) => Object.entries(e).map((e) => e[1]));
   //.flat()
 
   /*let cDataHistValO = [
@@ -57,11 +62,11 @@ export const printExcel = (cData, hData, calcData) => {
     },
   ];
 
-  let balOVals = [calcData.openBalance, calcData.currbal, calcData.closebal];
+  let balOVals = [calcData.openBalance, calcData.closeBal, calcData.currbal];
 
   let colsOHist = colsCustHist.map((e) => {
     return {
-      v: e,
+      v: e === "RNK" ? "SRL NO" : e.replaceAll("_", " "),
       t: "s",
       s: {
         fill: { fgColor: { rgb: "76adf5" } },
